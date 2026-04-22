@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useMicrophone } from '@/lib/hooks/use-microphone'
-import { useGeminiLive } from '@/lib/hooks/use-gemini-live'
+import { useGeminiLive, type CallEndReason } from '@/lib/hooks/use-gemini-live'
 import { AudioVisualizer } from './audio-visualizer'
 import type { RoleplayType } from '@/lib/prompts/roleplay'
 import { getRoleplayPrompt } from '@/lib/prompts/roleplay'
@@ -11,7 +11,11 @@ type CallState = 'idle' | 'connecting' | 'active' | 'ended'
 
 interface PhoneUIProps {
   roleplayType: RoleplayType | null
-  onCallEnd?: (transcript: { role: 'user' | 'model'; text: string }[], durationSeconds: number) => void
+  onCallEnd?: (
+    transcript: { role: 'user' | 'model'; text: string }[],
+    durationSeconds: number,
+    meta?: { endedBy: 'user' | 'model'; reason?: CallEndReason; summary?: string }
+  ) => void
 }
 
 function formatDuration(seconds: number): string {
@@ -28,6 +32,13 @@ export function PhoneUI({ roleplayType, onCallEnd }: PhoneUIProps) {
 
   const systemPrompt = roleplayType ? getRoleplayPrompt(roleplayType) : ''
 
+  // Refs volátiles para que el callback onModelHangup (que Gemini invoca desde
+  // dentro del hook) lea siempre la duración y el transcript actuales en vez
+  // de un closure stale.
+  const durationRef = useRef(0)
+  durationRef.current = duration
+  const finalizeCallRef = useRef<(meta: { endedBy: 'user' | 'model'; reason?: CallEndReason; summary?: string }) => void>(() => {})
+
   const gemini = useGeminiLive({
     systemPrompt,
     voiceName: 'Kore',
@@ -37,6 +48,10 @@ export function PhoneUI({ roleplayType, onCallEnd }: PhoneUIProps) {
     onError: useCallback((error: string) => {
       console.error('Gemini error:', error)
       setCallState('idle')
+    }, []),
+    onModelHangup: useCallback((info: { reason: CallEndReason; summary?: string }) => {
+      console.log('[phone-ui] model requested hangup', info)
+      finalizeCallRef.current({ endedBy: 'model', reason: info.reason, summary: info.summary })
     }, []),
   })
 
@@ -80,14 +95,29 @@ export function PhoneUI({ roleplayType, onCallEnd }: PhoneUIProps) {
     }
   }, [callState, roleplayType, gemini, microphone])
 
+  // Cleanup centralizado: lo usan tanto el botón rojo como el auto-hangup
+  // disparado por el modelo. Idempotente — si se llama dos veces (ej. user
+  // cuelga al mismo tiempo que el modelo pide end_call), la segunda invocación
+  // no hace nada porque callState ya es 'ended'.
+  const finalizeCall = useCallback(
+    (meta: { endedBy: 'user' | 'model'; reason?: CallEndReason; summary?: string }) => {
+      setCallState((prev) => {
+        if (prev === 'ended') return prev
+        const finalTranscript = gemini.transcript
+        const finalDuration = durationRef.current
+        microphone.stop()
+        gemini.disconnect()
+        onCallEnd?.(finalTranscript, finalDuration, meta)
+        return 'ended'
+      })
+    },
+    [microphone, gemini, onCallEnd]
+  )
+  finalizeCallRef.current = finalizeCall
+
   const handleHangup = useCallback(() => {
-    const finalTranscript = gemini.transcript
-    const finalDuration = duration
-    microphone.stop()
-    gemini.disconnect()
-    setCallState('ended')
-    onCallEnd?.(finalTranscript, finalDuration)
-  }, [microphone, gemini, onCallEnd, duration])
+    finalizeCall({ endedBy: 'user', reason: 'manual' })
+  }, [finalizeCall])
 
   const toggleMute = useCallback(() => {
     setIsMuted((prev) => !prev)

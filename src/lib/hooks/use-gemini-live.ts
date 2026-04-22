@@ -5,12 +5,22 @@ interface TranscriptEntry {
   text: string
 }
 
+export type CallEndReason =
+  | 'cierre_exitoso'
+  | 'objeciones_no_resueltas'
+  | 'sin_interes'
+  | 'timeout'
+  | 'manual'
+
 interface UseGeminiLiveOptions {
   systemPrompt: string
   voiceName?: string
   onTranscript?: (entry: TranscriptEntry) => void
   onModelSpeaking?: (speaking: boolean) => void
   onError?: (error: string) => void
+  // Se dispara cuando el modelo decide colgar la llamada (llamando la function
+  // end_call). El PhoneUI debe reaccionar cerrando la llamada en la UI.
+  onModelHangup?: (info: { reason: CallEndReason; summary?: string }) => void
 }
 
 interface UseGeminiLiveReturn {
@@ -58,7 +68,7 @@ function base64Decode(base64: string): ArrayBuffer {
 }
 
 export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveReturn {
-  const { systemPrompt, voiceName = 'Kore', onTranscript, onModelSpeaking, onError } = options
+  const { systemPrompt, voiceName = 'Kore', onTranscript, onModelSpeaking, onError, onModelHangup } = options
 
   const [isConnected, setIsConnected] = useState(false)
   const [isModelSpeaking, setIsModelSpeaking] = useState(false)
@@ -78,6 +88,13 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
   const reconnectAttemptsRef = useRef(0)
   const wsUrlRef = useRef<string | null>(null)
 
+  // Estado para hangup iniciado por el modelo vía function call `end_call`.
+  // Al recibir el toolCall, no cortamos inmediatamente: esperamos a que termine
+  // de reproducirse el audio de despedida y entonces llamamos a onModelHangup.
+  const pendingHangupRef = useRef<{ reason: CallEndReason; summary?: string } | null>(null)
+  const onModelHangupRef = useRef(onModelHangup)
+  onModelHangupRef.current = onModelHangup
+
   const playAudioChunk = useCallback((pcmBase64: string) => {
     if (!audioContextRef.current || audioContextRef.current.state === 'closed') {
       audioContextRef.current = new AudioContext({ sampleRate: 24000 })
@@ -95,7 +112,10 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
     source.buffer = audioBuffer
     source.connect(ctx.destination)
 
-    const startTime = Math.max(ctx.currentTime + 0.05, nextPlayTimeRef.current)
+    // Buffer de 20ms (antes 50ms). Reduce la latencia percibida entre que el
+    // modelo termina de "pensar" y empieza a hablar. Si vemos glitches en el
+    // audio podemos subirlo a 30ms.
+    const startTime = Math.max(ctx.currentTime + 0.02, nextPlayTimeRef.current)
     source.start(startTime)
     nextPlayTimeRef.current = startTime + audioBuffer.duration
 
@@ -105,6 +125,15 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
       if (activeSourcesRef.current.length === 0) {
         setIsModelSpeaking(false)
         onModelSpeaking?.(false)
+
+        // Si el modelo pidió colgar (function call end_call) y ya terminó de
+        // reproducirse toda la despedida, notificamos al UI para que cierre
+        // la llamada "naturalmente".
+        if (pendingHangupRef.current) {
+          const info = pendingHangupRef.current
+          pendingHangupRef.current = null
+          onModelHangupRef.current?.(info)
+        }
       }
     }
   }, [onModelSpeaking])
@@ -139,13 +168,62 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
               voiceConfig: {
                 prebuiltVoiceConfig: { voiceName },
               },
+              // Forzar español mexicano mejora la detección de fin-de-turno
+              // en el VAD del servidor y reduce latencia.
+              languageCode: 'es-MX',
             },
           },
           systemInstruction: {
             parts: [{ text: systemPrompt }],
           },
+          // Tuning del VAD del servidor: reducir silenceDurationMs hace que
+          // Gemini detecte fin de habla más rápido (default ~700-800ms).
+          // 400ms es un buen balance: no corta al usuario que hace pausas
+          // cortas pero responde rápido cuando de verdad terminó.
+          realtimeInputConfig: {
+            automaticActivityDetection: {
+              silenceDurationMs: 400,
+              prefixPaddingMs: 100,
+            },
+          },
           inputAudioTranscription: {},
           outputAudioTranscription: {},
+          // Tool declaration: el modelo puede llamar end_call para colgar la
+          // llamada cuando corresponda (cierre exitoso, sin interés, etc).
+          // El prompt instruye cuándo usarla.
+          tools: [
+            {
+              functionDeclarations: [
+                {
+                  name: 'end_call',
+                  description:
+                    'Cuelga la llamada telefónica cuando la conversación ha terminado naturalmente. Úsala DESPUÉS de haber dicho verbalmente la despedida (ej. "Gracias, hasta luego"). Escenarios válidos: el vendedor cerró exitosamente la venta, el prospecto no tiene interés real, o la conversación ha concluido.',
+                  parameters: {
+                    type: 'OBJECT',
+                    properties: {
+                      reason: {
+                        type: 'STRING',
+                        enum: [
+                          'cierre_exitoso',
+                          'objeciones_no_resueltas',
+                          'sin_interes',
+                          'timeout',
+                        ],
+                        description:
+                          'Motivo del cierre de la llamada: cierre_exitoso si el vendedor cerró la venta; objeciones_no_resueltas si te vas por objeciones sin resolver; sin_interes si nunca hubo match; timeout para otros cierres naturales.',
+                      },
+                      summary: {
+                        type: 'STRING',
+                        description:
+                          'Resumen corto (1 oración) del resultado de la llamada.',
+                      },
+                    },
+                    required: ['reason'],
+                  },
+                },
+              ],
+            },
+          ],
           // Habilita session resumption — Gemini enviará handles periódicos en
           // `sessionResumptionUpdate` y permite reconectar preservando contexto.
           sessionResumption: isResuming
@@ -198,6 +276,49 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
       // GoAway: Gemini avisa antes de cerrar. timeLeft suele ser ~30s.
       if (data.goAway) {
         console.warn('[gemini-live] goAway received', data.goAway)
+      }
+
+      // Function calling: el modelo pidió ejecutar una herramienta.
+      // Por ahora solo soportamos `end_call`. Respondemos con un ack y
+      // programamos el hangup para cuando termine de hablar.
+      if (data.toolCall?.functionCalls) {
+        const functionResponses: Array<{ id?: string; name: string; response: Record<string, unknown> }> = []
+        for (const fc of data.toolCall.functionCalls) {
+          if (fc.name === 'end_call') {
+            const args = fc.args || {}
+            const reason = (args.reason as CallEndReason) || 'timeout'
+            const summary = typeof args.summary === 'string' ? args.summary : undefined
+            console.log('[gemini-live] end_call received', { reason, summary })
+            pendingHangupRef.current = { reason, summary }
+            functionResponses.push({
+              id: fc.id,
+              name: 'end_call',
+              response: { ok: true },
+            })
+
+            // Fallback: si no hay audio reproduciéndose (el modelo llamó
+            // end_call sin despedirse), disparamos el hangup en ~800ms.
+            if (activeSourcesRef.current.length === 0) {
+              setTimeout(() => {
+                if (pendingHangupRef.current) {
+                  const info = pendingHangupRef.current
+                  pendingHangupRef.current = null
+                  onModelHangupRef.current?.(info)
+                }
+              }, 800)
+            }
+          } else {
+            // Función desconocida: respondemos con error para que el modelo se entere.
+            functionResponses.push({
+              id: fc.id,
+              name: fc.name,
+              response: { error: 'unknown function' },
+            })
+          }
+        }
+        if (functionResponses.length > 0 && ws.readyState === WebSocket.OPEN) {
+          ws.send(JSON.stringify({ toolResponse: { functionResponses } }))
+        }
       }
 
       if (data.serverContent) {
@@ -301,6 +422,7 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
       isUserDisconnectingRef.current = false
       sessionHandleRef.current = null
       reconnectAttemptsRef.current = 0
+      pendingHangupRef.current = null
 
       if (!audioContextRef.current || audioContextRef.current.state === 'closed') {
         audioContextRef.current = new AudioContext({ sampleRate: 24000 })
@@ -326,6 +448,7 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
     sessionHandleRef.current = null
     reconnectAttemptsRef.current = 0
     wsUrlRef.current = null
+    pendingHangupRef.current = null
     stopPlayback()
     if (wsRef.current) {
       wsRef.current.close()

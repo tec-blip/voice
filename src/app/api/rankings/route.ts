@@ -9,9 +9,14 @@ export async function GET() {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
+  // Solo mostramos a usuarios que han completado al menos 1 sesión.
+  // Los que nunca han practicado tienen rank=0 en DB (así los asigna
+  // `update_ranking`) — si los incluyéramos con ORDER BY rank ASC
+  // aparecerían antes que los de rank=1, robándose la medalla de oro.
   const { data, error } = await supabase
     .from('rankings')
     .select('user_id, total_score, avg_score, sessions_count, rank, badges')
+    .gt('sessions_count', 0)
     .order('rank', { ascending: true })
     .limit(50)
 

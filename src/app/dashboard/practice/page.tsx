@@ -59,8 +59,18 @@ export default function PracticePage() {
   const [callDuration, setCallDuration] = useState(0)
   const [evalError, setEvalError] = useState<string | null>(null)
 
-  const handleCallEnd = useCallback(async (transcript: { role: 'user' | 'model'; text: string }[], durationSeconds: number) => {
-    console.log('[practice] handleCallEnd — transcript length =', transcript.length, 'duration =', durationSeconds, 's')
+  const handleCallEnd = useCallback(async (
+    transcript: { role: 'user' | 'model'; text: string }[],
+    durationSeconds: number,
+    meta?: { endedBy: 'user' | 'model'; reason?: string; summary?: string }
+  ) => {
+    console.log(
+      '[practice] handleCallEnd — transcript length =',
+      transcript.length,
+      'duration =', durationSeconds, 's',
+      'endedBy =', meta?.endedBy ?? 'user',
+      'reason =', meta?.reason ?? '—'
+    )
     setLastTranscript(transcript)
     setCallDuration(durationSeconds)
 

@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
-import { useUserRole } from '@/lib/hooks/use-user-role'
+import { useAuth } from '@/lib/hooks/use-auth'
+import { useUserRole, type UserRole } from '@/lib/hooks/use-user-role'
 
 interface TranscriptEntry {
   role: 'user' | 'model'
@@ -82,11 +83,17 @@ function scoreColor(score: number | null): string {
 export default function AdminStudentDetailPage() {
   const router = useRouter()
   const params = useParams<{ id: string }>()
+  const { user: currentUser } = useAuth()
   const { isAdmin, loading: roleLoading } = useUserRole()
   const [data, setData] = useState<StudentDetail | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [expanded, setExpanded] = useState<string | null>(null)
+
+  // State para el selector de rol
+  const [pendingRole, setPendingRole] = useState<UserRole | null>(null)
+  const [savingRole, setSavingRole] = useState(false)
+  const [roleMessage, setRoleMessage] = useState<{ kind: 'ok' | 'err'; text: string } | null>(null)
 
   useEffect(() => {
     if (!roleLoading && !isAdmin) {
@@ -141,6 +148,34 @@ export default function AdminStudentDetailPage() {
   const rank = ranking?.rank ?? 0
   const badges = Array.isArray(ranking?.badges) ? ranking!.badges : []
 
+  const isSelf = currentUser?.id === user.id
+  const selectedRole = pendingRole ?? user.role
+  const hasChange = pendingRole !== null && pendingRole !== user.role
+
+  async function saveRole() {
+    if (!pendingRole || pendingRole === user.role) return
+    setSavingRole(true)
+    setRoleMessage(null)
+    try {
+      const res = await fetch(`/api/admin/students/${user.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ role: pendingRole }),
+      })
+      const body = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        throw new Error(body.error || 'Error al cambiar el rol')
+      }
+      setData((prev) => (prev ? { ...prev, user: { ...prev.user, role: pendingRole } } : prev))
+      setPendingRole(null)
+      setRoleMessage({ kind: 'ok', text: `Rol actualizado a "${pendingRole}"` })
+    } catch (err) {
+      setRoleMessage({ kind: 'err', text: err instanceof Error ? err.message : 'Error desconocido' })
+    } finally {
+      setSavingRole(false)
+    }
+  }
+
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       <Link href="/dashboard/admin/students" className="text-sm text-zinc-400 hover:text-white inline-flex items-center gap-1">
@@ -167,6 +202,47 @@ export default function AdminStudentDetailPage() {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Gestión de rol */}
+      <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-5">
+        <div className="flex items-center justify-between gap-3 flex-wrap">
+          <div>
+            <h3 className="text-sm font-semibold text-white">Gestión de rol</h3>
+            <p className="text-xs text-zinc-500 mt-0.5">
+              {isSelf
+                ? 'No puedes cambiar tu propio rol. Pide a otro admin que lo haga.'
+                : 'Cambia el nivel de acceso de este usuario.'}
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <select
+              value={selectedRole}
+              disabled={isSelf || savingRole}
+              onChange={(e) => {
+                setPendingRole(e.target.value as UserRole)
+                setRoleMessage(null)
+              }}
+              className="bg-zinc-950/60 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500 disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              <option value="alumno">Alumno</option>
+              <option value="instructor">Instructor</option>
+              <option value="admin">Admin</option>
+            </select>
+            <button
+              onClick={saveRole}
+              disabled={!hasChange || isSelf || savingRole}
+              className="rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              {savingRole ? 'Guardando...' : 'Guardar'}
+            </button>
+          </div>
+        </div>
+        {roleMessage && (
+          <div className={`mt-3 text-xs ${roleMessage.kind === 'ok' ? 'text-green-400' : 'text-red-400'}`}>
+            {roleMessage.text}
+          </div>
+        )}
       </div>
 
       {/* Stats */}

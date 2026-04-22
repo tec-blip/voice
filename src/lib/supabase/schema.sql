@@ -323,3 +323,46 @@ end;
 $$;
 
 grant execute on function public.get_student_detail(uuid) to authenticated;
+
+-- admin_update_user_role: cambio de rol controlado. Admin master puede asignar
+-- 'alumno' | 'instructor' | 'admin' a cualquier usuario, excepto a sí mismo.
+create or replace function public.admin_update_user_role(
+  p_user_id uuid,
+  p_role text
+)
+returns jsonb
+language plpgsql
+security definer
+set search_path = public, pg_temp
+as $$
+declare
+  v_updated_user jsonb;
+begin
+  if not public.is_admin() then
+    raise exception 'forbidden: admin role required';
+  end if;
+
+  if p_role not in ('alumno', 'instructor', 'admin') then
+    raise exception 'invalid role: must be alumno, instructor or admin';
+  end if;
+
+  if p_user_id = auth.uid() then
+    raise exception 'cannot change your own role';
+  end if;
+
+  update public.users
+     set role = p_role
+   where id = p_user_id
+   returning jsonb_build_object(
+     'id', id, 'email', email, 'name', name, 'role', role
+   ) into v_updated_user;
+
+  if v_updated_user is null then
+    raise exception 'user not found';
+  end if;
+
+  return v_updated_user;
+end;
+$$;
+
+grant execute on function public.admin_update_user_role(uuid, text) to authenticated;
