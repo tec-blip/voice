@@ -20,12 +20,20 @@ export async function GET() {
   }
 
   const userIds = data.map((r) => r.user_id)
-  const { data: users } = await supabase
-    .from('users')
-    .select('id, name')
-    .in('id', userIds)
 
-  const nameMap = new Map(users?.map((u) => [u.id, u.name]) || [])
+  // Usamos un RPC SECURITY DEFINER porque la policy de users solo permite leer
+  // la propia fila. Sin esto, todos los usuarios del ranking se verían como "Usuario".
+  const { data: users, error: namesErr } = await supabase.rpc('get_user_names', {
+    p_ids: userIds,
+  })
+
+  if (namesErr) {
+    console.error('[api/rankings] get_user_names failed', namesErr)
+  }
+
+  const nameMap = new Map(
+    (users as { id: string; name: string }[] | null)?.map((u) => [u.id, u.name]) || []
+  )
   const enriched = data.map((r) => ({
     ...r,
     name: nameMap.get(r.user_id) || 'Usuario',

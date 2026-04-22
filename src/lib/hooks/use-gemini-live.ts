@@ -71,6 +71,13 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
   const currentModelTextRef = useRef('')
   const currentUserTextRef = useRef('')
 
+  // Session resumption state — Gemini Live corta sesiones tras un tiempo, pero emite
+  // `sessionResumptionUpdate` con un handle que permite reconectar preservando contexto.
+  const sessionHandleRef = useRef<string | null>(null)
+  const isUserDisconnectingRef = useRef(false)
+  const reconnectAttemptsRef = useRef(0)
+  const wsUrlRef = useRef<string | null>(null)
+
   const playAudioChunk = useCallback((pcmBase64: string) => {
     if (!audioContextRef.current || audioContextRef.current.state === 'closed') {
       audioContextRef.current = new AudioContext({ sampleRate: 24000 })
@@ -112,12 +119,189 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
     onModelSpeaking?.(false)
   }, [onModelSpeaking])
 
+  // openSocket abre un WebSocket nuevo con el setup. Si sessionHandleRef está poblado,
+  // envía `sessionResumption: { handle }` para continuar la sesión anterior sin perder
+  // el contexto de la conversación en curso.
+  const openSocket = useCallback((url: string) => {
+    const isResuming = sessionHandleRef.current !== null
+    const ws = new WebSocket(url)
+
+    ws.onopen = () => {
+      console.log(
+        `[gemini-live] ws.onopen — sending setup (${isResuming ? 'RESUMING with handle' : 'new session'})`
+      )
+      const setupMessage: Record<string, unknown> = {
+        setup: {
+          model: 'models/gemini-3.1-flash-live-preview',
+          generationConfig: {
+            responseModalities: ['AUDIO'],
+            speechConfig: {
+              voiceConfig: {
+                prebuiltVoiceConfig: { voiceName },
+              },
+            },
+          },
+          systemInstruction: {
+            parts: [{ text: systemPrompt }],
+          },
+          inputAudioTranscription: {},
+          outputAudioTranscription: {},
+          // Habilita session resumption — Gemini enviará handles periódicos en
+          // `sessionResumptionUpdate` y permite reconectar preservando contexto.
+          sessionResumption: isResuming
+            ? { handle: sessionHandleRef.current }
+            : {},
+        },
+      }
+      ws.send(JSON.stringify(setupMessage))
+    }
+
+    ws.onmessage = async (event) => {
+      let raw: string
+      if (typeof event.data === 'string') {
+        raw = event.data
+      } else if (event.data instanceof Blob) {
+        raw = await event.data.text()
+      } else if (event.data instanceof ArrayBuffer) {
+        raw = new TextDecoder().decode(event.data)
+      } else {
+        console.warn('[gemini-live] unexpected message type', event.data)
+        return
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      let data: any
+      try {
+        data = JSON.parse(raw)
+      } catch (err) {
+        console.error('[gemini-live] JSON parse error', err, raw.slice(0, 200))
+        return
+      }
+
+      if (data.setupComplete !== undefined) {
+        console.log('[gemini-live] setupComplete — connected')
+        setIsConnected(true)
+        reconnectAttemptsRef.current = 0
+        return
+      }
+
+      // Session resumption: Gemini emite un handle nuevo cada ~60s. Lo guardamos
+      // para usarlo si la conexión se cae.
+      if (data.sessionResumptionUpdate) {
+        const upd = data.sessionResumptionUpdate
+        if (upd.resumable && upd.newHandle) {
+          sessionHandleRef.current = upd.newHandle
+          console.log('[gemini-live] sessionResumptionUpdate — handle stored')
+        }
+      }
+
+      // GoAway: Gemini avisa antes de cerrar. timeLeft suele ser ~30s.
+      if (data.goAway) {
+        console.warn('[gemini-live] goAway received', data.goAway)
+      }
+
+      if (data.serverContent) {
+        const sc = data.serverContent
+        const { modelTurn, turnComplete } = sc
+
+        if (modelTurn?.parts) {
+          for (const part of modelTurn.parts) {
+            if (part.inlineData?.mimeType?.startsWith('audio/')) {
+              if (!isModelSpeaking) {
+                setIsModelSpeaking(true)
+                onModelSpeaking?.(true)
+              }
+              playAudioChunk(part.inlineData.data)
+            }
+            if (part.text) {
+              currentModelTextRef.current += part.text
+            }
+          }
+        }
+
+        const inputTr = sc.inputTranscription
+        if (inputTr?.text) {
+          currentUserTextRef.current += inputTr.text
+        }
+        if (inputTr?.finished && currentUserTextRef.current) {
+          const entry: TranscriptEntry = { role: 'user', text: currentUserTextRef.current.trim() }
+          setTranscript((prev) => [...prev, entry])
+          onTranscript?.(entry)
+          currentUserTextRef.current = ''
+        }
+
+        const outputTr = sc.outputTranscription
+        if (outputTr?.text) {
+          currentModelTextRef.current += outputTr.text
+        }
+
+        if (turnComplete) {
+          if (currentUserTextRef.current) {
+            const entry: TranscriptEntry = { role: 'user', text: currentUserTextRef.current.trim() }
+            setTranscript((prev) => [...prev, entry])
+            onTranscript?.(entry)
+            currentUserTextRef.current = ''
+          }
+          if (currentModelTextRef.current) {
+            const entry: TranscriptEntry = { role: 'model', text: currentModelTextRef.current.trim() }
+            setTranscript((prev) => [...prev, entry])
+            onTranscript?.(entry)
+            currentModelTextRef.current = ''
+          }
+        }
+      }
+    }
+
+    ws.onerror = (ev) => {
+      console.error('[gemini-live] ws.onerror', ev)
+    }
+
+    ws.onclose = (ev) => {
+      console.warn(
+        `[gemini-live] ws.onclose code=${ev.code} wasClean=${ev.wasClean} reason="${ev.reason || '(empty)'}"`
+      )
+      setIsConnected(false)
+
+      // Si fue cierre intencional del usuario, no reconectar.
+      if (isUserDisconnectingRef.current) {
+        stopPlayback()
+        return
+      }
+
+      // Intento de reconexión automática si tenemos un handle (session resumption).
+      // Backoff lineal y tope de 3 intentos para no loopear infinitamente.
+      if (sessionHandleRef.current && reconnectAttemptsRef.current < 3 && wsUrlRef.current) {
+        reconnectAttemptsRef.current += 1
+        const delayMs = 500 * reconnectAttemptsRef.current
+        console.log(
+          `[gemini-live] attempting resume #${reconnectAttemptsRef.current} in ${delayMs}ms`
+        )
+        setTimeout(() => {
+          if (!isUserDisconnectingRef.current && wsUrlRef.current) {
+            openSocket(wsUrlRef.current)
+          }
+        }, delayMs)
+      } else {
+        // Sin handle o agotados los intentos: cerramos realmente.
+        stopPlayback()
+        if (!sessionHandleRef.current) {
+          onError?.('La conexión con Gemini se cerró')
+        } else {
+          onError?.('No se pudo reconectar con Gemini')
+        }
+      }
+    }
+
+    wsRef.current = ws
+  }, [voiceName, systemPrompt, onTranscript, onModelSpeaking, onError, playAudioChunk, stopPlayback, isModelSpeaking])
+
   const connect = useCallback(async () => {
     try {
-      // Critical: create + resume the playback AudioContext inside the user-gesture
-      // chain (this connect() is called from a click handler). If we wait until
-      // audio arrives from the WS to create it, Chrome/Brave create it suspended
-      // and no audio plays.
+      // Reset state para una nueva sesión
+      isUserDisconnectingRef.current = false
+      sessionHandleRef.current = null
+      reconnectAttemptsRef.current = 0
+
       if (!audioContextRef.current || audioContextRef.current.state === 'closed') {
         audioContextRef.current = new AudioContext({ sampleRate: 24000 })
       }
@@ -129,146 +313,19 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
       const res = await fetch('/api/gemini/config')
       if (!res.ok) throw new Error('Failed to get Gemini config')
       const { wsUrl } = await res.json()
+      wsUrlRef.current = wsUrl
 
-      const ws = new WebSocket(wsUrl)
-
-      ws.onopen = () => {
-        console.log('[gemini-live] ws.onopen — sending setup')
-        const setupMessage = {
-          setup: {
-            model: 'models/gemini-3.1-flash-live-preview',
-            generationConfig: {
-              responseModalities: ['AUDIO'],
-              speechConfig: {
-                voiceConfig: {
-                  prebuiltVoiceConfig: {
-                    voiceName,
-                  },
-                },
-              },
-            },
-            systemInstruction: {
-              parts: [{ text: systemPrompt }],
-            },
-            // Habilita transcripción automática del audio de entrada (usuario)
-            // y de salida (modelo). Sin esto, el transcript queda vacío porque
-            // responseModalities es sólo ['AUDIO'].
-            inputAudioTranscription: {},
-            outputAudioTranscription: {},
-          },
-        }
-        ws.send(JSON.stringify(setupMessage))
-      }
-
-      ws.onmessage = async (event) => {
-        // Gemini Live sends TEXT frames in some transports and BINARY (Blob) in others
-        let raw: string
-        if (typeof event.data === 'string') {
-          raw = event.data
-        } else if (event.data instanceof Blob) {
-          raw = await event.data.text()
-        } else if (event.data instanceof ArrayBuffer) {
-          raw = new TextDecoder().decode(event.data)
-        } else {
-          console.warn('[gemini-live] unexpected message type', event.data)
-          return
-        }
-
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        let data: any
-        try {
-          data = JSON.parse(raw)
-        } catch (err) {
-          console.error('[gemini-live] JSON parse error', err, raw.slice(0, 200))
-          return
-        }
-
-        console.log('[gemini-live] message', Object.keys(data).join(','))
-
-        if (data.setupComplete !== undefined) {
-          console.log('[gemini-live] setupComplete — connected')
-          setIsConnected(true)
-          return
-        }
-
-        if (data.serverContent) {
-          const sc = data.serverContent
-          const { modelTurn, turnComplete } = sc
-
-          if (modelTurn?.parts) {
-            for (const part of modelTurn.parts) {
-              if (part.inlineData?.mimeType?.startsWith('audio/')) {
-                if (!isModelSpeaking) {
-                  setIsModelSpeaking(true)
-                  onModelSpeaking?.(true)
-                }
-                playAudioChunk(part.inlineData.data)
-              }
-
-              if (part.text) {
-                currentModelTextRef.current += part.text
-              }
-            }
-          }
-
-          // Transcripción del audio del USUARIO (inputAudioTranscription habilitada en setup)
-          // La API envía chunks parciales; acumulamos y cerramos el turno al recibir un
-          // marcador (o al llegar inputTranscription.finished). Como no todos los
-          // servidores envían `finished`, también cerramos el turno cuando el modelo
-          // empieza a hablar (detectado por modelTurn audio en este mismo mensaje).
-          const inputTr = sc.inputTranscription
-          if (inputTr?.text) {
-            currentUserTextRef.current += inputTr.text
-          }
-          if (inputTr?.finished && currentUserTextRef.current) {
-            const entry: TranscriptEntry = { role: 'user', text: currentUserTextRef.current.trim() }
-            setTranscript((prev) => [...prev, entry])
-            onTranscript?.(entry)
-            currentUserTextRef.current = ''
-          }
-
-          // Transcripción del audio del MODELO (outputAudioTranscription)
-          const outputTr = sc.outputTranscription
-          if (outputTr?.text) {
-            currentModelTextRef.current += outputTr.text
-          }
-
-          if (turnComplete) {
-            // Cierra el turno del usuario si aún tenía texto pendiente sin `finished`
-            if (currentUserTextRef.current) {
-              const entry: TranscriptEntry = { role: 'user', text: currentUserTextRef.current.trim() }
-              setTranscript((prev) => [...prev, entry])
-              onTranscript?.(entry)
-              currentUserTextRef.current = ''
-            }
-            if (currentModelTextRef.current) {
-              const entry: TranscriptEntry = { role: 'model', text: currentModelTextRef.current.trim() }
-              setTranscript((prev) => [...prev, entry])
-              onTranscript?.(entry)
-              currentModelTextRef.current = ''
-            }
-          }
-        }
-      }
-
-      ws.onerror = (ev) => {
-        console.error('[gemini-live] ws.onerror', ev)
-        onError?.('Error en la conexión con Gemini')
-      }
-
-      ws.onclose = (ev) => {
-        console.warn(`[gemini-live] ws.onclose code=${ev.code} wasClean=${ev.wasClean} reason="${ev.reason || '(empty)'}"`)
-        setIsConnected(false)
-        stopPlayback()
-      }
-
-      wsRef.current = ws
+      openSocket(wsUrl)
     } catch (err) {
       onError?.(err instanceof Error ? err.message : 'Error conectando con Gemini')
     }
-  }, [systemPrompt, voiceName, onTranscript, onModelSpeaking, onError, playAudioChunk, stopPlayback, isModelSpeaking])
+  }, [openSocket, onError])
 
   const disconnect = useCallback(() => {
+    isUserDisconnectingRef.current = true
+    sessionHandleRef.current = null
+    reconnectAttemptsRef.current = 0
+    wsUrlRef.current = null
     stopPlayback()
     if (wsRef.current) {
       wsRef.current.close()
