@@ -1,0 +1,215 @@
+'use client'
+
+import { useState, useEffect, useCallback } from 'react'
+import { useMicrophone } from '@/lib/hooks/use-microphone'
+import { useGeminiLive } from '@/lib/hooks/use-gemini-live'
+import { AudioVisualizer } from './audio-visualizer'
+import type { RoleplayType } from '@/lib/prompts/roleplay'
+import { getRoleplayPrompt } from '@/lib/prompts/roleplay'
+
+type CallState = 'idle' | 'connecting' | 'active' | 'ended'
+
+interface PhoneUIProps {
+  roleplayType: RoleplayType | null
+  onCallEnd?: (transcript: { role: 'user' | 'model'; text: string }[], durationSeconds: number) => void
+}
+
+function formatDuration(seconds: number): string {
+  const m = Math.floor(seconds / 60)
+  const s = seconds % 60
+  return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`
+}
+
+export function PhoneUI({ roleplayType, onCallEnd }: PhoneUIProps) {
+  const [callState, setCallState] = useState<CallState>('idle')
+  const [isMuted, setIsMuted] = useState(false)
+  const [duration, setDuration] = useState(0)
+  const [lastText, setLastText] = useState('')
+
+  const systemPrompt = roleplayType ? getRoleplayPrompt(roleplayType) : ''
+
+  const gemini = useGeminiLive({
+    systemPrompt,
+    voiceName: 'Kore',
+    onTranscript: useCallback((entry: { role: 'user' | 'model'; text: string }) => {
+      setLastText(entry.text)
+    }, []),
+    onError: useCallback((error: string) => {
+      console.error('Gemini error:', error)
+      setCallState('idle')
+    }, []),
+  })
+
+  const microphone = useMicrophone({
+    onAudioData: useCallback((data: Float32Array) => {
+      gemini.sendAudio(data)
+    }, [gemini]),
+  })
+
+  useEffect(() => {
+    if (callState !== 'active') return
+    const interval = setInterval(() => setDuration((d) => d + 1), 1000)
+    return () => clearInterval(interval)
+  }, [callState])
+
+  useEffect(() => {
+    if (gemini.isConnected && callState === 'connecting') {
+      setCallState('active')
+    }
+  }, [gemini.isConnected, callState])
+
+  const handleCall = useCallback(async () => {
+    if (!roleplayType) return
+    if (callState !== 'idle' && callState !== 'ended') return
+
+    setDuration(0)
+    setIsMuted(false)
+    setLastText('')
+    setCallState('connecting')
+
+    try {
+      await gemini.connect()
+      const stream = await microphone.start()
+      if (!stream) {
+        setCallState('idle')
+        gemini.disconnect()
+        return
+      }
+    } catch {
+      setCallState('idle')
+    }
+  }, [callState, roleplayType, gemini, microphone])
+
+  const handleHangup = useCallback(() => {
+    const finalTranscript = gemini.transcript
+    const finalDuration = duration
+    microphone.stop()
+    gemini.disconnect()
+    setCallState('ended')
+    onCallEnd?.(finalTranscript, finalDuration)
+  }, [microphone, gemini, onCallEnd, duration])
+
+  const toggleMute = useCallback(() => {
+    setIsMuted((prev) => !prev)
+  }, [])
+
+  const canCall = roleplayType !== null
+
+  return (
+    <div className="w-full max-w-sm mx-auto">
+      <div className="bg-zinc-900 border border-zinc-800 rounded-3xl shadow-2xl shadow-black/40 overflow-hidden">
+        <div className="px-6 pt-8 pb-4 text-center">
+          <div className={`h-12 w-12 rounded-full mx-auto flex items-center justify-center ${
+            gemini.isModelSpeaking ? 'bg-blue-600/20 ring-2 ring-blue-500/40' : 'bg-zinc-700'
+          } transition-all`}>
+            <svg className={`w-6 h-6 ${gemini.isModelSpeaking ? 'text-blue-400' : 'text-zinc-400'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+            </svg>
+          </div>
+          <p className="text-white font-semibold mt-3">
+            {callState === 'idle' ? 'Prospecto IA' : callState === 'connecting' ? 'Conectando...' : callState === 'ended' ? 'Llamada finalizada' : gemini.isModelSpeaking ? 'Hablando...' : 'Escuchando...'}
+          </p>
+          <p className="text-sm text-zinc-500 mt-0.5">
+            {callState === 'active'
+              ? formatDuration(duration)
+              : callState === 'connecting'
+                ? 'Estableciendo conexión...'
+                : callState === 'ended'
+                  ? formatDuration(duration)
+                  : canCall
+                    ? 'Listo para practicar'
+                    : 'Selecciona un tipo de práctica'}
+          </p>
+        </div>
+
+        <div className="flex items-center justify-center h-36 px-6">
+          {callState === 'active' ? (
+            <AudioVisualizer
+              frequencyData={microphone.frequencyData}
+              isActive={microphone.isRecording}
+              color={gemini.isModelSpeaking ? '#8b5cf6' : '#3b82f6'}
+            />
+          ) : callState === 'connecting' ? (
+            <div className="h-24 w-24 rounded-full bg-blue-600/20 border-2 border-blue-500/40 flex items-center justify-center animate-pulse">
+              <div className="h-16 w-16 rounded-full bg-blue-600/30 flex items-center justify-center animate-pulse">
+                <svg className="w-8 h-8 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
+                </svg>
+              </div>
+            </div>
+          ) : callState === 'ended' ? (
+            <div className="h-24 w-24 rounded-full bg-green-600/20 border-2 border-green-500/40 flex items-center justify-center">
+              <svg className="w-10 h-10 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+          ) : (
+            <div className="h-24 w-24 rounded-full bg-zinc-800 border-2 border-zinc-700 flex items-center justify-center">
+              <svg className="w-10 h-10 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
+              </svg>
+            </div>
+          )}
+        </div>
+
+        {callState === 'active' && lastText && (
+          <div className="px-6 pb-2">
+            <div className="bg-zinc-800/50 rounded-lg px-4 py-2 max-h-16 overflow-y-auto">
+              <p className="text-xs text-zinc-400 truncate">{lastText}</p>
+            </div>
+          </div>
+        )}
+
+        <div className="flex items-center justify-center gap-8 pb-10 pt-4">
+          <button
+            onClick={toggleMute}
+            disabled={callState !== 'active'}
+            className={`h-14 w-14 rounded-full flex items-center justify-center transition-colors disabled:opacity-30 ${
+              isMuted ? 'bg-red-600/20 text-red-400' : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
+            }`}
+          >
+            {isMuted ? (
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 9.75L19.5 12m0 0l2.25 2.25M19.5 12l2.25-2.25M19.5 12l-2.25 2.25m-10.5-6l4.72-4.72a.75.75 0 011.28.531v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z" />
+              </svg>
+            ) : (
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
+              </svg>
+            )}
+          </button>
+
+          {callState === 'active' || callState === 'connecting' ? (
+            <button
+              onClick={handleHangup}
+              className="h-16 w-16 rounded-full bg-red-600 hover:bg-red-700 flex items-center justify-center text-white transition-colors shadow-lg shadow-red-600/30"
+            >
+              <svg className="w-7 h-7 rotate-[135deg]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
+              </svg>
+            </button>
+          ) : (
+            <button
+              onClick={handleCall}
+              disabled={!canCall}
+              className="h-16 w-16 rounded-full bg-green-600 hover:bg-green-700 flex items-center justify-center text-white transition-colors shadow-lg shadow-green-600/30 disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
+              </svg>
+            </button>
+          )}
+
+          <button
+            disabled={callState !== 'active'}
+            className="h-14 w-14 rounded-full bg-zinc-800 text-zinc-400 hover:bg-zinc-700 flex items-center justify-center transition-colors disabled:opacity-30"
+          >
+            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
