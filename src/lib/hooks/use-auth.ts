@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { clearRoleCache } from '@/lib/hooks/use-user-role'
 import type { User } from '@supabase/supabase-js'
 
 export function useAuth() {
@@ -24,6 +25,7 @@ export function useAuth() {
   }, [])
 
   const signOut = async () => {
+    clearRoleCache()
     await supabase.auth.signOut()
     window.location.href = '/login'
   }

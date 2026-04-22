@@ -232,3 +232,94 @@ drop trigger if exists sessions_refresh_ranking_trg on public.sessions;
 create trigger sessions_refresh_ranking_trg
   after insert or update or delete on public.sessions
   for each row execute function public.sessions_refresh_ranking();
+
+-- Admin overview helpers (SECURITY DEFINER + check is_admin internamente)
+-- Bypassan RLS de forma controlada: solo admins pueden invocarlas.
+create or replace function public.get_students_overview()
+returns table (
+  id uuid,
+  email text,
+  name text,
+  role text,
+  created_at timestamptz,
+  sessions_count int,
+  avg_score numeric,
+  total_score int,
+  rank int,
+  badges jsonb,
+  last_session_at timestamptz
+)
+language plpgsql
+security definer
+stable
+set search_path = public, pg_temp
+as $$
+begin
+  if not public.is_admin() then
+    raise exception 'forbidden: admin role required';
+  end if;
+
+  return query
+    select
+      u.id, u.email, u.name, u.role, u.created_at,
+      coalesce(r.sessions_count, 0),
+      coalesce(r.avg_score, 0),
+      coalesce(r.total_score, 0),
+      coalesce(r.rank, 0),
+      coalesce(r.badges, '[]'::jsonb),
+      (select max(s.created_at) from public.sessions s where s.user_id = u.id)
+    from public.users u
+    left join public.rankings r on r.user_id = u.id
+    order by coalesce(r.sessions_count, 0) desc, u.created_at desc;
+end;
+$$;
+
+grant execute on function public.get_students_overview() to authenticated;
+
+create or replace function public.get_student_detail(p_student_id uuid)
+returns jsonb
+language plpgsql
+security definer
+stable
+set search_path = public, pg_temp
+as $$
+declare
+  v_result jsonb;
+begin
+  if not public.is_admin() then
+    raise exception 'forbidden: admin role required';
+  end if;
+
+  select jsonb_build_object(
+    'user', (
+      select jsonb_build_object(
+        'id', u.id, 'email', u.email, 'name', u.name,
+        'role', u.role, 'created_at', u.created_at
+      )
+      from public.users u where u.id = p_student_id
+    ),
+    'ranking', (
+      select jsonb_build_object(
+        'sessions_count', coalesce(r.sessions_count, 0),
+        'avg_score', coalesce(r.avg_score, 0),
+        'total_score', coalesce(r.total_score, 0),
+        'rank', coalesce(r.rank, 0),
+        'badges', coalesce(r.badges, '[]'::jsonb)
+      )
+      from public.rankings r where r.user_id = p_student_id
+    ),
+    'sessions', coalesce((
+      select jsonb_agg(jsonb_build_object(
+        'id', s.id, 'type', s.type, 'score', s.score,
+        'duration', s.duration, 'transcript', s.transcript,
+        'feedback', s.feedback, 'created_at', s.created_at
+      ) order by s.created_at desc)
+      from public.sessions s where s.user_id = p_student_id
+    ), '[]'::jsonb)
+  ) into v_result;
+
+  return v_result;
+end;
+$$;
+
+grant execute on function public.get_student_detail(uuid) to authenticated;
