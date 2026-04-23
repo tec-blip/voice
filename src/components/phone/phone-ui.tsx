@@ -99,6 +99,8 @@ export function PhoneUI({ roleplayType, onCallEnd }: PhoneUIProps) {
   // disparado por el modelo. Idempotente — si se llama dos veces (ej. user
   // cuelga al mismo tiempo que el modelo pide end_call), la segunda invocación
   // no hace nada porque callState ya es 'ended'.
+  // onCallEnd se invoca con setTimeout(0) para sacarlo del ciclo de render de React
+  // y evitar el warning "setState during render" en PracticePage.
   const finalizeCall = useCallback(
     (meta: { endedBy: 'user' | 'model'; reason?: CallEndReason; summary?: string }) => {
       setCallState((prev) => {
@@ -107,7 +109,7 @@ export function PhoneUI({ roleplayType, onCallEnd }: PhoneUIProps) {
         const finalDuration = durationRef.current
         microphone.stop()
         gemini.disconnect()
-        onCallEnd?.(finalTranscript, finalDuration, meta)
+        setTimeout(() => onCallEnd?.(finalTranscript, finalDuration, meta), 0)
         return 'ended'
       })
     },
