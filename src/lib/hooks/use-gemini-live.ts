@@ -87,6 +87,7 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
   const isUserDisconnectingRef = useRef(false)
   const reconnectAttemptsRef = useRef(0)
   const wsUrlRef = useRef<string | null>(null)
+  const modelPathRef = useRef<string>('models/gemini-3.1-flash-live-preview')
 
   // Estado para hangup iniciado por el modelo vía function call `end_call`.
   // Al recibir el toolCall, no cortamos inmediatamente: esperamos a que termine
@@ -161,16 +162,15 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
       )
       const setupMessage: Record<string, unknown> = {
         setup: {
-          model: 'models/gemini-3.1-flash-live-preview',
+          model: modelPathRef.current,
           generationConfig: {
             responseModalities: ['AUDIO'],
             speechConfig: {
               voiceConfig: {
                 prebuiltVoiceConfig: { voiceName },
               },
-              // Forzar español mexicano mejora la detección de fin-de-turno
-              // en el VAD del servidor y reduce latencia.
-              languageCode: 'es-MX',
+              // languageCode NO se usa en modelos de audio nativo (gemini-live-2.5-flash-native-audio)
+              // El modelo detecta el idioma automáticamente durante la conversación.
             },
           },
           systemInstruction: {
@@ -226,9 +226,10 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
           ],
           // Habilita session resumption — Gemini enviará handles periódicos en
           // `sessionResumptionUpdate` y permite reconectar preservando contexto.
-          sessionResumption: isResuming
-            ? { handle: sessionHandleRef.current }
-            : {},
+          // Solo se envía el campo si hay un handle activo (sesiones nuevas no lo incluyen).
+          ...(isResuming && sessionHandleRef.current
+            ? { sessionResumption: { handle: sessionHandleRef.current } }
+            : {}),
         },
       }
       ws.send(JSON.stringify(setupMessage))
@@ -432,10 +433,14 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
       }
       console.log('[gemini-live] playback AudioContext state =', audioContextRef.current.state)
 
-      const res = await fetch('/api/gemini/config')
-      if (!res.ok) throw new Error('Failed to get Gemini config')
-      const { wsUrl } = await res.json()
+      const res = await fetch('/api/vertex/config')
+      if (!res.ok) {
+        const { error } = await res.json().catch(() => ({ error: 'Error conectando con Vertex AI' }))
+        throw new Error(error ?? 'Failed to get Vertex AI config')
+      }
+      const { wsUrl, modelPath } = await res.json()
       wsUrlRef.current = wsUrl
+      modelPathRef.current = modelPath
 
       openSocket(wsUrl)
     } catch (err) {
