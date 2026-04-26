@@ -12,7 +12,7 @@ const WIF_AUDIENCE =
   '//iam.googleapis.com/projects/947812330851/locations/global/workloadIdentityPools/vercel-pool/providers/vercel-provider'
 const WIF_SERVICE_ACCOUNT_URL =
   'https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/' +
-  'salesvoice-vercel@ethereal-audio-494220-t6.iam.gserviceaccount.com:generateAccessToken'
+  'salesvoice-vertexai@ethereal-audio-494220-t6.iam.gserviceaccount.com:generateAccessToken'
 
 async function getTokenViaWorkloadIdentity(oidcToken: string): Promise<string> {
   // Paso 1: intercambiar el OIDC token de Vercel por un federated token de GCP STS
