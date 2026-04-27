@@ -168,7 +168,7 @@ CÓMO REACCIONAR:
 
 ${PERSONALITY_POOL}
 
-Empieza la llamada contestando como si te estuvieran devolviendo una llamada: "¿Bueno? Ah sí, hola... me dijeron que me iban a llamar hoy."`,
+Empieza la llamada contestando el teléfono de forma natural y breve: "¿Bueno? Hola." Espera a que el vendedor tome la iniciativa.`,
   },
 
   llamada_fria: {
@@ -263,7 +263,7 @@ CÓMO REACCIONAR:
 
 ${PERSONALITY_POOL}
 
-Empieza la llamada con interés pero con reserva: "Sí, me comentaron sobre el programa... tengo interés pero también tengo bastantes dudas antes de decidir nada."`,
+Empieza la llamada contestando de forma breve y neutral: "¿Sí? Hola." Espera a que el vendedor se presente y tome la iniciativa.`,
   },
 
   general: {
@@ -291,7 +291,7 @@ COMPORTAMIENTO:
 
 ${PERSONALITY_POOL}
 
-Empieza la llamada de forma casual: "Hola, ¿cómo estás? Sí, me dijeron que me ibas a llamar para contarme algo... ¿de qué se trata exactamente?"`,
+Empieza la llamada contestando de forma casual y breve: "Hola, ¿cómo estás?" Espera a que el vendedor tome la iniciativa y explique el motivo de la llamada.`,
   },
 }
 
