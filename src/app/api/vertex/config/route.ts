@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { GoogleAuth } from 'google-auth-library'
+import { getVercelOidcToken } from '@vercel/functions/oidc'
 
 export const dynamic = 'force-dynamic'
 
@@ -64,17 +65,39 @@ export async function GET() {
 
   try {
     let token: string
-    let authPath: 'wif' | 'credentials_json' | 'adc' = 'adc'
+    let authPath: 'wif_helper' | 'wif_envvar' | 'credentials_json' | 'adc' = 'adc'
 
-    if (process.env.VERCEL_OIDC_TOKEN) {
+    // Intento 1: helper oficial @vercel/functions/oidc (recomendado en Pro/Enterprise)
+    let oidcToken: string | undefined
+    try {
+      oidcToken = await getVercelOidcToken()
+      if (oidcToken) {
+        authPath = 'wif_helper'
+        console.log('[vertex/config] OIDC token obtained via getVercelOidcToken()')
+      }
+    } catch (helperErr) {
+      // El helper falla cuando no está habilitado o cuando se ejecuta fuera de Vercel.
+      console.log(
+        '[vertex/config] getVercelOidcToken() not available:',
+        helperErr instanceof Error ? helperErr.message : String(helperErr),
+      )
+    }
+
+    // Intento 2: env var directa (legacy / fallback)
+    if (!oidcToken && process.env.VERCEL_OIDC_TOKEN) {
+      oidcToken = process.env.VERCEL_OIDC_TOKEN
+      authPath = 'wif_envvar'
+      console.log('[vertex/config] OIDC token obtained via process.env.VERCEL_OIDC_TOKEN')
+    }
+
+    if (oidcToken) {
       // Producción (Vercel): Workload Identity Federation — sin credenciales personales
-      authPath = 'wif'
-      console.log('[vertex/config] auth path: WIF (VERCEL_OIDC_TOKEN present)')
-      token = await getTokenViaWorkloadIdentity(process.env.VERCEL_OIDC_TOKEN)
+      console.log(`[vertex/config] auth path: ${authPath}`)
+      token = await getTokenViaWorkloadIdentity(oidcToken)
     } else {
       // Fallback: GOOGLE_CREDENTIALS_JSON (Vercel temporal) o ADC (local)
       authPath = process.env.GOOGLE_CREDENTIALS_JSON ? 'credentials_json' : 'adc'
-      console.log(`[vertex/config] auth path: ${authPath} (no VERCEL_OIDC_TOKEN)`)
+      console.log(`[vertex/config] auth path: ${authPath} (no OIDC token disponible)`)
       const authOptions: ConstructorParameters<typeof GoogleAuth>[0] = {
         scopes: ['https://www.googleapis.com/auth/cloud-platform'],
       }
@@ -101,9 +124,10 @@ export async function GET() {
   } catch (err) {
     console.error('[vertex/config] FAILED', {
       message: err instanceof Error ? err.message : String(err),
-      hasVercelOidc: !!process.env.VERCEL_OIDC_TOKEN,
+      hasVercelOidcEnvVar: !!process.env.VERCEL_OIDC_TOKEN,
       hasCredentialsJson: !!process.env.GOOGLE_CREDENTIALS_JSON,
       project: PROJECT,
+      runtime: process.env.VERCEL ? 'vercel' : 'local',
     })
     const rawMessage = err instanceof Error ? err.message : 'Error desconocido'
 
