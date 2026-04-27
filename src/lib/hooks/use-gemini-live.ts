@@ -109,6 +109,10 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
   const onModelHangupRef = useRef(onModelHangup)
   onModelHangupRef.current = onModelHangup
 
+  // Ref para la función de reconexión con token fresco. Se actualiza en cada render
+  // para evitar closures stales dentro del ws.onclose de openSocket.
+  const doReconnectRef = useRef<() => void>(() => {})
+
   const playAudioChunk = useCallback((pcmBase64: string) => {
     if (!audioContextRef.current || audioContextRef.current.state === 'closed') {
       // ⚠️ NO forzar sampleRate aquí: iOS Safari lo rechaza o lo ignora.
@@ -306,8 +310,20 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
       }
 
       // GoAway: Gemini avisa antes de cerrar. timeLeft suele ser ~30s.
+      // Aprovechamos ese margen para pre-fetchear un token fresco, de modo que
+      // cuando onclose dispare tengamos la URL lista y la reconexión sea instantánea.
       if (data.goAway) {
-        console.warn('[gemini-live] goAway received', data.goAway)
+        console.warn('[gemini-live] goAway received — pre-fetching fresh token', data.goAway)
+        fetch('/api/vertex/config')
+          .then((r) => (r.ok ? r.json() : Promise.reject('goAway pre-fetch HTTP error')))
+          .then(({ wsUrl, modelPath }: { wsUrl: string; modelPath: string }) => {
+            wsUrlRef.current = wsUrl
+            modelPathRef.current = modelPath
+            console.log('[gemini-live] goAway: fresh token pre-fetched and ready')
+          })
+          .catch((err) =>
+            console.warn('[gemini-live] goAway: pre-fetch failed (will retry on close)', err),
+          )
       }
 
       // Function calling: el modelo pidió ejecutar una herramienta.
@@ -423,15 +439,17 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
 
       // Intento de reconexión automática si tenemos un handle (session resumption).
       // Backoff lineal y tope de 3 intentos para no loopear infinitamente.
-      if (sessionHandleRef.current && reconnectAttemptsRef.current < 3 && wsUrlRef.current) {
+      if (sessionHandleRef.current && reconnectAttemptsRef.current < 3) {
         reconnectAttemptsRef.current += 1
         const delayMs = 500 * reconnectAttemptsRef.current
         console.log(
-          `[gemini-live] attempting resume #${reconnectAttemptsRef.current} in ${delayMs}ms`
+          `[gemini-live] attempting resume #${reconnectAttemptsRef.current} with fresh token in ${delayMs}ms`
         )
+        // Siempre pedimos un token fresco — el token anterior puede haber expirado
+        // (el OIDC token de Vercel tiene ~2 min de vida, lo que limita el access token de GCP).
         setTimeout(() => {
-          if (!isUserDisconnectingRef.current && wsUrlRef.current) {
-            openSocket(wsUrlRef.current)
+          if (!isUserDisconnectingRef.current) {
+            doReconnectRef.current()
           }
         }, delayMs)
       } else {
@@ -447,6 +465,32 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
 
     wsRef.current = ws
   }, [voiceName, systemPrompt, onTranscript, onModelSpeaking, onError, playAudioChunk, stopPlayback, isModelSpeaking])
+
+  // Obtiene un token fresco de /api/vertex/config y abre un nuevo socket preservando
+  // el sessionHandle para que Gemini retome la conversación desde donde se cortó.
+  // Se accede siempre vía doReconnectRef para evitar closures stales en openSocket.
+  const doReconnect = useCallback(() => {
+    if (isUserDisconnectingRef.current) return
+    console.log(`[gemini-live] fetching fresh token for reconnect #${reconnectAttemptsRef.current}`)
+    fetch('/api/vertex/config')
+      .then((r) => {
+        if (!r.ok) return r.json().then((d: { error?: string }) => { throw new Error(d.error ?? 'Token refresh failed') })
+        return r.json()
+      })
+      .then(({ wsUrl, modelPath }: { wsUrl: string; modelPath: string }) => {
+        if (isUserDisconnectingRef.current) return
+        wsUrlRef.current = wsUrl
+        modelPathRef.current = modelPath
+        console.log('[gemini-live] fresh token obtained — opening socket with session handle')
+        openSocket(wsUrl)
+      })
+      .catch((err: unknown) => {
+        console.error('[gemini-live] token refresh failed on reconnect', err)
+        stopPlayback()
+        onError?.('No se pudo reconectar con Gemini. Intenta iniciar una nueva llamada.')
+      })
+  }, [openSocket, stopPlayback, onError])
+  doReconnectRef.current = doReconnect
 
   const connect = useCallback(async () => {
     try {

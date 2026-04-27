@@ -51,8 +51,12 @@ async function getTokenViaWorkloadIdentity(oidcToken: string): Promise<string> {
     const err = await impersonateRes.text()
     throw new Error(`Impersonación del service account falló: ${err}`)
   }
-  const { accessToken } = await impersonateRes.json()
-  return accessToken
+  const json = await impersonateRes.json() as { accessToken: string; expireTime?: string }
+  if (json.expireTime) {
+    const expiresInSeconds = Math.round((new Date(json.expireTime).getTime() - Date.now()) / 1000)
+    console.log(`[vertex/config] access token expires in ${expiresInSeconds}s (at ${json.expireTime})`)
+  }
+  return json.accessToken
 }
 
 export async function GET() {
