@@ -29,6 +29,7 @@ export function PhoneUI({ roleplayType, onCallEnd }: PhoneUIProps) {
   const [isMuted, setIsMuted] = useState(false)
   const [duration, setDuration] = useState(0)
   const [lastText, setLastText] = useState('')
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   const systemPrompt = roleplayType ? getRoleplayPrompt(roleplayType) : ''
 
@@ -47,6 +48,7 @@ export function PhoneUI({ roleplayType, onCallEnd }: PhoneUIProps) {
     }, []),
     onError: useCallback((error: string) => {
       console.error('Gemini error:', error)
+      setErrorMessage(error)
       setCallState('idle')
     }, []),
     onModelHangup: useCallback((info: { reason: CallEndReason; summary?: string }) => {
@@ -59,6 +61,11 @@ export function PhoneUI({ roleplayType, onCallEnd }: PhoneUIProps) {
     onAudioData: useCallback((data: Float32Array) => {
       gemini.sendAudio(data)
     }, [gemini]),
+    onError: useCallback((error: string) => {
+      console.error('Microphone error:', error)
+      setErrorMessage(error)
+      setCallState('idle')
+    }, []),
   })
 
   useEffect(() => {
@@ -80,6 +87,7 @@ export function PhoneUI({ roleplayType, onCallEnd }: PhoneUIProps) {
     setDuration(0)
     setIsMuted(false)
     setLastText('')
+    setErrorMessage(null)
     setCallState('connecting')
 
     try {
@@ -188,6 +196,19 @@ export function PhoneUI({ roleplayType, onCallEnd }: PhoneUIProps) {
           <div className="px-6 pb-2">
             <div className="bg-zinc-800/50 rounded-lg px-4 py-2 max-h-16 overflow-y-auto">
               <p className="text-xs text-zinc-400 truncate">{lastText}</p>
+            </div>
+          </div>
+        )}
+
+        {errorMessage && callState !== 'active' && (
+          <div className="px-6 pb-2">
+            <div className="bg-red-950/50 border border-red-800/50 rounded-lg px-4 py-3">
+              <div className="flex items-start gap-2">
+                <svg className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                </svg>
+                <p className="text-xs text-red-300 leading-relaxed">{errorMessage}</p>
+              </div>
             </div>
           </div>
         )}

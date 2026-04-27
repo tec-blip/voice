@@ -67,6 +67,19 @@ function base64Decode(base64: string): ArrayBuffer {
   return bytes.buffer
 }
 
+// Cross-browser AudioContext (iOS Safari < 14 usa webkitAudioContext)
+function getAudioContextClass(): typeof AudioContext | null {
+  if (typeof window === 'undefined') return null
+  return (
+    window.AudioContext ||
+    (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext ||
+    null
+  )
+}
+
+// Sample rate del audio que devuelve Gemini Live (siempre 24kHz).
+const GEMINI_OUTPUT_SAMPLE_RATE = 24000
+
 export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveReturn {
   const { systemPrompt, voiceName = 'Kore', onTranscript, onModelSpeaking, onError, onModelHangup } = options
 
@@ -98,15 +111,33 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
 
   const playAudioChunk = useCallback((pcmBase64: string) => {
     if (!audioContextRef.current || audioContextRef.current.state === 'closed') {
-      audioContextRef.current = new AudioContext({ sampleRate: 24000 })
+      // ⚠️ NO forzar sampleRate aquí: iOS Safari lo rechaza o lo ignora.
+      // Creamos el contexto al sample rate nativo del dispositivo y dejamos
+      // que el AudioBuffer (creado a 24kHz, el rate de Gemini) se resamplee
+      // automáticamente al conectarse al destination.
+      const AudioContextClass = getAudioContextClass()
+      if (!AudioContextClass) {
+        console.error('[gemini-live] Web Audio API no disponible')
+        return
+      }
+      audioContextRef.current = new AudioContextClass()
     }
 
     const ctx = audioContextRef.current
+    // En móviles, el AudioContext puede estar suspendido si la pantalla se apagó
+    // o si llegó un audio antes de que el user gesture lo activara.
+    if (ctx.state === 'suspended') {
+      ctx.resume().catch((err) => console.warn('[gemini-live] resume() failed', err))
+    }
+
     const pcmBuffer = base64Decode(pcmBase64)
     const int16Data = new Int16Array(pcmBuffer)
     const float32Data = int16ToFloat32(int16Data)
 
-    const audioBuffer = ctx.createBuffer(1, float32Data.length, 24000)
+    // Creamos el buffer al sample rate de Gemini (24kHz). El navegador lo
+    // resamplea al sample rate del contexto cuando se conecta a destination.
+    // Esto funciona en Chrome/Firefox/Safari modernos (iOS 14.5+).
+    const audioBuffer = ctx.createBuffer(1, float32Data.length, GEMINI_OUTPUT_SAMPLE_RATE)
     audioBuffer.getChannelData(0).set(float32Data)
 
     const source = ctx.createBufferSource()
@@ -426,12 +457,20 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
       pendingHangupRef.current = null
 
       if (!audioContextRef.current || audioContextRef.current.state === 'closed') {
-        audioContextRef.current = new AudioContext({ sampleRate: 24000 })
+        // NO forzar sampleRate (iOS Safari lo rechaza). Usamos el rate nativo
+        // y los buffers de 24kHz se resamplean automáticamente al destination.
+        const AudioContextClass = getAudioContextClass()
+        if (!AudioContextClass) {
+          throw new Error('Tu navegador no soporta Web Audio API')
+        }
+        audioContextRef.current = new AudioContextClass()
       }
       if (audioContextRef.current.state === 'suspended') {
         await audioContextRef.current.resume()
       }
-      console.log('[gemini-live] playback AudioContext state =', audioContextRef.current.state)
+      console.log(
+        `[gemini-live] playback AudioContext state=${audioContextRef.current.state}, sampleRate=${audioContextRef.current.sampleRate}Hz`,
+      )
 
       const res = await fetch('/api/vertex/config')
       if (!res.ok) {
