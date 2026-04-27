@@ -64,12 +64,17 @@ export async function GET() {
 
   try {
     let token: string
+    let authPath: 'wif' | 'credentials_json' | 'adc' = 'adc'
 
     if (process.env.VERCEL_OIDC_TOKEN) {
       // Producción (Vercel): Workload Identity Federation — sin credenciales personales
+      authPath = 'wif'
+      console.log('[vertex/config] auth path: WIF (VERCEL_OIDC_TOKEN present)')
       token = await getTokenViaWorkloadIdentity(process.env.VERCEL_OIDC_TOKEN)
     } else {
       // Fallback: GOOGLE_CREDENTIALS_JSON (Vercel temporal) o ADC (local)
+      authPath = process.env.GOOGLE_CREDENTIALS_JSON ? 'credentials_json' : 'adc'
+      console.log(`[vertex/config] auth path: ${authPath} (no VERCEL_OIDC_TOKEN)`)
       const authOptions: ConstructorParameters<typeof GoogleAuth>[0] = {
         scopes: ['https://www.googleapis.com/auth/cloud-platform'],
       }
@@ -82,6 +87,7 @@ export async function GET() {
       if (!result.token) throw new Error('No se obtuvo token — ejecuta: gcloud auth application-default login')
       token = result.token
     }
+    console.log(`[vertex/config] token obtained via ${authPath}`)
 
     const wsUrl =
       `wss://${LOCATION}-aiplatform.googleapis.com/ws/` +
@@ -93,8 +99,25 @@ export async function GET() {
 
     return NextResponse.json({ wsUrl, modelPath })
   } catch (err) {
-    console.error('[vertex/config]', err)
-    const message = err instanceof Error ? err.message : 'Error desconocido'
-    return NextResponse.json({ error: message }, { status: 500 })
+    console.error('[vertex/config] FAILED', {
+      message: err instanceof Error ? err.message : String(err),
+      hasVercelOidc: !!process.env.VERCEL_OIDC_TOKEN,
+      hasCredentialsJson: !!process.env.GOOGLE_CREDENTIALS_JSON,
+      project: PROJECT,
+    })
+    const rawMessage = err instanceof Error ? err.message : 'Error desconocido'
+
+    // Detectar el caso específico de credenciales user-OAuth2 expiradas (rapt)
+    // y dar un mensaje accionable en lugar del JSON crudo de Google.
+    if (rawMessage.includes('invalid_rapt') || rawMessage.includes('reauth')) {
+      return NextResponse.json(
+        {
+          error:
+            'Credenciales de Google expiradas. El admin debe activar Vercel OIDC Federation o refrescar GOOGLE_CREDENTIALS_JSON.',
+        },
+        { status: 500 },
+      )
+    }
+    return NextResponse.json({ error: rawMessage }, { status: 500 })
   }
 }
