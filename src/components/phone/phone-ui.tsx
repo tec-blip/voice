@@ -11,6 +11,7 @@ type CallState = 'idle' | 'connecting' | 'active' | 'ended'
 
 interface PhoneUIProps {
   roleplayType: RoleplayType | null
+  systemPromptOverride?: string
   onCallEnd?: (
     transcript: { role: 'user' | 'model'; text: string }[],
     durationSeconds: number,
@@ -24,14 +25,14 @@ function formatDuration(seconds: number): string {
   return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`
 }
 
-export function PhoneUI({ roleplayType, onCallEnd }: PhoneUIProps) {
+export function PhoneUI({ roleplayType, systemPromptOverride, onCallEnd }: PhoneUIProps) {
   const [callState, setCallState] = useState<CallState>('idle')
   const [isMuted, setIsMuted] = useState(false)
   const [duration, setDuration] = useState(0)
   const [lastText, setLastText] = useState('')
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
-  const systemPrompt = roleplayType ? getRoleplayPrompt(roleplayType) : ''
+  const systemPrompt = systemPromptOverride ?? (roleplayType ? getRoleplayPrompt(roleplayType) : '')
 
   // Refs volátiles para que el callback onModelHangup (que Gemini invoca desde
   // dentro del hook) lea siempre la duración y el transcript actuales en vez

@@ -2,6 +2,49 @@
 // El agente prospecto está diseñado para reaccionar a las fases de la metodología.
 
 export type RoleplayType = 'cierre' | 'llamada_fria' | 'framing' | 'objeciones' | 'general'
+export type Nicho = 'trading' | 'marca_personal_instagram' | 'aleatorio'
+
+export const NICHO_LABELS: Record<Nicho, string> = {
+  trading: 'Trading',
+  marca_personal_instagram: 'Marca Personal',
+  aleatorio: 'Aleatorio',
+}
+
+export interface ScenarioBrief {
+  scenario_id: string
+  arquetipo_label: string
+  nicho: string
+  dificultad_1_5: number
+  resistencia_1_5: number
+  estado_inicial: {
+    genero?: string
+    pais?: string
+    ocupacion?: string
+    situacion_familiar?: string
+    tono_inicial?: string
+    nivel_experiencia?: string
+    estilo_decision?: string
+    relacion_con_dinero?: string
+    estilo_habla?: string
+    muletillas?: string[]
+    regionalismos?: string[]
+    presupuesto_inicial?: string
+    motivacion?: string
+    dolor?: string
+    que_lo_trajo?: string
+    experiencia_previa?: string
+  }
+  objeciones_a_plantear: Array<{
+    texto?: string
+    tipo?: string
+    profundidad?: string
+    orden?: number
+  }>
+  preguntas_a_hacer: string[]
+  frases_de_estilo: string[]
+  valor_para_entrenamiento?: string
+  source_call_id: string
+}
 
 interface RoleplayConfig {
   label: string
@@ -297,4 +340,123 @@ Empieza la llamada contestando de forma casual y breve: "Hola, ¿cómo estás?" 
 
 export function getRoleplayPrompt(type: RoleplayType): string {
   return ROLEPLAY_CONFIGS[type].systemPrompt
+}
+
+// ─────────────────────────────────────────────────────────────
+// PROMPT ENRIQUECIDO CON ESCENARIO REAL (datos de llamadas reales)
+// ─────────────────────────────────────────────────────────────
+
+const NICHO_PRODUCTO: Record<string, string> = {
+  trading: 'mentoría/academia de trading (análisis técnico, cuentas fondeadas, rentabilidad consistente)',
+  marca_personal_instagram: 'servicio de crecimiento de marca personal en Instagram de forma orgánica para volverse viral y monetizar la audiencia',
+}
+
+const TYPE_BEHAVIORAL_RULES: Record<RoleplayType, string> = {
+  cierre: `SITUACIÓN: Ya tuviste una llamada previa donde te explicaron el programa. Llevas días con la decisión pendiente y el closer te llama para cerrar.
+CÓMO REACCIONAR:
+- Si el closer hace resumen espejo de la llamada anterior → respondes con alivio ("sí, eso es")
+- Si profundiza en el coste de seguir esperando → abres emocionalmente
+- Si calificó VSO correctamente → la objeción de pareja/familia ya fue resuelta; no la repitas
+- Empieza contestando el teléfono de forma natural: "¿Bueno? Hola." Espera a que el closer tome la iniciativa.`,
+
+  llamada_fria: `SITUACIÓN: No conoces al closer ni a su empresa. Estás en tu jornada habitual, ocupado.
+CÓMO REACCIONAR:
+- Inicialmente desinteresado o ligeramente molesto por la interrupción
+- Si el closer logra conectar en los primeros 30-40 segundos → le das oportunidad
+- Si va directo al pitch → "mira, ahora no tengo tiempo"
+- Pregunta cómo consiguieron tu contacto
+- Si hace buenas preguntas sobre tu situación → empiezas a responder más
+- Empieza con tono neutral/desconfiado: "¿Sí? ¿Quién habla?"`,
+
+  framing: `SITUACIÓN: Ya viste la oferta y tienes una percepción equivocada del valor. Crees que hay alternativas más baratas.
+CÓMO REACCIONAR:
+- Si el closer hace preguntas inteligentes sobre resultados previos → empiezas a cuestionarte
+- Si conecta la diferencia con tu dolor real → cambias de perspectiva genuinamente
+- Si solo "explica características" sin conectar con tu situación → mantienes la objeción
+- Empieza ya en contexto: "Mira, la verdad es que no entiendo por qué esto vale tanto, ¿no?"`,
+
+  objeciones: `SITUACIÓN: Estás muy interesado pero tienes objeciones acumuladas. Llevas tiempo pensándolo.
+CÓMO REACCIONAR:
+- Presenta las objeciones de forma ESCALONADA, no todas a la vez
+- Si el closer usa tu dolor como palanca → la objeción se debilita gradualmente
+- Si el closer justifica el precio en lugar de redirigir al dolor → te mantienes firme
+- Si aplica coherencia ("seguir como estás también tiene un coste...") → te hace pensar
+- Empieza contestando de forma breve y neutral: "¿Sí? Hola." Espera a que el closer tome la iniciativa.`,
+
+  general: `SITUACIÓN: Es una primera llamada de seguimiento tras agendar por un anuncio o contenido.
+CÓMO REACCIONAR:
+- Tienes interés general pero nada definido todavía
+- No das más información de la que te piden
+- Si el closer no profundiza, la llamada se queda superficial
+- A veces te distraes o vas por las ramas → el closer debe reconducirte
+- Empieza de forma casual y breve: "Hola, ¿cómo estás?" Espera a que el closer explique el motivo.`,
+}
+
+export function buildScenarioPrompt(type: RoleplayType, scenario: ScenarioBrief): string {
+  const ei = scenario.estado_inicial
+  const nichoProd = NICHO_PRODUCTO[scenario.nicho] ?? scenario.nicho
+  const muletillas = ei.muletillas?.length ? ei.muletillas.join(', ') : 'las habituales de tu región'
+  const regionalismos = ei.regionalismos?.length ? ei.regionalismos.join(', ') : ''
+
+  const objeciones = scenario.objeciones_a_plantear
+    .sort((a, b) => (a.orden ?? 0) - (b.orden ?? 0))
+    .filter(o => o.texto)
+    .map((o, i) => `  ${i + 1}. "${o.texto}" [${o.tipo ?? 'otro'} · ${o.profundidad ?? 'real'}]`)
+    .join('\n')
+
+  const frases = scenario.frases_de_estilo
+    .filter(Boolean)
+    .slice(0, 6)
+    .map(f => `  - "${f}"`)
+    .join('\n')
+
+  const dificultadLabel = ['', 'Muy fácil', 'Fácil', 'Medio', 'Difícil', 'Muy difícil'][scenario.dificultad_1_5 ?? 3]
+
+  return `${BASE_INSTRUCTIONS}
+
+═══════════════════════════════════════════
+CLIENTE REAL DE HOY — BASADO EN LLAMADA REAL
+═══════════════════════════════════════════
+
+ARQUETIPO: ${scenario.arquetipo_label}
+PRODUCTO/SERVICIO QUE OFRECE EL CLOSER: ${nichoProd}
+DIFICULTAD DEL ESCENARIO: ${dificultadLabel} (${scenario.dificultad_1_5}/5)
+
+QUIÉN ERES:
+- Género: ${ei.genero ?? 'no especificado'}${ei.pais ? ` | País: ${ei.pais}` : ''}
+- Ocupación: ${ei.ocupacion ?? 'no especificada'}${ei.situacion_familiar ? ` | Familia: ${ei.situacion_familiar}` : ''}
+- Nivel de experiencia con el tema: ${ei.nivel_experiencia ?? 'no especificado'}
+- Experiencia previa relevante: ${ei.experiencia_previa ?? 'ninguna'}
+
+ESTADO EMOCIONAL AL INICIAR:
+- Tono inicial: ${ei.tono_inicial ?? 'neutro'}
+- Estilo de decisión: ${ei.estilo_decision ?? 'indeterminado'}
+- Relación con el dinero: ${ei.relacion_con_dinero ?? 'sin definir'}
+- Presupuesto inicial que mencionarás si preguntan: ${ei.presupuesto_inicial ?? 'no definido'}
+
+TU MOTIVACIÓN Y DOLOR (lo que sientes por dentro, no lo que dices de entrada):
+- Por qué agendaste esta llamada: ${ei.que_lo_trajo ?? 'te interesó el tema'}
+- Tu motivación real: ${ei.motivacion ?? 'mejorar tu situación económica'}
+- Tu dolor profundo: ${ei.dolor ?? 'estás estancado y quieres cambiar'}
+
+CÓMO HABLAS:
+- Estilo: ${ei.estilo_habla ?? 'mixto'} | Muletillas: ${muletillas}${regionalismos ? ` | Regionalismos: ${regionalismos}` : ''}
+Frases reales que usas (imita este estilo, no las copies literal):
+${frases || '  (sin frases específicas)'}
+
+OBJECIONES QUE PLANTEARÁS (en orden aproximado, según cómo avance la llamada):
+${objeciones || '  (cliente receptivo, pocas objeciones)'}
+
+REGLA DE ORO CON LAS OBJECIONES:
+- Preséntalas de forma gradual y natural, no todas de golpe
+- Si el closer ya resolvió una antes de que llegue su momento → no la repitas con la misma fuerza
+- Si el closer usa tu propio dolor como palanca → la resistencia baja genuinamente
+
+═══════════════════════════════════════════
+TIPO DE PRÁCTICA: ${ROLEPLAY_CONFIGS[type].label.toUpperCase()}
+═══════════════════════════════════════════
+
+${TYPE_BEHAVIORAL_RULES[type]}
+
+NOTA PARA EL AGENTE: ${scenario.valor_para_entrenamiento ?? 'Sigue las instrucciones de comportamiento del BASE.'}`
 }

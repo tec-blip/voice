@@ -1,0 +1,142 @@
+{
+  "archetypes": [
+    {
+      "id": "arch_0",
+      "nombre": "Trader autodidacta frustrado, busca libe",
+      "descripcion": "Trader autodidacta frustrado, busca libertad y estructura",
+      "nicho": "trading",
+      "call_ids": [
+        "call_8b8c6a24de",
+        "call_433e99854c",
+        "call_393dac4f44",
+        "call_a54b066452",
+        "call_f478617d18"
+      ],
+      "count": 5
+    },
+    {
+      "id": "arch_1",
+      "nombre": "Trader autodidacta frustrado, busca libe",
+      "descripcion": "Trader autodidacta frustrado, busca libertad financiera",
+      "nicho": "trading",
+      "call_ids": [
+        "call_e57b23c945",
+        "call_609ff0c227",
+        "call_3a74ee319b",
+        "call_9bb3678c96",
+        "call_cd193567c9"
+      ],
+      "count": 5
+    },
+    {
+      "id": "arch_2",
+      "nombre": "Trader autodidacta frustrado, busca libe",
+      "descripcion": "Trader autodidacta frustrado, busca libertad familiar",
+      "nicho": "trading",
+      "call_ids": [
+        "call_86eade4aca",
+        "call_fe3baf8da4",
+        "call_e871a2a24a",
+        "call_e37e075f31"
+      ],
+      "count": 4
+    },
+    {
+      "id": "arch_3",
+      "nombre": "Trader autodidacta frustrado, busca libe",
+      "descripcion": "Trader autodidacta frustrado, busca libertad",
+      "nicho": "trading",
+      "call_ids": [
+        "call_c90ee5d49f",
+        "call_8778fbb026"
+      ],
+      "count": 2
+    },
+    {
+      "id": "arch_4",
+      "nombre": "Trader frustrado, busca mentoría y liber",
+      "descripcion": "Trader frustrado, busca mentoría y libertad financiera",
+      "nicho": "trading",
+      "call_ids": [
+        "call_436b3cfaab",
+        "call_597239709a"
+      ],
+      "count": 2
+    },
+    {
+      "id": "arch_5",
+      "nombre": "Trader autodidacta frustrado, busca estr",
+      "descripcion": "Trader autodidacta frustrado, busca estructura y libertad",
+      "nicho": "trading",
+      "call_ids": [
+        "call_041d4739f5",
+        "call_dc539fb191"
+      ],
+      "count": 2
+    },
+    {
+      "id": "arch_6",
+      "nombre": "Joven trabajador frustrado, busca libert",
+      "descripcion": "Joven trabajador frustrado, busca libertad financiera",
+      "nicho": "trading",
+      "call_ids": [
+        "call_3203d25c03",
+        "call_4daddf6500"
+      ],
+      "count": 2
+    },
+    {
+      "id": "arch_7",
+      "nombre": "Hijo dedicado, trader principiante, pres",
+      "descripcion": "Hijo dedicado, trader principiante, presupuesto ajustado",
+      "nicho": "trading",
+      "call_ids": [
+        "call_d8d04f22c7",
+        "call_d8d04f22c7"
+      ],
+      "count": 2
+    },
+    {
+      "id": "arch_8",
+      "nombre": "trader autodidacta frustrado, busca libe",
+      "descripcion": "trader autodidacta frustrado, busca libertad",
+      "nicho": "trading",
+      "call_ids": [
+        "call_14b9fd32f5",
+        "call_e7a751fd1e"
+      ],
+      "count": 2
+    },
+    {
+      "id": "arch_9",
+      "nombre": "Inmigrante luchador, busca libertad fina",
+      "descripcion": "Inmigrante luchador, busca libertad financiera familiar",
+      "nicho": "trading",
+      "call_ids": [
+        "call_49f9e4bbbf",
+        "call_75c0218bfa"
+      ],
+      "count": 2
+    },
+    {
+      "id": "arch_10",
+      "nombre": "Joven ambicioso, busca libertad financie",
+      "descripcion": "Joven ambicioso, busca libertad financiera familiar",
+      "nicho": "trading",
+      "call_ids": [
+        "call_3c286509c8"
+      ],
+      "count": 1
+    },
+    {
+      "id": "arch_11",
+      "nombre": "Trader inconsistente, busca estructura y",
+      "descripcion": "Trader inconsistente, busca estructura y libertad",
+      "nicho": "trading",
+      "call_ids": [
+        "call_342fe48e6b"
+      ],
+      "count": 1
+    }
+  ]
+}
