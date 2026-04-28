@@ -1,0 +1,1815 @@
+{
+  "total_objeciones": 1796,
+  "tipos": {
+    "confianza": {
+      "count": 359,
+      "ejemplos": [
+        {
+          "objecion": "Bueno, obviamente lo de la cuenta de fondeo, eso puede ser opcional una vez que yo pueda aprender y pueda decidir y ustedes me podrían recomendar alguna institución, ¿cierto? Algo así.",
+          "profundidad": "real",
+          "orden": 1,
+          "call_id": "call_8b8c6a24de",
+          "arquetipo": "Trader autodidacta frustrado, busca libertad y estructura"
+        },
+        {
+          "objecion": "Me falta disciplina y mentoría para ser rentable.",
+          "profundidad": "real",
+          "orden": 2,
+          "call_id": "call_e57b23c945",
+          "arquetipo": "Trader autodidacta frustrado, busca libertad financiera"
+        },
+        {
+          "objecion": "Digo, ¿qué me va a aportar una persona así? Por nada.",
+          "profundidad": "superficial",
+          "orden": 1,
+          "call_id": "call_9756b0163d",
+          "arquetipo": "trader autodidacta estancado, busca libertad financiera"
+        },
+        {
+          "objecion": "yo solo creí que era la llamada, así, ¿no? Ajá, creí que eso me iban a explicar, nomás, ¿no?",
+          "profundidad": "superficial",
+          "orden": 3,
+          "call_id": "call_bb2e1a60e1",
+          "arquetipo": "Joven trabajador frustrado, busca libertad financiera para su familia"
+        },
+        {
+          "objecion": "Escepticismo por estafas pasadas en el sector de la educación en trading.",
+          "profundidad": "real",
+          "orden": 1,
+          "call_id": "call_756537c028",
+          "arquetipo": "Instalador frustrado, busca libertad y seguridad"
+        },
+        {
+          "objecion": "¿O sea, ¿si agarran así muchos estudiantes seguidos, día tras día, tras día?",
+          "profundidad": "superficial",
+          "orden": 2,
+          "call_id": "call_756537c028",
+          "arquetipo": "Instalador frustrado, busca libertad y seguridad"
+        },
+        {
+          "objecion": "Sí, claro, porque también sé que hay un mundo grande de personas que venden o que enseñan el trading, pero sí, no sé, uno por lo menos, tengo que ser sincero, uno que está atrás de una pantalla, le da algo de energía a uno, ¿cierto? Porque uno dice, ah,...",
+          "profundidad": "real",
+          "orden": 2,
+          "call_id": "call_0240677702",
+          "arquetipo": "Joven padre frustrado, busca libertad y tiempo familiar"
+        },
+        {
+          "objecion": "miedo de que te ocurra lo mismo que te pasó en el otro sitio",
+          "profundidad": "real",
+          "orden": 1,
+          "call_id": "call_f74c5c53b6",
+          "arquetipo": "trabajador esforzado quemado, busca libertad y seguridad"
+        },
+        {
+          "objecion": "En la anterior, en la principal de él con el que empezó, yo le empecé a escribir o cosas así, pero era muy difícil de que le contestara a uno...",
+          "profundidad": "real",
+          "orden": 1,
+          "call_id": "call_a374ff0933",
+          "arquetipo": "Relojero frustrado, busca libertad y jubilar a su madre"
+        },
+        {
+          "objecion": "Me siento estafado por un mentor anterior que no brindó apoyo tras el pago, solo querían que pagara.",
+          "profundidad": "real",
+          "orden": 1,
+          "call_id": "call_28f685fe96",
+          "arquetipo": "Trader autodidacta frustrado y cauteloso, busca mentoría y libertad"
+        },
+        {
+          "objecion": "Si no se generan estos tres mil dólares, ¿qué condición me has dicho?",
+          "profundidad": "superficial",
+          "orden": 3,
+          "call_id": "call_d28d4a3f46",
+          "arquetipo": "Mecánico frustrado, trader intermedio busca guía y libertad financiera"
+        },
+        {
+          "objecion": "Pero, viejo, algo, ¿no? Que después, si no, te devolvían algo o algo, me has dicho…",
+          "profundidad": "superficial",
+          "orden": 4,
+          "call_id": "call_d28d4a3f46",
+          "arquetipo": "Mecánico frustrado, trader intermedio busca guía y libertad financiera"
+        },
+        {
+          "objecion": "¿Esa operación, yo la primera, hablando de la primera, la harías sola o tendría algún acompañamiento?",
+          "profundidad": "real",
+          "orden": 4,
+          "call_id": "call_b25566d4a0",
+          "arquetipo": "Madre migrante, esceptica, busca libertad financiera"
+        },
+        {
+          "objecion": "Pero digo yo, ¿para qué me prometes algo y al final me vas a salir con otra cosa? Entonces no está bien.",
+          "profundidad": "real",
+          "orden": 5,
+          "call_id": "call_b25566d4a0",
+          "arquetipo": "Madre migrante, esceptica, busca libertad financiera"
+        },
+        {
+          "objecion": "You have told me that of the 100% those, I take like the 10-15%, right? Why did have told me not all are the same, but he told me that he took the 90%?",
+          "profundidad": "real",
+          "orden": 2,
+          "call_id": "call_0e42bca73d",
+          "arquetipo": "Barbero soñador, busca libertad financiera familiar"
+        },
+        {
+          "objecion": "Temor a fallar y a ser estafada nuevamente.",
+          "profundidad": "real",
+          "orden": 2,
+          "call_id": "call_b4ceb2a1aa",
+          "arquetipo": "trabajadora con ingresos ajustados, desconfiada por estafa previa, busca libertad financiera"
+        },
+        {
+          "objecion": "He sido estafado por otros servicios que prometían señales, ¿cómo sé que esto es diferente?",
+          "profundidad": "real",
+          "orden": 1,
+          "call_id": "call_5c2d786057",
+          "arquetipo": "Albañil estancado, busca libertad financiera"
+        },
+        {
+          "objecion": "miedo a saber si vas a tener resultados o no",
+          "profundidad": "real",
+          "orden": 1,
+          "call_id": "call_f3b336b80d",
+          "arquetipo": "Oficial de prisiones agotada, busca libertad financiera"
+        },
+        {
+          "objecion": "no sé si esto sea para mí",
+          "profundidad": "real",
+          "orden": 2,
+          "call_id": "call_f3b336b80d",
+          "arquetipo": "Oficial de prisiones agotada, busca libertad financiera"
+        },
+        {
+          "objecion": "Y eso, por eso, eso me asusta, tipo, voy a, ¿tengo que ver por lo menos algo o ya puedo entrar y por lo menos observar a ver qué entiende y qué no?",
+          "profundidad": "superficial",
+          "orden": 2,
+          "call_id": "call_93d07de933",
+          "arquetipo": "Trader autodidacta estancada, busca libertad financiera"
+        },
+        {
+          "objecion": "¿Por qué no has accedido antes a su mentorización, a su programa?",
+          "profundidad": "real",
+          "orden": 2,
+          "call_id": "call_436b3cfaab",
+          "arquetipo": "Trader frustrado, busca mentoría y libertad financiera"
+        },
+        {
+          "objecion": "Tengo que ver qué es lo que me pueden enseñar, ¿sabes?, por ahí ustedes, qué es lo que más puedo aprender de ustedes, ¿me entiendo?",
+          "profundidad": "superficial",
+          "orden": 1,
+          "call_id": "call_3c49abfa7d",
+          "arquetipo": "Trader frustrado, busca consistencia y libertad familiar"
+        },
+        {
+          "objecion": "¿Y cuál crees que es la diferencia entre Alberto y tú?",
+          "profundidad": "superficial",
+          "orden": 4,
+          "call_id": "call_3c49abfa7d",
+          "arquetipo": "Trader frustrado, busca consistencia y libertad familiar"
+        },
+        {
+          "objecion": "¿Usted también es trader? ¿Se dedica al trading?",
+          "profundidad": "superficial",
+          "orden": 4,
+          "call_id": "call_8d5120faa7",
+          "arquetipo": "Caficultor frustrado, busca libertad y estabilidad"
+        },
+        {
+          "objecion": "Dudas sobre el proceso de interacción y mentoría con el Sensei.",
+          "profundidad": "superficial",
+          "orden": 2,
+          "call_id": "call_041d4739f5",
+          "arquetipo": "Trader autodidacta frustrado, busca estructura y libertad"
+        },
+        {
+          "objecion": "No quiero abrir una cuenta a ciegas, hay muchos hackers y no tengo conocimiento.",
+          "profundidad": "real",
+          "orden": 1,
+          "call_id": "call_d2bcbd5cbd",
+          "arquetipo": "Emprendedor frustrado, novato cauteloso, busca libertad"
+        },
+        {
+          "objecion": "Nunca me he visualizado con tanto dinero.",
+          "profundidad": "real",
+          "orden": 3,
+          "call_id": "call_d2bcbd5cbd",
+          "arquetipo": "Emprendedor frustrado, novato cauteloso, busca libertad"
+        },
+        {
+          "objecion": "Si tuviera alguna pregunta, jordan, ¿me comunicaría con usted?",
+          "profundidad": "superficial",
+          "orden": 3,
+          "call_id": "call_bfa6983a60",
+          "arquetipo": "Trabajador manual ambicioso, busca libertad"
+        },
+        {
+          "objecion": "No es que yo sea antisocial, sino como que me gusta estar solo, me gusta mucho la privacidad",
+          "profundidad": "superficial",
+          "orden": 3,
+          "call_id": "call_55820b4e60",
+          "arquetipo": "Obrero sacrificado, busca libertad y propósito"
+        },
+        {
+          "objecion": "Sí, de saber cómo opera él, ¿no?",
+          "profundidad": "superficial",
+          "orden": 1,
+          "call_id": "call_b7196a0b5b",
+          "arquetipo": "Trader frustrado, busca disciplina y libertad financiera"
+        }
+      ]
+    },
+    "tecnica": {
+      "count": 217,
+      "ejemplos": [
+        {
+          "objecion": "¿Cómo conseguir una yo? ¿Ustedes me ayudan en ese proceso como para conseguir una empresa que me preste una cuenta o algo así?",
+          "profundidad": "real",
+          "orden": 2,
+          "call_id": "call_8b8c6a24de",
+          "arquetipo": "Trader autodidacta frustrado, busca libertad y estructura"
+        },
+        {
+          "objecion": "Pero, perdón, la ignorancia, ¿de qué sería eso? ¿Una cuenta?",
+          "profundidad": "superficial",
+          "orden": 6,
+          "call_id": "call_8b8c6a24de",
+          "arquetipo": "Trader autodidacta frustrado, busca libertad y estructura"
+        },
+        {
+          "objecion": "¿Te llega una notificación si ya se hizo el pago? No, a mí no me llega la notificación, mi hermano.",
+          "profundidad": "superficial",
+          "orden": 7,
+          "call_id": "call_8b8c6a24de",
+          "arquetipo": "Trader autodidacta frustrado, busca libertad y estructura"
+        },
+        {
+          "objecion": "¿Pero eso del curso de qué? ¿De las clases y todo eso?",
+          "profundidad": "superficial",
+          "orden": 5,
+          "call_id": "call_9756b0163d",
+          "arquetipo": "trader autodidacta estancado, busca libertad financiera"
+        },
+        {
+          "objecion": "¿Cómo quieres que yo tome acción?",
+          "profundidad": "real",
+          "orden": 4,
+          "call_id": "call_bb2e1a60e1",
+          "arquetipo": "Joven trabajador frustrado, busca libertad financiera para su familia"
+        },
+        {
+          "objecion": "¿Hay algún lector de gráfico? Porque yo siento que ahí, yo en lo personal siento que ahí es donde me daría un poco de trabajo.",
+          "profundidad": "real",
+          "orden": 3,
+          "call_id": "call_b25566d4a0",
+          "arquetipo": "Madre migrante, esceptica, busca libertad financiera"
+        },
+        {
+          "objecion": "Jesus, mira, ¿qué me dice? No sé lo que me dice, porque está en inglés.",
+          "profundidad": "superficial",
+          "orden": 4,
+          "call_id": "call_2c2a7a42e7",
+          "arquetipo": "Inmigrante agotada, busca libertad financiera y reunión familiar."
+        },
+        {
+          "objecion": "¿Y cómo es rentable? ¿Cómo? O sea, ¿qué quiere decir rentable?",
+          "profundidad": "superficial",
+          "orden": 1,
+          "call_id": "call_0e42bca73d",
+          "arquetipo": "Barbero soñador, busca libertad financiera familiar"
+        },
+        {
+          "objecion": "Cuando dicen que tengo que tener una cuenta con un dinero, ¿esto es, se trabaja con dinero real?",
+          "profundidad": "superficial",
+          "orden": 1,
+          "call_id": "call_9a7f3afc35",
+          "arquetipo": "Trader frustrada, busca independencia y método real"
+        },
+        {
+          "objecion": "Ok, este dinero tiene que estar en la cuenta, ahí nada más, ¿verdad? No voy a invertirlo, no nada.",
+          "profundidad": "superficial",
+          "orden": 4,
+          "call_id": "call_9a7f3afc35",
+          "arquetipo": "Trader frustrada, busca independencia y método real"
+        },
+        {
+          "objecion": "cómo yo puedo identificar cuándo es que yo, o sea, ¿cómo puedo hacerte la pregunta para que me entiendas? ¿Cómo yo voy a saber cuándo, cuándo entrar y cuándo salir?",
+          "profundidad": "superficial",
+          "orden": 1,
+          "call_id": "call_4059c20224",
+          "arquetipo": "Padre frustrado, busca libertad y tiempo para su hija"
+        },
+        {
+          "objecion": "¿Las clases en directo? ¿Las clases? / Después de esto, las clases, ¿hay clases en vivo también?",
+          "profundidad": "superficial",
+          "orden": 3,
+          "call_id": "call_3c49abfa7d",
+          "arquetipo": "Trader frustrado, busca consistencia y libertad familiar"
+        },
+        {
+          "objecion": "La cuenta que tengo ahorita actualmente, esa cuenta instantánea de fondeo, ¿la puedo operar sin ningún problema con el curso?",
+          "profundidad": "superficial",
+          "orden": 3,
+          "call_id": "call_8d5120faa7",
+          "arquetipo": "Caficultor frustrado, busca libertad y estabilidad"
+        },
+        {
+          "objecion": "¿Y ese dinero, eso le sacan impuesto a eso?",
+          "profundidad": "superficial",
+          "orden": 2,
+          "call_id": "call_d2bcbd5cbd",
+          "arquetipo": "Emprendedor frustrado, novato cauteloso, busca libertad"
+        },
+        {
+          "objecion": "¿Las cuentas fondeadas funcionan en Venezuela?",
+          "profundidad": "superficial",
+          "orden": 3,
+          "call_id": "call_b7196a0b5b",
+          "arquetipo": "Trader frustrado, busca disciplina y libertad financiera"
+        },
+        {
+          "objecion": "No sé si tengo el concepto claro, pero es como un préstamo que te dan, o una cuenta que, más o menos, ¿no?",
+          "profundidad": "superficial",
+          "orden": 1,
+          "call_id": "call_791cc20af9",
+          "arquetipo": "Policía endeudado, busca libertad financiera familiar"
+        },
+        {
+          "objecion": "No inicio sesión, ¿verdad? ¿O sí?",
+          "profundidad": "superficial",
+          "orden": 7,
+          "call_id": "call_791cc20af9",
+          "arquetipo": "Policía endeudado, busca libertad financiera familiar"
+        },
+        {
+          "objecion": "La dirección, dice ahí dirección, ¿es física?",
+          "profundidad": "superficial",
+          "orden": 2,
+          "call_id": "call_e875e7b5a0",
+          "arquetipo": "trader estancado, busca libertad familiar"
+        },
+        {
+          "objecion": "¿Eso sería como una educación aparte o está incluido?",
+          "profundidad": "superficial",
+          "orden": 1,
+          "call_id": "call_a0a7092068",
+          "arquetipo": "Madre autodidacta cautelosa, busca libertad financiera sin riesgo."
+        },
+        {
+          "objecion": "¿Por operar con tu propio dinero?",
+          "profundidad": "real",
+          "orden": 6,
+          "call_id": "call_a0a7092068",
+          "arquetipo": "Madre autodidacta cautelosa, busca libertad financiera sin riesgo."
+        },
+        {
+          "objecion": "¿Es por qué qué? Dice que el destinatario ha detectado algo y no lo deja.",
+          "profundidad": "real",
+          "orden": 2,
+          "call_id": "call_789770d1e2",
+          "arquetipo": "Trader intermedio frustrado, busca mentoría práctica y seguridad"
+        },
+        {
+          "objecion": "Mi conocimiento académico es insuficiente para el trading práctico.",
+          "profundidad": "real",
+          "orden": 2,
+          "call_id": "call_7f2a1f60db",
+          "arquetipo": "Economista cautelosa, busca libertad con estructura."
+        },
+        {
+          "objecion": "La psicología me juega en contra para ser rentable.",
+          "profundidad": "real",
+          "orden": 1,
+          "call_id": "call_bc818b2743",
+          "arquetipo": "Trader autodidacta frustrado, busca apoyo psicológico y financiero."
+        },
+        {
+          "objecion": "No sé si estaría junto contigo o estaría tomando las clases con el Sensei.",
+          "profundidad": "superficial",
+          "orden": 3,
+          "call_id": "call_79629f01f5",
+          "arquetipo": "Tester frustrado, busca libertad financiera tras estafa"
+        },
+        {
+          "objecion": "Ok, pero el plan de 3000 incluye lo del Instituto del Sensei, la primera parte más las masterclass, ¿o no?",
+          "profundidad": "superficial",
+          "orden": 2,
+          "call_id": "call_2621e288a2",
+          "arquetipo": "Trader frustrada, busca estructura y guía"
+        },
+        {
+          "objecion": "Le iba a decir, ¿esa cuenta sería como me la regalan, pero pasado el examen o no pasado el examen?",
+          "profundidad": "superficial",
+          "orden": 3,
+          "call_id": "call_8c9b433661",
+          "arquetipo": "Joven autodidacta frustrado, busca libertad y propósito"
+        },
+        {
+          "objecion": "¿Estas son interactivas o solamente Sebastián hablar?",
+          "profundidad": "superficial",
+          "orden": 3,
+          "call_id": "call_a872d8092d",
+          "arquetipo": "Trader autodidacta ambicioso con recursos limitados"
+        },
+        {
+          "objecion": "¿se paga eso y luego se tiene que meter dinero a inversión aparte de eso?",
+          "profundidad": "superficial",
+          "orden": 1,
+          "call_id": "call_46867b34b3",
+          "arquetipo": "trabajadora agotada, busca libertad financiera"
+        },
+        {
+          "objecion": "¿Qué requisitos tendría que tener para arrancar?",
+          "profundidad": "superficial",
+          "orden": 1,
+          "call_id": "call_bce45bf871",
+          "arquetipo": "Trabajador agotado, busca libertad y casa"
+        },
+        {
+          "objecion": "Cuando dices cuentas demo, ¿a qué se refiere cuentas demo? Es que no entiendo qué son cuentas demo.",
+          "profundidad": "superficial",
+          "orden": 2,
+          "call_id": "call_bce45bf871",
+          "arquetipo": "Trabajador agotado, busca libertad y casa"
+        }
+      ]
+    },
+    "tiempo": {
+      "count": 235,
+      "ejemplos": [
+        {
+          "objecion": "¿Y qué horario? Del horario, permíteme, ¿dónde está?",
+          "profundidad": "superficial",
+          "orden": 3,
+          "call_id": "call_8b8c6a24de",
+          "arquetipo": "Trader autodidacta frustrado, busca libertad y estructura"
+        },
+        {
+          "objecion": "Necesito ver cuándo puedo pagar",
+          "profundidad": "real",
+          "orden": 2,
+          "call_id": "call_3c286509c8",
+          "arquetipo": "Joven ambicioso, busca libertad financiera familiar"
+        },
+        {
+          "objecion": "¿Y cuánto dura, por ejemplo, la mentoría que estoy actualmente buscando tener?",
+          "profundidad": "superficial",
+          "orden": 3,
+          "call_id": "call_342fe48e6b",
+          "arquetipo": "Trader inconsistente, busca estructura y libertad"
+        },
+        {
+          "objecion": "¿La formación esa tiene un límite de que se acaba o es continuo?",
+          "profundidad": "superficial",
+          "orden": 2,
+          "call_id": "call_9756b0163d",
+          "arquetipo": "trader autodidacta estancado, busca libertad financiera"
+        },
+        {
+          "objecion": "usted sabe el tiempo, hay que esperar el tiempo, no es fácil, no es rápido.",
+          "profundidad": "real",
+          "orden": 1,
+          "call_id": "call_bb2e1a60e1",
+          "arquetipo": "Joven trabajador frustrado, busca libertad financiera para su familia"
+        },
+        {
+          "objecion": "El apartado de calendario que organizan las clases de lunes a lunes, ¿son clases en vivo?",
+          "profundidad": "real",
+          "orden": 1,
+          "call_id": "call_5d8cbcd274",
+          "arquetipo": "Trader autodidacta ambicioso con tiempo limitado"
+        },
+        {
+          "objecion": "¿Cuántos meses le tomó Agustín aproximadamente llegar a esos niveles de retiro?",
+          "profundidad": "superficial",
+          "orden": 1,
+          "call_id": "call_07fc82eb73",
+          "arquetipo": "Ingeniera ambiciosa, trader novata frustrada, busca estructura y capital."
+        },
+        {
+          "objecion": "Oh, si tiene más de un año y algo, ¿verdad? Porque después de agosto, de agosto de 25, no desde el 24, disculpa, si es verdad, desde el 2024, no sé si tiene dos años con él, y le tomó bastante.",
+          "profundidad": "superficial",
+          "orden": 2,
+          "call_id": "call_07fc82eb73",
+          "arquetipo": "Ingeniera ambiciosa, trader novata frustrada, busca estructura y capital."
+        },
+        {
+          "objecion": "¿Cómo yo las haría si yo estaría en el trabajo?",
+          "profundidad": "real",
+          "orden": 6,
+          "call_id": "call_b25566d4a0",
+          "arquetipo": "Madre migrante, esceptica, busca libertad financiera"
+        },
+        {
+          "objecion": "¿Hasta cuándo tengo tiempo para conseguirlo? ¿Los 4.500?",
+          "profundidad": "superficial",
+          "orden": 2,
+          "call_id": "call_c90ee5d49f",
+          "arquetipo": "Trader autodidacta frustrado, busca libertad"
+        },
+        {
+          "objecion": "Ellos son de España, pero ¿qué pasa? Yo tengo muchos años sin estudiar.",
+          "profundidad": "superficial",
+          "orden": 1,
+          "call_id": "call_2c2a7a42e7",
+          "arquetipo": "Inmigrante agotada, busca libertad financiera y reunión familiar."
+        },
+        {
+          "objecion": "¿eso por medio de esta plataforma puedo estudiar de noche y el chat no me dan la respuesta de noche o sí?",
+          "profundidad": "real",
+          "orden": 2,
+          "call_id": "call_2c2a7a42e7",
+          "arquetipo": "Inmigrante agotada, busca libertad financiera y reunión familiar."
+        },
+        {
+          "objecion": "¿Eso lo podría acceder a fin de mes?",
+          "profundidad": "real",
+          "orden": 1,
+          "call_id": "call_484dbfb44c",
+          "arquetipo": "Trader autodidacta emocionalmente inestable, busca disciplina y seguridad."
+        },
+        {
+          "objecion": "¿O sería hasta que acabe el curso?",
+          "profundidad": "superficial",
+          "orden": 3,
+          "call_id": "call_5c2d786057",
+          "arquetipo": "Albañil estancado, busca libertad financiera"
+        },
+        {
+          "objecion": "aquí la vida en Estados Unidos es muy enjetreada, no se tiene mucho tiempo",
+          "profundidad": "superficial",
+          "orden": 1,
+          "call_id": "call_609ff0c227",
+          "arquetipo": "Trader autodidacta frustrado, busca libertad financiera"
+        },
+        {
+          "objecion": "¿Se puede ser a la hora que sea o realmente va a una hora específicamente que van a estar?",
+          "profundidad": "superficial",
+          "orden": 3,
+          "call_id": "call_f3b336b80d",
+          "arquetipo": "Oficial de prisiones agotada, busca libertad financiera"
+        },
+        {
+          "objecion": "Y en todo, o sea, hoy tengo que hacer la entrega, ¿verdad?, de esa mitad, ¿podría ser mañana?",
+          "profundidad": "superficial",
+          "orden": 4,
+          "call_id": "call_93d07de933",
+          "arquetipo": "Trader autodidacta estancada, busca libertad financiera"
+        },
+        {
+          "objecion": "¿Y en qué hora lo haces eso? Eso, por que te digo.",
+          "profundidad": "superficial",
+          "orden": 1,
+          "call_id": "call_436b3cfaab",
+          "arquetipo": "Trader frustrado, busca mentoría y libertad financiera"
+        },
+        {
+          "objecion": "¿Ya con este primer pago hay acceso?",
+          "profundidad": "superficial",
+          "orden": 3,
+          "call_id": "call_e460f3c8f3",
+          "arquetipo": "Trader frustrado por pérdidas, busca seguridad y libertad financiera."
+        },
+        {
+          "objecion": "No sé si tengo tiempo para dedicarme al programa.",
+          "profundidad": "real",
+          "orden": 4,
+          "call_id": "call_d2bcbd5cbd",
+          "arquetipo": "Emprendedor frustrado, novato cauteloso, busca libertad"
+        },
+        {
+          "objecion": "Y los horarios, ¿de qué horarios son las clases? Yo me los tomo, ¿cómo sería eso? ¿Las clases? Sí, los horarios.",
+          "profundidad": "superficial",
+          "orden": 3,
+          "call_id": "call_d8cbf8815b",
+          "arquetipo": "Mecánico frustrado, busca libertad financiera y estructura en trading."
+        },
+        {
+          "objecion": "No sé si se puede hacer un plan de pagos o si necesito más tiempo/otra llamada.",
+          "profundidad": "superficial",
+          "orden": 3,
+          "call_id": "call_f45c41a46b",
+          "arquetipo": "Trader autodidacta estancado, padre motivado por la familia"
+        },
+        {
+          "objecion": "Duda sobre el momento adecuado para invertir en mentoría o la urgencia de hacerlo.",
+          "profundidad": "real",
+          "orden": 1,
+          "call_id": "call_524e2bf2c4",
+          "arquetipo": "Trader frustrado, busca mentoría y garantía de éxito."
+        },
+        {
+          "objecion": "Una consulta antes de, este pago es, por ejemplo, cuando ya se terminan los módulos, ¿ya se finaliza todo o cómo hay que...?",
+          "profundidad": "superficial",
+          "orden": 3,
+          "call_id": "call_791cc20af9",
+          "arquetipo": "Policía endeudado, busca libertad financiera familiar"
+        },
+        {
+          "objecion": "Más allá que esté de mi, ¿me entiendes? circunstancia.",
+          "profundidad": "real",
+          "orden": 2,
+          "call_id": "call_8c9b433661",
+          "arquetipo": "Joven autodidacta frustrado, busca libertad y propósito"
+        },
+        {
+          "objecion": "No tengo mucho tiempo disponible (trabajo 10 horas diarias).",
+          "profundidad": "superficial",
+          "orden": 3,
+          "call_id": "call_3203d25c03",
+          "arquetipo": "Joven trabajador frustrado, busca libertad financiera"
+        },
+        {
+          "objecion": "¿Que las clases sean pregrabadas? O sea, ¿se quedan para verlas después?",
+          "profundidad": "superficial",
+          "orden": 2,
+          "call_id": "call_a872d8092d",
+          "arquetipo": "Trader autodidacta ambicioso con recursos limitados"
+        },
+        {
+          "objecion": "¿cuánto tiempo tiene uno para poder pagar la otra, terminar de pagar la, el otro grupo, pues, la otra opción?",
+          "profundidad": "real",
+          "orden": 3,
+          "call_id": "call_ea5bf7f916",
+          "arquetipo": "Trader autodidacta frustrada, busca estrategia y libertad financiera"
+        },
+        {
+          "objecion": "Transferencia bancaria, ¿qué tiene que ser ahora? El banco no está abierto a esta hora.",
+          "profundidad": "superficial",
+          "orden": 2,
+          "call_id": "call_83f092ffcf",
+          "arquetipo": "Padre soltero frustrado, busca libertad y tiempo para su hijo"
+        },
+        {
+          "objecion": "Tengo un viaje pronto y no quiero desconectarme de la formación.",
+          "profundidad": "superficial",
+          "orden": 2,
+          "call_id": "call_6b4015c81b",
+          "arquetipo": "Trader novato frustrado, busca estructura y seguridad para su familia"
+        }
+      ]
+    },
+    "precio": {
+      "count": 576,
+      "ejemplos": [
+        {
+          "objecion": "Dime a mí, ¿cómo se te haría más sencillo? No sé, ¿se puede en cuota o algo así o no? ¿O es todo de una mensualidad o se paga todos los tres mil dólares de una sola vez?",
+          "profundidad": "real",
+          "orden": 4,
+          "call_id": "call_8b8c6a24de",
+          "arquetipo": "Trader autodidacta frustrado, busca libertad y estructura"
+        },
+        {
+          "objecion": "¿Todas las clases $4,500?",
+          "profundidad": "superficial",
+          "orden": 1,
+          "call_id": "call_3c286509c8",
+          "arquetipo": "Joven ambicioso, busca libertad financiera familiar"
+        },
+        {
+          "objecion": "Presupuesto inicial de ~$1,000",
+          "profundidad": "real",
+          "orden": 1,
+          "call_id": "call_342fe48e6b",
+          "arquetipo": "Trader inconsistente, busca estructura y libertad"
+        },
+        {
+          "objecion": "Pero 3.000 dólares, ¿en qué sentido?",
+          "profundidad": "superficial",
+          "orden": 4,
+          "call_id": "call_342fe48e6b",
+          "arquetipo": "Trader inconsistente, busca estructura y libertad"
+        },
+        {
+          "objecion": "No puedo pagar $300 todos los meses, solo dispongo de unos $200 variables.",
+          "profundidad": "real",
+          "orden": 1,
+          "call_id": "call_458a33e7d3",
+          "arquetipo": "Ingeniero frustrado, padre reciente, busca libertad financiera familiar"
+        },
+        {
+          "objecion": "El costo del programa es alto para mi ingreso actual de $2,000 al mes.",
+          "profundidad": "real",
+          "orden": 1,
+          "call_id": "call_e57b23c945",
+          "arquetipo": "Trader autodidacta frustrado, busca libertad financiera"
+        },
+        {
+          "objecion": "Porque si la pagas poco a poco tiene intereses, ¿no?",
+          "profundidad": "real",
+          "orden": 3,
+          "call_id": "call_9756b0163d",
+          "arquetipo": "trader autodidacta estancado, busca libertad financiera"
+        },
+        {
+          "objecion": "No puedo pagar $3,000 de golpe.",
+          "profundidad": "real",
+          "orden": 2,
+          "call_id": "call_5d8cbcd274",
+          "arquetipo": "Trader autodidacta ambicioso con tiempo limitado"
+        },
+        {
+          "objecion": "La inversión de $4,500.",
+          "profundidad": "superficial",
+          "orden": 3,
+          "call_id": "call_756537c028",
+          "arquetipo": "Instalador frustrado, busca libertad y seguridad"
+        },
+        {
+          "objecion": "No puedo hacer el plan Premium porque no tengo dinero todavía.",
+          "profundidad": "real",
+          "orden": 1,
+          "call_id": "call_ca0bab8db7",
+          "arquetipo": "Inmigrante resiliente, trader novato, busca escape laboral"
+        },
+        {
+          "objecion": "Me dijiste que la de 10.000, la de cuenta de 10.000, son 3.000, ¿cierto?",
+          "profundidad": "superficial",
+          "orden": 1,
+          "call_id": "call_0240677702",
+          "arquetipo": "Joven padre frustrado, busca libertad y tiempo familiar"
+        },
+        {
+          "objecion": "solo tenía la mitad de los fondos disponibles",
+          "profundidad": "real",
+          "orden": 2,
+          "call_id": "call_f74c5c53b6",
+          "arquetipo": "trabajador esforzado quemado, busca libertad y seguridad"
+        },
+        {
+          "objecion": "El costo del programa es alto para mi presupuesto actual.",
+          "profundidad": "real",
+          "orden": 1,
+          "call_id": "call_d30d3f2253",
+          "arquetipo": "Trader frustrado por mentalidad, busca cambio de vida"
+        },
+        {
+          "objecion": "Trato de ir recogiendo el dinero para poder ingresar en el grupo, ¿tendría el mismo espacio o ya sería, perdón, sería el mismo precio o sería ya diferente?",
+          "profundidad": "real",
+          "orden": 2,
+          "call_id": "call_a374ff0933",
+          "arquetipo": "Relojero frustrado, busca libertad y jubilar a su madre"
+        },
+        {
+          "objecion": "No sé si puedo pagar el programa completo de una vez, ¿hay opciones para ir escalando o pagar en partes?",
+          "profundidad": "real",
+          "orden": 2,
+          "call_id": "call_28f685fe96",
+          "arquetipo": "Trader autodidacta frustrado y cauteloso, busca mentoría y libertad"
+        },
+        {
+          "objecion": "¿Y en cuanto costes? ¿Cuánto vale esto?",
+          "profundidad": "superficial",
+          "orden": 1,
+          "call_id": "call_d28d4a3f46",
+          "arquetipo": "Mecánico frustrado, trader intermedio busca guía y libertad financiera"
+        },
+        {
+          "objecion": "¿Todo de los planes es de una vez?",
+          "profundidad": "superficial",
+          "orden": 1,
+          "call_id": "call_b25566d4a0",
+          "arquetipo": "Madre migrante, esceptica, busca libertad financiera"
+        },
+        {
+          "objecion": "¿Hay mucha diferencia entre los dos más accesibles?",
+          "profundidad": "superficial",
+          "orden": 2,
+          "call_id": "call_b25566d4a0",
+          "arquetipo": "Madre migrante, esceptica, busca libertad financiera"
+        },
+        {
+          "objecion": "O sea, ¿tendría que pagarte $4,500 de contado?",
+          "profundidad": "real",
+          "orden": 3,
+          "call_id": "call_2c2a7a42e7",
+          "arquetipo": "Inmigrante agotada, busca libertad financiera y reunión familiar."
+        },
+        {
+          "objecion": "No tengo el dinero completo ahora mismo.",
+          "profundidad": "real",
+          "orden": 1,
+          "call_id": "call_dedaafc015",
+          "arquetipo": "dueña de negocio frustrada, trader autodidacta miedosa"
+        },
+        {
+          "objecion": "¿En cuántas cuotas estarías tú?",
+          "profundidad": "superficial",
+          "orden": 4,
+          "call_id": "call_0e42bca73d",
+          "arquetipo": "Barbero soñador, busca libertad financiera familiar"
+        },
+        {
+          "objecion": "El costo de $780 es alto para mí.",
+          "profundidad": "real",
+          "orden": 1,
+          "call_id": "call_f8838d579f",
+          "arquetipo": "Estudiante ambicioso con presupuesto ajustado"
+        },
+        {
+          "objecion": "Creía que los $300 eran el costo total del programa, no solo la reserva.",
+          "profundidad": "superficial",
+          "orden": 1,
+          "call_id": "call_08d5c0c1e5",
+          "arquetipo": "Cliente confundido pero decidido, busca flexibilidad de pago."
+        },
+        {
+          "objecion": "¿Y esa inversión es como para qué?",
+          "profundidad": "superficial",
+          "orden": 2,
+          "call_id": "call_9a7f3afc35",
+          "arquetipo": "Trader frustrada, busca independencia y método real"
+        },
+        {
+          "objecion": "¿Y cuál es el precio que tiene la escuela?",
+          "profundidad": "superficial",
+          "orden": 3,
+          "call_id": "call_9a7f3afc35",
+          "arquetipo": "Trader frustrada, busca independencia y método real"
+        },
+        {
+          "objecion": "¿Ese pago se hace una vez o se hace mensual?",
+          "profundidad": "superficial",
+          "orden": 6,
+          "call_id": "call_9a7f3afc35",
+          "arquetipo": "Trader frustrada, busca independencia y método real"
+        },
+        {
+          "objecion": "¿Qué tanto así me conviene? Me conviene, pero yo sé que a mejor tú me has preguntado, pues te conviene más grande, pero con mi tiempo y ya conforme mis ingresos, pues más o menos.",
+          "profundidad": "real",
+          "orden": 1,
+          "call_id": "call_cc9d2ab84a",
+          "arquetipo": "Cocinero ambicioso, busca libertad financiera, con presupuesto ajustado"
+        },
+        {
+          "objecion": "Solo tenía $800 disponibles, ya que pronto vencía la renta.",
+          "profundidad": "real",
+          "orden": 1,
+          "call_id": "call_b4ceb2a1aa",
+          "arquetipo": "trabajadora con ingresos ajustados, desconfiada por estafa previa, busca libertad financiera"
+        },
+        {
+          "objecion": "lo ideal es que no te puedo decir cómo yo debería hacerlo porque, o sea, no está en mí, o sea, si te estoy diciendo, pues yo te puedo decir lo que puedo empezar a estudiar y puedo ir pagándolo mientras voy aprendiendo.",
+          "profundidad": "real",
+          "orden": 2,
+          "call_id": "call_4059c20224",
+          "arquetipo": "Padre frustrado, busca libertad y tiempo para su hija"
+        },
+        {
+          "objecion": "Necesidad de plan de pago en 3 partes",
+          "profundidad": "real",
+          "orden": 2,
+          "call_id": "call_484dbfb44c",
+          "arquetipo": "Trader autodidacta emocionalmente inestable, busca disciplina y seguridad."
+        }
+      ]
+    },
+    "metodo_pago": {
+      "count": 301,
+      "ejemplos": [
+        {
+          "objecion": "Solamente a través de ese pain se puede pagar, ¿cierto? ¿Por qué?",
+          "profundidad": "superficial",
+          "orden": 5,
+          "call_id": "call_8b8c6a24de",
+          "arquetipo": "Trader autodidacta frustrado, busca libertad y estructura"
+        },
+        {
+          "objecion": "Pero en 750 dólares, ¿en cuánto tiempo?",
+          "profundidad": "real",
+          "orden": 5,
+          "call_id": "call_342fe48e6b",
+          "arquetipo": "Trader inconsistente, busca estructura y libertad"
+        },
+        {
+          "objecion": "Mi tarjeta no es elegible para el pago.",
+          "profundidad": "real",
+          "orden": 3,
+          "call_id": "call_e57b23c945",
+          "arquetipo": "Trader autodidacta frustrado, busca libertad financiera"
+        },
+        {
+          "objecion": "¿Pero te dejan, por ejemplo, pagarlo todo luego de golpe?",
+          "profundidad": "real",
+          "orden": 4,
+          "call_id": "call_9756b0163d",
+          "arquetipo": "trader autodidacta estancado, busca libertad financiera"
+        },
+        {
+          "objecion": "no tengo cuenta bancaria y guardo mis fondos en efectivo.",
+          "profundidad": "real",
+          "orden": 2,
+          "call_id": "call_bb2e1a60e1",
+          "arquetipo": "Joven trabajador frustrado, busca libertad financiera para su familia"
+        },
+        {
+          "objecion": "¿Cuánto tiempo me dan dos semanas, un mes? Y yo veo para que sea un solo pago.",
+          "profundidad": "superficial",
+          "orden": 3,
+          "call_id": "call_f74c5c53b6",
+          "arquetipo": "trabajador esforzado quemado, busca libertad y seguridad"
+        },
+        {
+          "objecion": "¿Será que tengo que movilizar el dinero de mi cuenta a que le hagan un sale? ¿O cómo?",
+          "profundidad": "real",
+          "orden": 3,
+          "call_id": "call_07fc82eb73",
+          "arquetipo": "Ingeniera ambiciosa, trader novata frustrada, busca estructura y capital."
+        },
+        {
+          "objecion": "Vale, el pago es íntegro al momento, ¿no? Me refiero, por ejemplo, trae algo, recuerdo que era, o sea, que al final lo acabé pagando todo el golpe, pero bueno, te hacían como una financiación en Secura o algo así, no",
+          "profundidad": "real",
+          "orden": 2,
+          "call_id": "call_d28d4a3f46",
+          "arquetipo": "Mecánico frustrado, trader intermedio busca guía y libertad financiera"
+        },
+        {
+          "objecion": "Eh, no sé, voy a darte este mes 2000, el siguiente mes, los otros 2500, ¿puede ser?",
+          "profundidad": "real",
+          "orden": 1,
+          "call_id": "call_c90ee5d49f",
+          "arquetipo": "Trader autodidacta frustrado, busca libertad"
+        },
+        {
+          "objecion": "No puedo pagar ahora mismo porque tengo el dinero en efectivo y no en el banco.",
+          "profundidad": "superficial",
+          "orden": 1,
+          "call_id": "call_2c57cd2b66",
+          "arquetipo": "Trader autodidacta frustrado, busca estructura y control emocional"
+        },
+        {
+          "objecion": "Cuando uno le da para cobrar, ¿cuánto se tarda eso? ¿Cómo depositáis en la cuenta de uno? Pero cuando tú los retiras ya, ¿eso cae rápido en tu cuenta o se tarda unos días?",
+          "profundidad": "superficial",
+          "orden": 3,
+          "call_id": "call_0e42bca73d",
+          "arquetipo": "Barbero soñador, busca libertad financiera familiar"
+        },
+        {
+          "objecion": "¿O me van a chequear el crédito?",
+          "profundidad": "superficial",
+          "orden": 5,
+          "call_id": "call_0e42bca73d",
+          "arquetipo": "Barbero soñador, busca libertad financiera familiar"
+        },
+        {
+          "objecion": "Ok, eso del pago, o sea, el dinero que tengo que tener en la cuenta no es para el pago, ¿verdad?",
+          "profundidad": "superficial",
+          "orden": 5,
+          "call_id": "call_9a7f3afc35",
+          "arquetipo": "Trader frustrada, busca independencia y método real"
+        },
+        {
+          "objecion": "Me parece que cómo se llama y dice que es una respuesta obligatoria, pero ¿cómo es el nombre? no me va a ahí aparece que Blackline Agencia, LLC, pero no me deja seguir, dice que no es válido. / El pago estaba vinculado a una cuenta de Hotmail antigua e inaccesible.",
+          "profundidad": "real",
+          "orden": 3,
+          "call_id": "call_cc9d2ab84a",
+          "arquetipo": "Cocinero ambicioso, busca libertad financiera, con presupuesto ajustado"
+        },
+        {
+          "objecion": "No puedo pagar con Splitty en cuotas, me da error.",
+          "profundidad": "real",
+          "orden": 1,
+          "call_id": "call_40ff0533ec",
+          "arquetipo": "Padre frustrado, busca libertad y seguridad financiera"
+        },
+        {
+          "objecion": "Me dice que tengo que verificar la tarjeta otra vez, pero ya lo he dicho tres veces.",
+          "profundidad": "superficial",
+          "orden": 3,
+          "call_id": "call_4059c20224",
+          "arquetipo": "Padre frustrado, busca libertad y tiempo para su hija"
+        },
+        {
+          "objecion": "¿El pago cómo se haría, José?",
+          "profundidad": "superficial",
+          "orden": 3,
+          "call_id": "call_484dbfb44c",
+          "arquetipo": "Trader autodidacta emocionalmente inestable, busca disciplina y seguridad."
+        },
+        {
+          "objecion": "Mi tarjeta no pasa / tengo problemas con el pago.",
+          "profundidad": "real",
+          "orden": 2,
+          "call_id": "call_a25aa89cd2",
+          "arquetipo": "Médica ambiciosa, trader principiante frustrada, busca libertad financiera."
+        },
+        {
+          "objecion": "No puedo hacer el pago completo ahora mismo porque el efectivo lo tengo en mi casa.",
+          "profundidad": "real",
+          "orden": 2,
+          "call_id": "call_609ff0c227",
+          "arquetipo": "Trader autodidacta frustrado, busca libertad financiera"
+        },
+        {
+          "objecion": "¿El pago se tiene que hacer con tarjeta de débito o puede ser con tarjeta de crédito?",
+          "profundidad": "superficial",
+          "orden": 1,
+          "call_id": "call_d85ba64e0b",
+          "arquetipo": "Exalumna proactiva busca mentoría intensiva"
+        },
+        {
+          "objecion": "Dos o tres cuotas, ¿que sería pagarla al mes o por semana?",
+          "profundidad": "superficial",
+          "orden": 2,
+          "call_id": "call_e3863a43a9",
+          "arquetipo": "Trader joven frustrado, busca estructura y apoyo psicológico"
+        },
+        {
+          "objecion": "tengo que revisar la fecha de corte de la tarjeta, yo podría hacer esa transferencia después del 24",
+          "profundidad": "real",
+          "orden": 2,
+          "call_id": "call_e460f3c8f3",
+          "arquetipo": "Trader frustrado por pérdidas, busca seguridad y libertad financiera."
+        },
+        {
+          "objecion": "¿Cuándo sería el próximo pago? / ¿Solamente los pagos son por Apple Pay o puedo hacerlo por otra?",
+          "profundidad": "superficial",
+          "orden": 5,
+          "call_id": "call_3c49abfa7d",
+          "arquetipo": "Trader frustrado, busca consistencia y libertad familiar"
+        },
+        {
+          "objecion": "Por eso le preguntaba más o menos ayer cómo eran los métodos de pago, ¿verdad? Y de qué cantidad sería el pago.",
+          "profundidad": "real",
+          "orden": 2,
+          "call_id": "call_8d5120faa7",
+          "arquetipo": "Caficultor frustrado, busca libertad y estabilidad"
+        },
+        {
+          "objecion": "Ok, solo tengo una cosa.",
+          "profundidad": "superficial",
+          "orden": 1,
+          "call_id": "call_0bf077849b",
+          "arquetipo": "DJ frustrado, busca estabilidad y libertad"
+        },
+        {
+          "objecion": "¿Cómo podríamos arreglar lo del pago?",
+          "profundidad": "real",
+          "orden": 1,
+          "call_id": "call_041d4739f5",
+          "arquetipo": "Trader autodidacta frustrado, busca estructura y libertad"
+        },
+        {
+          "objecion": "¿Ustedes aceptan tarjetas de crédito?",
+          "profundidad": "superficial",
+          "orden": 1,
+          "call_id": "call_bfa6983a60",
+          "arquetipo": "Trabajador manual ambicioso, busca libertad"
+        },
+        {
+          "objecion": "Problema con el método de pago (Klarna falló)",
+          "profundidad": "real",
+          "orden": 4,
+          "call_id": "call_d8cbf8815b",
+          "arquetipo": "Mecánico frustrado, busca libertad financiera y estructura en trading."
+        },
+        {
+          "objecion": "¿Se le pagaría todo en un solo pago?",
+          "profundidad": "superficial",
+          "orden": 1,
+          "call_id": "call_915f3b8568",
+          "arquetipo": "Joven soñador con recursos limitados"
+        },
+        {
+          "objecion": "Necesito un plan de pagos.",
+          "profundidad": "real",
+          "orden": 2,
+          "call_id": "call_f45c41a46b",
+          "arquetipo": "Trader autodidacta estancado, padre motivado por la familia"
+        }
+      ]
+    },
+    "comparacion": {
+      "count": 29,
+      "ejemplos": [
+        {
+          "objecion": "¿Cuál es la diferencia que tiene al del 3.000?",
+          "profundidad": "superficial",
+          "orden": 2,
+          "call_id": "call_342fe48e6b",
+          "arquetipo": "Trader inconsistente, busca estructura y libertad"
+        },
+        {
+          "objecion": "¿Qué diferencia de este a los otros?",
+          "profundidad": "superficial",
+          "orden": 2,
+          "call_id": "call_3c49abfa7d",
+          "arquetipo": "Trader frustrado, busca consistencia y libertad familiar"
+        },
+        {
+          "objecion": "el deseo de comparar opciones",
+          "profundidad": "real",
+          "orden": 2,
+          "call_id": "call_abade9dce9",
+          "arquetipo": "Emprendedor cauteloso, busca libertad y jubilación temprana"
+        },
+        {
+          "objecion": "¿Solamente voy a tener tres clases en vivo mensuales? Me imagino que hay más formaciones, ¿no?",
+          "profundidad": "superficial",
+          "orden": 2,
+          "call_id": "call_b04d2d078d",
+          "arquetipo": "Padre trabajador agotado, busca libertad financiera y tiempo familiar."
+        },
+        {
+          "objecion": "¿qué diferencias tienen estas clases a las que tienen YouTube?",
+          "profundidad": "superficial",
+          "orden": 1,
+          "call_id": "call_4a4e77f067",
+          "arquetipo": "Emprendedor autodidacta frustrado, busca estructura y garantía para priorizar el trading."
+        },
+        {
+          "objecion": "¿Por qué no te enseña tu hermano y te ahorras el invertir el dinero con Noddy?",
+          "profundidad": "superficial",
+          "orden": 2,
+          "call_id": "call_d609421c66",
+          "arquetipo": "Artista con aspiraciones financieras, cautelosa pero decidida."
+        },
+        {
+          "objecion": "¿Qué más se incluye aparte de más contenido? Este plan.",
+          "profundidad": "superficial",
+          "orden": 2,
+          "call_id": "call_146767da8a",
+          "arquetipo": "Trader principiante cautelosa, busca libertad y disciplina"
+        },
+        {
+          "objecion": "Pero, ¿cuál es diferencia en las dos?",
+          "profundidad": "superficial",
+          "orden": 1,
+          "call_id": "call_61423468a7",
+          "arquetipo": "empresario trader frustrado, busca rentabilidad garantizada"
+        },
+        {
+          "objecion": "Es que la de cinco es esa, ¿no?",
+          "profundidad": "superficial",
+          "orden": 4,
+          "call_id": "call_0aff11d302",
+          "arquetipo": "Trader autodidacta frustrado, busca estructura y consistencia"
+        },
+        {
+          "objecion": "Es muy importante investigar mucho de qué empresa es mejor o cuál es la que mejor le conviene a uno, ¿ok?",
+          "profundidad": "real",
+          "orden": 2,
+          "call_id": "call_a54b066452",
+          "arquetipo": "Trader autodidacta frustrado, busca libertad y estructura"
+        },
+        {
+          "objecion": "¿Qué diferencia a de Agustín? ¿Qué le entró hace un año?",
+          "profundidad": "superficial",
+          "orden": 3,
+          "call_id": "call_8edd8b72f3",
+          "arquetipo": "Trader frustrado, busca libertad financiera"
+        },
+        {
+          "objecion": "¿Es uno de esos como los de Hotmart?",
+          "profundidad": "superficial",
+          "orden": 6,
+          "call_id": "call_8edd8b72f3",
+          "arquetipo": "Trader frustrado, busca libertad financiera"
+        },
+        {
+          "objecion": "¿Qué crees que es mejor? Entonces, de 1.800, ¿cuántas clases son al mes?",
+          "profundidad": "superficial",
+          "orden": 4,
+          "call_id": "call_ead1a33c70",
+          "arquetipo": "Autodidacta frustrado, busca libertad y mentoría."
+        },
+        {
+          "objecion": "¿Hay una alternativa más económica?",
+          "profundidad": "real",
+          "orden": 10,
+          "call_id": "call_e1df316885",
+          "arquetipo": "Pareja trabajadora, busca libertad financiera y jubilación"
+        },
+        {
+          "objecion": "Cuál es la diferencia entre el programa de 700 y el de 1647, especialmente en el asesoramiento?",
+          "profundidad": "superficial",
+          "orden": 4,
+          "call_id": "call_0d6e6fe695",
+          "arquetipo": "Mecánico autodidacta, trader frustrado, busca estructura y mentoría, cauteloso con el dinero."
+        },
+        {
+          "objecion": "¿Cuál es la diferencia entre uno y el otro? El acompañamiento, ¿vale?",
+          "profundidad": "superficial",
+          "orden": 1,
+          "call_id": "call_bf8b52f724",
+          "arquetipo": "Obrero ambicioso busca libertad con trading"
+        },
+        {
+          "objecion": "Sí, la verdad es que es el que veo mejor, porque se tiene lo del fondeo, no? Y es el que tiene cuántas llamadas me dijiste?",
+          "profundidad": "superficial",
+          "orden": 3,
+          "call_id": "call_d82c19086d",
+          "arquetipo": "Principiante motivado, busca estabilidad y fondeo"
+        },
+        {
+          "objecion": "¿Puedo preguntar qué diferencia hay entre los planes?",
+          "profundidad": "superficial",
+          "orden": 1,
+          "call_id": "call_6caf3381bb",
+          "arquetipo": "Estudiante ambicioso, busca libertad financiera y tiempo"
+        },
+        {
+          "objecion": "Mi competencia (Mugisa) invierte mucho en redes sociales con resultados pobres, ¿cómo sé que esto será diferente?",
+          "profundidad": "superficial",
+          "orden": 4,
+          "call_id": "call_3d77444f81",
+          "arquetipo": "Empresario tradicional cauteloso, busca crecimiento digital sostenible"
+        },
+        {
+          "objecion": "Pero yo pensaba que me iba a escribir en el de la Universidad de Marca Personal porque pensé que ese era el programa que enseña a gente a hacer lo que hace Victor.",
+          "profundidad": "superficial",
+          "orden": 1,
+          "call_id": "call_1a0c6b83c0",
+          "arquetipo": "Creador de videos ambicioso, con flujo de caja ajustado"
+        },
+        {
+          "objecion": "Hace tiempo también pagamos una en school con... (otra persona que no funcionó).",
+          "profundidad": "real",
+          "orden": 2,
+          "call_id": "call_d02a0f09e0",
+          "arquetipo": "Psicóloga frustrada, busca monetizar marca personal con garantía."
+        },
+        {
+          "objecion": "¿Cuál es la diferencia entre el de 1.500, 2.300 y el de 3.000?",
+          "profundidad": "superficial",
+          "orden": 6,
+          "call_id": "call_1021a7877e",
+          "arquetipo": "Empresario nicaragüense cauteloso, busca estructura digital"
+        },
+        {
+          "objecion": "Lo he visto, pero el de 13 es, o sea, ¿qué diferencia hay entre el de 10 y el de 13? No, no.",
+          "profundidad": "superficial",
+          "orden": 1,
+          "call_id": "call_9f2c98d70e",
+          "arquetipo": "Abogado ambicioso, busca escala rápida y probada"
+        },
+        {
+          "objecion": "¿Y ya tienes citas con las demás opciones o...?",
+          "profundidad": "real",
+          "orden": 5,
+          "call_id": "call_0a7b4d6b51",
+          "arquetipo": "coach frustrada, busca sistema orgánico y confianza"
+        },
+        {
+          "objecion": "¿Pero cuántos seguidores tiene Víctor Eras? Si no tiene tantos tampoco, tío. ¿Y por qué, digamos, tan pocos respecto a lo que me ofrecéis a mí conseguir, no?",
+          "profundidad": "superficial",
+          "orden": 4,
+          "call_id": "call_d689a83a11",
+          "arquetipo": "Emprendedor de póker frustrado, busca crecimiento estratégico y monetización"
+        },
+        {
+          "objecion": "No, a un par de chavalillos que ya están monetizando y le están yendo bien, con cuentas así de 30, 40, 50.000 seguidores, pero son muchos, ¿no? 25, 30 euros.",
+          "profundidad": "superficial",
+          "orden": 4,
+          "call_id": "call_5a3453966b",
+          "arquetipo": "Ex-deportista ambicioso, novato digital, busca mentoría intensiva"
+        },
+        {
+          "objecion": "Básicamente, la diferencia del de tres sería que no tendría tanto acompañamiento con Víctor, ¿sí? Es exactamente lo mismo.",
+          "profundidad": "superficial",
+          "orden": 5,
+          "call_id": "call_d490bfd15a",
+          "arquetipo": "Emprendedora novata con miedo escénico, busca estructura y resultados probados"
+        },
+        {
+          "objecion": "¿Cuál es la diferencia entre este programa con el más caro?",
+          "profundidad": "superficial",
+          "orden": 2,
+          "call_id": "call_68549a4a62",
+          "arquetipo": "Analista estancado, busca libertad financiera y apoyar a su familia"
+        },
+        {
+          "objecion": "¿Él se enfoca más en fría de peso?",
+          "profundidad": "superficial",
+          "orden": 1,
+          "call_id": "call_75b6be1270",
+          "arquetipo": "emprendedoras de salud novatas online, cautelosas con inversión"
+        }
+      ]
+    },
+    "pareja_familia": {
+      "count": 38,
+      "ejemplos": [
+        {
+          "objecion": "Necesidad de consultar con mi pareja (inferido por pregunta del closer y resumen)",
+          "profundidad": "real",
+          "orden": 7,
+          "call_id": "call_b25566d4a0",
+          "arquetipo": "Madre migrante, esceptica, busca libertad financiera"
+        },
+        {
+          "objecion": "Decisión: Beltrán hablará de la inversión con su pareja, quien es la única persona que la apoya financieramente",
+          "profundidad": "real",
+          "orden": 7,
+          "call_id": "call_9a7f3afc35",
+          "arquetipo": "Trader frustrada, busca independencia y método real"
+        },
+        {
+          "objecion": "No, sí se entiende, pero yo creo que ahorita como tomar una decisión, si no podría, la verdad necesito hablarlo, no tanto de mí, sino como yo no estoy solo, pues, no es como tal, hermano, ¿cómo te digo? Realmente estoy preguntado, entonces necesito platicarlo, no sé si me entiendes,...",
+          "profundidad": "real",
+          "orden": 2,
+          "call_id": "call_cc9d2ab84a",
+          "arquetipo": "Cocinero ambicioso, busca libertad financiera, con presupuesto ajustado"
+        },
+        {
+          "objecion": "Tengo que consultarlo con mi madre por el proyecto inmobiliario.",
+          "profundidad": "real",
+          "orden": 1,
+          "call_id": "call_a51a5a456e",
+          "arquetipo": "Joven emprendedora estancada, busca libertad financiera"
+        },
+        {
+          "objecion": "Después de ese año, ¿qué pasa? ¿Ya no tengo acceso? Obviamente que lo que yo aspiro y espero es ya aprender antes, ¿no? O sea, yo ya no tengo acceso a eso en el año, pregunta mi esposa, después del año.",
+          "profundidad": "real",
+          "orden": 4,
+          "call_id": "call_791cc20af9",
+          "arquetipo": "Policía endeudado, busca libertad financiera familiar"
+        },
+        {
+          "objecion": "La decisión de invertir sin el conocimiento inicial de su esposo.",
+          "profundidad": "real",
+          "orden": 4,
+          "call_id": "call_a0a7092068",
+          "arquetipo": "Madre autodidacta cautelosa, busca libertad financiera sin riesgo."
+        },
+        {
+          "objecion": "Mis padres me apoyarían en esto?",
+          "profundidad": "superficial",
+          "orden": 4,
+          "call_id": "call_79629f01f5",
+          "arquetipo": "Tester frustrado, busca libertad financiera tras estafa"
+        },
+        {
+          "objecion": "tengo que consultarlo con mi pareja y mi madre",
+          "profundidad": "real",
+          "orden": 2,
+          "call_id": "call_d8dd590627",
+          "arquetipo": "joven uber frustrado, busca libertad financiera"
+        },
+        {
+          "objecion": "Así que yo voy a conversarlo y ya tengo la respuesta el día de hoy, ¿ya?",
+          "profundidad": "real",
+          "orden": 5,
+          "call_id": "call_1327a7084c",
+          "arquetipo": "Trader frustrado, busca consistencia y libertad financiera, con presupuesto ajustado y decisión familiar."
+        },
+        {
+          "objecion": "Tengo que hablar con mi mamá para que apruebe el costo, porque ella ya está pagando otro curso.",
+          "profundidad": "real",
+          "orden": 1,
+          "call_id": "call_daa745a3e8",
+          "arquetipo": "Trader joven ambicioso, busca mentoría y libertad financiera"
+        },
+        {
+          "objecion": "Tengo que consultarlo con mi esposo",
+          "profundidad": "real",
+          "orden": 1,
+          "call_id": "call_d5ef669891",
+          "arquetipo": "empleada exigida, busca libertad financiera"
+        },
+        {
+          "objecion": "necesita 3 horas para consultar a un contacto de trading de confianza",
+          "profundidad": "real",
+          "orden": 2,
+          "call_id": "call_243014c1d5",
+          "arquetipo": "Estudiante puertorriqueña agotada, busca libertad financiera."
+        },
+        {
+          "objecion": "ella me apoya en lo que yo decida, mientras que no deje en la calle a la familia, pues está bien, ¿sí me entiendes?",
+          "profundidad": "superficial",
+          "orden": 4,
+          "call_id": "call_cb94fa7f6d",
+          "arquetipo": "Trabajador manual, padre de familia, trader autodidacta frustrado"
+        },
+        {
+          "objecion": "Estábamos hablando sobre no sabemos si ella quisiera cogerlo o fuera yo, ¿me entiendes?",
+          "profundidad": "superficial",
+          "orden": 1,
+          "call_id": "call_2ede07cae8",
+          "arquetipo": "Madre dominicana ambiciosa, busca libertad financiera"
+        },
+        {
+          "objecion": "Herrera explorará esta opción con un amigo antes del viernes.",
+          "profundidad": "superficial",
+          "orden": 7,
+          "call_id": "call_52286dc791",
+          "arquetipo": "Trader autodidacta frustrado, busca mentoría y libertad financiera para apoyar a su madre."
+        },
+        {
+          "objecion": "Necesito consultar con mi madre para el pago.",
+          "profundidad": "real",
+          "orden": 1,
+          "call_id": "call_bf697629cd",
+          "arquetipo": "Estudiante ambicioso sin experiencia, busca libertad financiera"
+        },
+        {
+          "objecion": "¿Y ellos qué piensan sobre el training?",
+          "profundidad": "superficial",
+          "orden": 4,
+          "call_id": "call_7d6f662216",
+          "arquetipo": "trabajador agotado, busca libertad financiera"
+        },
+        {
+          "objecion": "No, yo puedo tomar una decisión por mí mismo, pero siempre lo comento, entiendes? Para escuchar una segunda opinión o algo, pero no es como que depende de mi, de esa decisión.",
+          "profundidad": "superficial",
+          "orden": 3,
+          "call_id": "call_e2d7904a6b",
+          "arquetipo": "Padre trabajador agotado, busca libertad financiera vía trading"
+        },
+        {
+          "objecion": "Te lo puedo enviar un poquito más tarde para poder comentarle a mis padres?",
+          "profundidad": "real",
+          "orden": 2,
+          "call_id": "call_d808af01da",
+          "arquetipo": "Estudiante emprendedor, busca estrategia probada"
+        },
+        {
+          "objecion": "Vale, pues entonces por WhatsApp él te dice y os coordináis que seguramente, aunque el dinero le ponga yo, el pago lo gestionará la madre, ¿vale? O sea que ya os coordináis.",
+          "profundidad": "real",
+          "orden": 3,
+          "call_id": "call_2a31fd8d01",
+          "arquetipo": "Estudiante de trading ambicioso, busca mentoría y estructura"
+        },
+        {
+          "objecion": "Vale, pues entonces por WhatsApp él te dice y os coordináis que seguramente, aunque el dinero le ponga yo, el pago lo gestionará la madre, ¿vale? O sea que ya os coordináis.",
+          "profundidad": "real",
+          "orden": 4,
+          "call_id": "call_2a31fd8d01",
+          "arquetipo": "Estudiante autodidacta ambicioso, busca mentoría y estructura para fondearse."
+        },
+        {
+          "objecion": "Necesito cuadrar con mi madre para hablar de esto.",
+          "profundidad": "real",
+          "orden": 1,
+          "call_id": "call_edfaab1de3",
+          "arquetipo": "Estudiante ambicioso, busca libertad financiera familiar"
+        },
+        {
+          "objecion": "Lo que pasa es que tendría que cuadrar con mi hijo y mi esposa, cuadrar para recoger el dinero y hacer el pago, ¿no?",
+          "profundidad": "real",
+          "orden": 2,
+          "call_id": "call_2801433b0b",
+          "arquetipo": "Trader frustrado, busca mentoría y control psicológico"
+        },
+        {
+          "objecion": "tengo que comentarle a mi esposa, que ella también tiene que, o sea, para poder conversarlo, cómo podemos hacerlo, ¿no?",
+          "profundidad": "superficial",
+          "orden": 1,
+          "call_id": "call_e37e075f31",
+          "arquetipo": "Trader autodidacta frustrado, busca libertad familiar"
+        },
+        {
+          "objecion": "Necesito consultar con mi familia para la decisión.",
+          "profundidad": "real",
+          "orden": 5,
+          "call_id": "call_4b2526665f",
+          "arquetipo": "Trader autodidacta frustrado, busca estrategia probada y financiamiento"
+        },
+        {
+          "objecion": "mi madre no estaba muy convencida",
+          "profundidad": "real",
+          "orden": 1,
+          "call_id": "call_79aae5028d",
+          "arquetipo": "Emprendedor joven, busca estructura y comunidad para invertir herencia"
+        },
+        {
+          "objecion": "Mis padres necesitan entender y aprobar el programa.",
+          "profundidad": "real",
+          "orden": 1,
+          "call_id": "call_85d98d6b57",
+          "arquetipo": "Joven aspirante a trader, busca mentoría y estructura."
+        },
+        {
+          "objecion": "Tendría que consultarlo con él, con ella? Sí, exacto.",
+          "profundidad": "real",
+          "orden": 2,
+          "call_id": "call_c70c249937",
+          "arquetipo": "Inmigrante motivado, busca libertad financiera, con presupuesto ajustado."
+        },
+        {
+          "objecion": "La decisión de entrar con Víctor sería de Wendy tuya o...? Eh, más...",
+          "profundidad": "real",
+          "orden": 4,
+          "call_id": "call_b19322b051",
+          "arquetipo": "Emprendedor ambicioso, técnico frustrado por marketing, busca validación de modelo de negocio."
+        },
+        {
+          "objecion": "Tengo que esperar a que mi esposa regrese a casa para hacer el pago.",
+          "profundidad": "real",
+          "orden": 1,
+          "call_id": "call_7635ffbb90",
+          "arquetipo": "Emprendedor migrante, busca libertad financiera"
+        }
+      ]
+    },
+    "urgencia": {
+      "count": 16,
+      "ejemplos": [
+        {
+          "objecion": "¿Y no la podemos coordinar en una llamada a la zona que viene?",
+          "profundidad": "real",
+          "orden": 3,
+          "call_id": "call_436b3cfaab",
+          "arquetipo": "Trader frustrado, busca mentoría y libertad financiera"
+        },
+        {
+          "objecion": "No, no es algo que pueda pensar, ¿no? Pero tengo que decidirlo ahora mismo.",
+          "profundidad": "superficial",
+          "orden": 1,
+          "call_id": "call_e857bd6554",
+          "arquetipo": "Empleado estancado con aspiraciones familiares y financieras, busca un cambio estructurado."
+        },
+        {
+          "objecion": "¿Tiene que ser ahora mismo? ¿Es ahora o nunca?",
+          "profundidad": "real",
+          "orden": 4,
+          "call_id": "call_5f31050930",
+          "arquetipo": "empleada frustrada, busca libertad, procastinadora"
+        },
+        {
+          "objecion": "Necesito un incentivo para tomar la decisión ahora.",
+          "profundidad": "superficial",
+          "orden": 4,
+          "call_id": "call_2792247b8c",
+          "arquetipo": "Trader autodidacta frustrado, busca guía y libertad"
+        },
+        {
+          "objecion": "Yo no tengo afán.",
+          "profundidad": "real",
+          "orden": 3,
+          "call_id": "call_a54b066452",
+          "arquetipo": "Trader autodidacta frustrado, busca libertad y estructura"
+        },
+        {
+          "objecion": "¿Y tengo hasta cuándo para decidir si entro o no entro a la academia? En esta llamada.",
+          "profundidad": "superficial",
+          "orden": 3,
+          "call_id": "call_5cf9a0559d",
+          "arquetipo": "Electricista sobrecargado, busca libertad financiera, analítico y consciente del presupuesto."
+        },
+        {
+          "objecion": "¿Y tendría que ser hoy mismo la inversión o...?",
+          "profundidad": "superficial",
+          "orden": 1,
+          "call_id": "call_079d27fe4a",
+          "arquetipo": "Techador frustrado, busca libertad y flexibilidad de pago"
+        },
+        {
+          "objecion": "El tema del pago, ¿esto hay que hacerlo ya?",
+          "profundidad": "superficial",
+          "orden": 1,
+          "call_id": "call_262f0aaf94",
+          "arquetipo": "Trader estancado, busca mentoría para libertad financiera familiar."
+        },
+        {
+          "objecion": "Por eso, ¿hay alguna manera de dejarlo como ya el preacceso y luego yo la semana que viene entrar a mejor en la página o hacerlo yo el pago directamente o de alguna manera similar?",
+          "profundidad": "real",
+          "orden": 3,
+          "call_id": "call_7a00eca7c2",
+          "arquetipo": "Operador de grúa con tiempo limitado y presupuesto ajustado"
+        },
+        {
+          "objecion": "¿Tengo que tomar una decisión medio inmediata?",
+          "profundidad": "superficial",
+          "orden": 2,
+          "call_id": "call_05534cda04",
+          "arquetipo": "Cirujano jubilado cauteloso, busca nueva habilidad y rentabilidad segura."
+        },
+        {
+          "objecion": "el primer mes que abono los 400.000 pesos, ¿se puede ir sacando algún tipo de ganancia también del trading?",
+          "profundidad": "superficial",
+          "orden": 1,
+          "call_id": "call_a8ccc10b04",
+          "arquetipo": "Trader autodidacta motivado, busca libertad y comunidad"
+        },
+        {
+          "objecion": "¿Por qué ahora y no antes?",
+          "profundidad": "superficial",
+          "orden": 1,
+          "call_id": "call_45174ef447",
+          "arquetipo": "Trader experimentada y empresaria, busca mentoría específica para libertad financiera y causas sociales."
+        },
+        {
+          "objecion": "¿Y en qué momento uno lo ve inmediato?",
+          "profundidad": "superficial",
+          "orden": 1,
+          "call_id": "call_ca59be2d37",
+          "arquetipo": "Policía frustrado, trader reincidente, busca libertad financiera"
+        },
+        {
+          "objecion": "no me lo había pensado (qué pasaría si todo sigue igual)",
+          "profundidad": "superficial",
+          "orden": 3,
+          "call_id": "call_9fd9a8cbbe",
+          "arquetipo": "Dueño de barbería ambicioso, padre motivado, estancado en marketing."
+        },
+        {
+          "objecion": "O sea, en esta llamada específicamente no, porque quiero tener un tiempo para reflexionarlo.",
+          "profundidad": "superficial",
+          "orden": 1,
+          "call_id": "call_d689a83a11",
+          "arquetipo": "Emprendedor de póker frustrado, busca crecimiento estratégico y monetización"
+        },
+        {
+          "objecion": "¿Tú crees que para el 15 del mes siguiente (se puede lograr el objetivo)?",
+          "profundidad": "superficial",
+          "orden": 3,
+          "call_id": "call_6668f95106",
+          "arquetipo": "Experto frustrado, busca monetizar autoridad"
+        }
+      ]
+    },
+    "presupuesto": {
+      "count": 8,
+      "ejemplos": [
+        {
+          "objecion": "Falta de capital propio para operar o invertir en el programa.",
+          "profundidad": "real",
+          "orden": 2,
+          "call_id": "call_524e2bf2c4",
+          "arquetipo": "Trader frustrado, busca mentoría y garantía de éxito."
+        },
+        {
+          "objecion": "Hasta el momento, nada. Me los consigo, pa.",
+          "profundidad": "real",
+          "orden": 4,
+          "call_id": "call_b04d2d078d",
+          "arquetipo": "Padre trabajador agotado, busca libertad financiera y tiempo familiar."
+        },
+        {
+          "objecion": "Yo sé hasta dónde, yo sé hasta dónde puedo, ¿tú entiendes? Y no quiero ahogarme, porque vuelvo y te repito, tengo mis compromisos y mis cosas, entonces la idea es uno hacer esto y tratar de salir y tener mejor, pero no meter el brazo hasta donde llegue la cabeza.",
+          "profundidad": "real",
+          "orden": 2,
+          "call_id": "call_73e2f872f3",
+          "arquetipo": "Trader estancado con limitaciones financieras, busca estrategia y comunidad."
+        },
+        {
+          "objecion": "necesito preservar mi fondo de emergencia de $1,000",
+          "profundidad": "real",
+          "orden": 2,
+          "call_id": "call_823e30c298",
+          "arquetipo": "Trader principiante frustrado, busca libertad y validación"
+        },
+        {
+          "objecion": "No puedo pagar la diferencia del curso superior de inmediato.",
+          "profundidad": "real",
+          "orden": 2,
+          "call_id": "call_71da48b9d5",
+          "arquetipo": "Profesional sobrecargada, busca libertad financiera y flexibilidad."
+        },
+        {
+          "objecion": "De mil dólares? Sí, pero a cada cuatro. (Necesidad de plan de pagos por flujo de caja para nómina)",
+          "profundidad": "real",
+          "orden": 3,
+          "call_id": "call_3594892535",
+          "arquetipo": "Trader estancado, desconfiado pero esperanzado, con limitaciones de flujo de caja."
+        },
+        {
+          "objecion": "Ahorita tengo gastos y si quiero invertirlo, pero no me gustaría de pronto llegar a estar apretado y no poder pagar.",
+          "profundidad": "real",
+          "orden": 2,
+          "call_id": "call_ae7417e7c9",
+          "arquetipo": "Trader cauteloso con presupuesto ajustado, busca seguridad y flexibilidad."
+        },
+        {
+          "objecion": "Tengo altos costos fijos y estoy pagando dos hipotecas, lo que genera presión financiera.",
+          "profundidad": "real",
+          "orden": 4,
+          "call_id": "call_a89c49aef0",
+          "arquetipo": "Madre soltera emprendedora, busca estabilidad financiera y crecimiento."
+        }
+      ]
+    },
+    "otro": {
+      "count": 11,
+      "ejemplos": [
+        {
+          "objecion": "Miedo a perder capital propio.",
+          "profundidad": "real",
+          "orden": 1,
+          "call_id": "call_7f2a1f60db",
+          "arquetipo": "Economista cautelosa, busca libertad con estructura."
+        },
+        {
+          "objecion": "Me ha faltado compromiso.",
+          "profundidad": "real",
+          "orden": 3,
+          "call_id": "call_7f2a1f60db",
+          "arquetipo": "Economista cautelosa, busca libertad con estructura."
+        },
+        {
+          "objecion": "Ok, entonces la pregunta, ¿cómo lo puedo hacer para yo entrar al canal, al instituto?",
+          "profundidad": "superficial",
+          "orden": 3,
+          "call_id": "call_52bfcfaab4",
+          "arquetipo": "Trader autodidacta frustrado por miedo"
+        },
+        {
+          "objecion": "¿No declarar nada en Hacienda?",
+          "profundidad": "superficial",
+          "orden": 3,
+          "call_id": "call_dc0983106b",
+          "arquetipo": "Trader frustrada por estafa, busca guía y seguridad."
+        },
+        {
+          "objecion": "Pero lo que tú me dices, si voy avanzando y me puedo pasar a la de 3.000, ¿lo podría hacer?",
+          "profundidad": "superficial",
+          "orden": 4,
+          "call_id": "call_92dabed522",
+          "arquetipo": "Principiante motivado, presupuesto ajustado, busca libertad."
+        },
+        {
+          "objecion": "Mi ausencia previa se debió a una crisis personal por robo de identidad.",
+          "profundidad": "real",
+          "orden": 1,
+          "call_id": "call_4fc8dde1eb",
+          "arquetipo": "Exalumno frustrado por falta de rentabilidad, busca garantía y exclusividad."
+        },
+        {
+          "objecion": "Disculpa que te interrumpa, ¿cuál es la edad mínima que ustedes tienen para aceptar a un estudiante? ¿La edad mínima?",
+          "profundidad": "superficial",
+          "orden": 5,
+          "call_id": "call_af74299cdc",
+          "arquetipo": "Inversionista pasivo ambicioso, con conflicto de horario"
+        },
+        {
+          "objecion": "¿Tiene que ser el nombre legalmente exacto como está, con los apellidos todos legales y todo?",
+          "profundidad": "real",
+          "orden": 3,
+          "call_id": "call_18831ea669",
+          "arquetipo": "Trader principiante cauteloso, busca flexibilidad y apoyo"
+        },
+        {
+          "objecion": "¿Eso tiene algo que ver con el crédito?",
+          "profundidad": "superficial",
+          "orden": 3,
+          "call_id": "call_bd19b4f827",
+          "arquetipo": "Trader principiante motivada, busca libertad financiera y soporte en el proceso."
+        },
+        {
+          "objecion": "Sí. (En respuesta a: ¿Habría algo que te pudiera impedir tomar acción ahora mismo, en esta llamada?)",
+          "profundidad": "superficial",
+          "orden": 4,
+          "call_id": "call_c025cf4ee6",
+          "arquetipo": "Madre trabajadora frustrada, busca libertad y tiempo"
+        },
+        {
+          "objecion": "Y eso para entrar, ¿cómo se haría?",
+          "profundidad": "superficial",
+          "orden": 1,
+          "call_id": "call_f14aa76091",
+          "arquetipo": "Joven inmigrante motivada, con recursos limitados, busca estabilidad y apoyo familiar."
+        }
+      ]
+    },
+    "valor": {
+      "count": 4,
+      "ejemplos": [
+        {
+          "objecion": "si yo invierto 1.800 dólares y yo voy a empezar a generar dinero a partir de los tres meses, mi primero 3.000 dólares van a ser en tres meses, entonces yo estaré ganando solamente 1.200 dólares, no 3.000.",
+          "profundidad": "real",
+          "orden": 2,
+          "call_id": "call_f6d1089799",
+          "arquetipo": "Barbero frustrado, busca libertad y apoyo familiar"
+        },
+        {
+          "objecion": "¿Solamente el fondeo?",
+          "profundidad": "superficial",
+          "orden": 3,
+          "call_id": "call_03ffa864fc",
+          "arquetipo": "trabajador frustrado, trader principiante, busca libertad financiera"
+        },
+        {
+          "objecion": "Estoy un poco lejos, un poco lejos de por qué tengo que vender varios zapatos para llegar a mil quinientos.",
+          "profundidad": "real",
+          "orden": 2,
+          "call_id": "call_55a399c612",
+          "arquetipo": "policía emprendedor estancado, busca libertad financiera"
+        },
+        {
+          "objecion": "Y el perfil de, perfil, la opción esta de 5.000 o así, esto que es más una formación o qué?",
+          "profundidad": "superficial",
+          "orden": 2,
+          "call_id": "call_9f2c98d70e",
+          "arquetipo": "Abogado ambicioso, busca escala rápida y probada"
+        }
+      ]
+    },
+    "riesgo": {
+      "count": 2,
+      "ejemplos": [
+        {
+          "objecion": "Quiero hacerlo, puedo pagarlo, pero no quiero comprometer mi liquidez porque me podría jugar en contra en mi negocio.",
+          "profundidad": "real",
+          "orden": 5,
+          "call_id": "call_0d6e6fe695",
+          "arquetipo": "Mecánico autodidacta, trader frustrado, busca estructura y mentoría, cauteloso con el dinero."
+        },
+        {
+          "objecion": "Necesidad de una opción de bajo riesgo/costo para iniciar.",
+          "profundidad": "real",
+          "orden": 2,
+          "call_id": "call_ac9bc9aebf",
+          "arquetipo": "Madre principiante cautelosa, busca flexibilidad y bajo riesgo"
+        }
+      ]
+    }
+  }
+}

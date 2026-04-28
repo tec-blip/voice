@@ -4,10 +4,36 @@
 export type RoleplayType = 'cierre' | 'llamada_fria' | 'framing' | 'objeciones' | 'general'
 export type Nicho = 'trading' | 'marca_personal_instagram' | 'aleatorio'
 
+// Voces disponibles en Gemini Live API
+export type GeminiVoice = 'Puck' | 'Charon' | 'Kore' | 'Fenrir' | 'Aoede'
+
 export const NICHO_LABELS: Record<Nicho, string> = {
   trading: 'Trading',
   marca_personal_instagram: 'Marca Personal',
   aleatorio: 'Aleatorio',
+}
+
+// Mapeo de género a voz. Usamos voces masculinas para clientes hombres, femeninas para mujeres.
+// Voces masculinas: Puck, Charon, Fenrir
+// Voces femeninas: Kore, Aoede
+export function getVoiceByGender(genero?: string): GeminiVoice {
+  if (!genero) return 'Kore' // Default a voz femenina
+  const lowerGenero = genero.toLowerCase().trim()
+
+  // Si es hombre, elige aleatoriamente entre voces masculinas
+  if (lowerGenero === 'm' || lowerGenero === 'hombre' || lowerGenero === 'male') {
+    const maleVoices: GeminiVoice[] = ['Puck', 'Charon', 'Fenrir']
+    return maleVoices[Math.floor(Math.random() * maleVoices.length)]
+  }
+
+  // Si es mujer, elige aleatoriamente entre voces femeninas
+  if (lowerGenero === 'f' || lowerGenero === 'mujer' || lowerGenero === 'female') {
+    const femaleVoices: GeminiVoice[] = ['Kore', 'Aoede']
+    return femaleVoices[Math.floor(Math.random() * femaleVoices.length)]
+  }
+
+  // Default
+  return 'Kore'
 }
 
 export interface ScenarioBrief {

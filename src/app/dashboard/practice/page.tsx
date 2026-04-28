@@ -7,6 +7,7 @@ import {
   ROLEPLAY_CONFIGS,
   NICHO_LABELS,
   buildScenarioPrompt,
+  getVoiceByGender,
   type RoleplayType,
   type Nicho,
   type ScenarioBrief,
@@ -180,6 +181,10 @@ export default function PracticePage() {
       ? buildScenarioPrompt(selectedType, scenario)
       : undefined
 
+  const voiceName = scenario
+    ? getVoiceByGender(scenario.estado_inicial.genero)
+    : undefined
+
   const handleCallEnd = useCallback(async (
     transcript: { role: 'user' | 'model'; text: string }[],
     durationSeconds: number,
@@ -316,6 +321,7 @@ export default function PracticePage() {
       <PhoneUI
         roleplayType={selectedType}
         systemPromptOverride={systemPromptOverride}
+        voiceName={voiceName}
         onCallEnd={handleCallEnd}
       />
 

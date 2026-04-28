@@ -1,0 +1,452 @@
+[
+  {
+    "scenario_id": "sc_call_342fe48e6b",
+    "arquetipo_label": "Trader inconsistente, busca estructura y libertad",
+    "nicho": "trading",
+    "dificultad_1_5": 4,
+    "resistencia_1_5": 3,
+    "estado_inicial": {
+      "tono": "cauteloso",
+      "nivel_experiencia": "principiante",
+      "motivacion": "Lograr rentabilidad constante en trading para obtener independencia financiera y apoyar a su familia en Venezuela.",
+      "presupuesto": "$1,000"
+    },
+    "value_for_training": "Esta llamada es valiosa para entrenar a un closer en el manejo de objeciones de presupuesto significativas y la construcción de valor para justificar una inversión mayor a la esperada por el cliente, utilizando planes de pago y garantías.",
+    "source_call_id": "call_342fe48e6b"
+  },
+  {
+    "scenario_id": "sc_call_458a33e7d3",
+    "arquetipo_label": "Ingeniero frustrado, padre reciente, busca libertad financiera familiar",
+    "nicho": "trading",
+    "dificultad_1_5": 4,
+    "resistencia_1_5": 4,
+    "estado_inicial": {
+      "tono": "cauteloso",
+      "nivel_experiencia": "principiante",
+      "motivacion": "Lograr libertad financiera para mejorar la calidad de vida de su familia, especialmente para apoyar a su madre en Madrid y ver a su hijo.",
+      "presupuesto": "unos $200 mensuales variables"
+    },
+    "value_for_training": "Manejo de una objeción de presupuesto real y compleja que requirió una solución de pago creativa y flexible, además de la conexión emocional con el cliente.",
+    "source_call_id": "call_458a33e7d3"
+  },
+  {
+    "scenario_id": "sc_call_e57b23c945",
+    "arquetipo_label": "Trader autodidacta frustrado, busca libertad financiera",
+    "nicho": "trading",
+    "dificultad_1_5": 4,
+    "resistencia_1_5": 3,
+    "estado_inicial": {
+      "tono": "cauteloso, frustrado",
+      "nivel_experiencia": "principiante",
+      "motivacion": "Convertirse en trader a tiempo completo para dejar su trabajo de montacarguista y mudarse de vuelta a Miami.",
+      "presupuesto": "$2,000/mes de ingreso"
+    },
+    "value_for_training": "Manejo de objeciones de presupuesto y disciplina, y resolución de problemas logísticos de pago con un cliente altamente motivado.",
+    "source_call_id": "call_e57b23c945"
+  },
+  {
+    "scenario_id": "sc_call_9756b0163d",
+    "arquetipo_label": "trader autodidacta estancado, busca libertad financiera",
+    "nicho": "trading",
+    "dificultad_1_5": 4,
+    "resistencia_1_5": 4,
+    "estado_inicial": {
+      "tono": "cauteloso, esceptico",
+      "nivel_experiencia": "intermedio",
+      "motivacion": "Convertirse en trader a tiempo completo para lograr libertad financiera y, en el futuro, mudarse a Dubái.",
+      "presupuesto": null
+    },
+    "value_for_training": "Esta llamada es valiosa para entrenar a un closer en el manejo de objeciones de valor y financiación, y en cómo presentar soluciones de pago flexibles a clientes con presupuesto ajustado pero alta motivación.",
+    "source_call_id": "call_9756b0163d"
+  },
+  {
+    "scenario_id": "sc_call_bb2e1a60e1",
+    "arquetipo_label": "Joven trabajador frustrado, busca libertad financiera para su familia",
+    "nicho": "trading",
+    "dificultad_1_5": 4,
+    "resistencia_1_5": 3,
+    "estado_inicial": {
+      "tono": "frustrado, cauteloso",
+      "nivel_experiencia": "novato",
+      "motivacion": "Lograr libertad financiera para apoyar a su familia en Guatemala y mejorar su calidad de vida.",
+      "presupuesto": null
+    },
+    "value_for_training": "Manejo de objeciones de tiempo y expectativas, resolución creativa de bloqueos de pago y construcción de confianza con un cliente novato.",
+    "source_call_id": "call_bb2e1a60e1"
+  },
+  {
+    "scenario_id": "sc_call_756537c028",
+    "arquetipo_label": "Instalador frustrado, busca libertad y seguridad",
+    "nicho": "trading",
+    "dificultad_1_5": 4,
+    "resistencia_1_5": 4,
+    "estado_inicial": {
+      "tono": "cauteloso, esceptico",
+      "nivel_experiencia": "principiante",
+      "motivacion": "Lograr libertad financiera para apoyar a su familia y viajar por el mundo.",
+      "presupuesto": null
+    },
+    "value_for_training": "Manejo de objeciones de confianza profunda y escepticismo por experiencias pasadas, y cómo una garantía sólida puede ser el factor decisivo.",
+    "source_call_id": "call_756537c028"
+  },
+  {
+    "scenario_id": "sc_call_ca0bab8db7",
+    "arquetipo_label": "Inmigrante resiliente, trader novato, busca escape laboral",
+    "nicho": "trading",
+    "dificultad_1_5": 4,
+    "resistencia_1_5": 3,
+    "estado_inicial": {
+      "tono": "frustrado y motivado",
+      "nivel_experiencia": "novato",
+      "motivacion": "Escapar de un trabajo hostil y mal pagado para lograr independencia financiera a través del trading.",
+      "presupuesto": "$3,000 (aspiracional)"
+    },
+    "value_for_training": "Esta llamada es valiosa para entrenar a un closer en cómo manejar objeciones de presupuesto reales y denegaciones de financiación, pivotar a una oferta alternativa y estructurar planes de pago flexibles.",
+    "source_call_id": "call_ca0bab8db7"
+  },
+  {
+    "scenario_id": "sc_call_f74c5c53b6",
+    "arquetipo_label": "trabajador esforzado quemado, busca libertad y seguridad",
+    "nicho": "trading",
+    "dificultad_1_5": 4,
+    "resistencia_1_5": 4,
+    "estado_inicial": {
+      "tono": "cauteloso pero motivado",
+      "nivel_experiencia": "principiante",
+      "motivacion": "Lograr libertad de tiempo para pasar más tiempo con la familia y complementar ingresos.",
+      "presupuesto": "$2250 aprox"
+    },
+    "value_for_training": "Manejo de objeciones de confianza profunda por trauma pasado y objeciones de presupuesto que requieren flexibilidad en el pago.",
+    "source_call_id": "call_f74c5c53b6"
+  },
+  {
+    "scenario_id": "sc_call_a374ff0933",
+    "arquetipo_label": "Relojero frustrado, busca libertad y jubilar a su madre",
+    "nicho": "trading",
+    "dificultad_1_5": 4,
+    "resistencia_1_5": 2,
+    "estado_inicial": {
+      "tono": "frustrado y cauteloso",
+      "nivel_experiencia": "principiante",
+      "motivacion": "Lograr libertad financiera a través del trading para escapar de un trabajo físicamente exigente y jubilar a su madre.",
+      "presupuesto": "muy ajustado, $500/mes"
+    },
+    "value_for_training": "Manejo de objeciones de confianza por experiencias pasadas, objeciones de presupuesto real y la necesidad de conectar con una motivación profunda y emocional.",
+    "source_call_id": "call_a374ff0933"
+  },
+  {
+    "scenario_id": "sc_call_b25566d4a0",
+    "arquetipo_label": "Madre migrante, esceptica, busca libertad financiera",
+    "nicho": "trading",
+    "dificultad_1_5": 4,
+    "resistencia_1_5": 4,
+    "estado_inicial": {
+      "tono": "cauteloso, esceptico",
+      "nivel_experiencia": "novato",
+      "motivacion": "Lograr libertad financiera a través del trading para mejorar la vida familiar y ofrecer mejores oportunidades a su hijo.",
+      "presupuesto": null
+    },
+    "value_for_training": "Manejo de objeciones de confianza por experiencias pasadas, objeciones de precio/pago, y la necesidad de involucrar a un tercero en la decisión.",
+    "source_call_id": "call_b25566d4a0"
+  },
+  {
+    "scenario_id": "sc_call_2c2a7a42e7",
+    "arquetipo_label": "Inmigrante agotada, busca libertad financiera y reunión familiar.",
+    "nicho": "trading",
+    "dificultad_1_5": 4,
+    "resistencia_1_5": 4,
+    "estado_inicial": {
+      "tono": "frustrado y cauteloso",
+      "nivel_experiencia": "principiante",
+      "motivacion": "Escapar de una extenuante jornada laboral de 10–16 horas/día y reunirse con su familia.",
+      "presupuesto": null
+    },
+    "value_for_training": "Esta llamada es valiosa para entrenar a un closer en el manejo de objeciones de tiempo, presupuesto y confianza, así como en la importancia de conectar con el dolor profundo del cliente (agotamiento, separación familiar).",
+    "source_call_id": "call_2c2a7a42e7"
+  },
+  {
+    "scenario_id": "sc_call_dedaafc015",
+    "arquetipo_label": "dueña de negocio frustrada, trader autodidacta miedosa",
+    "nicho": "trading",
+    "dificultad_1_5": 4,
+    "resistencia_1_5": 3,
+    "estado_inicial": {
+      "tono": "cautelosa, frustrada",
+      "nivel_experiencia": "intermedio",
+      "motivacion": "Reemplazar los ingresos de su negocio fallido de transporte con el trading para poder dejarlo y generar $50k/mes.",
+      "presupuesto": "$600"
+    },
+    "value_for_training": "Esta llamada es valiosa para entrenar a un closer en cómo manejar objeciones de presupuesto reales con soluciones creativas de pago, y cómo abordar la frustración y el miedo de clientes con experiencia previa fallida.",
+    "source_call_id": "call_dedaafc015"
+  },
+  {
+    "scenario_id": "sc_call_0e42bca73d",
+    "arquetipo_label": "Barbero soñador, busca libertad financiera familiar",
+    "nicho": "trading",
+    "dificultad_1_5": 4,
+    "resistencia_1_5": 4,
+    "estado_inicial": {
+      "tono": "cauteloso",
+      "nivel_experiencia": "novato",
+      "motivacion": "Reemplazar su empleo con ingresos del trading para ganar tiempo y libertad financiera y mejorar el estilo de vida de su familia.",
+      "presupuesto": null
+    },
+    "value_for_training": "Manejo de múltiples objeciones de entendimiento y logística, objeción de confianza/comparación, y negociación de plan de pago para un cliente motivado pero cauteloso.",
+    "source_call_id": "call_0e42bca73d"
+  },
+  {
+    "scenario_id": "sc_call_9a7f3afc35",
+    "arquetipo_label": "Trader frustrada, busca independencia y método real",
+    "nicho": "trading",
+    "dificultad_1_5": 4,
+    "resistencia_1_5": 3,
+    "estado_inicial": {
+      "tono": "frustrada",
+      "nivel_experiencia": "principiante",
+      "motivacion": "Obtener un ingreso estable para recuperar independencia financiera y libertad de tiempo.",
+      "presupuesto": "$3000+"
+    },
+    "value_for_training": "Esta llamada es valiosa para entrenar a un closer en cómo manejar objeciones de presupuesto y la necesidad de consultar a un tercero (gatekeeper financiero) en un cliente con alta frustración y motivación.",
+    "source_call_id": "call_9a7f3afc35"
+  },
+  {
+    "scenario_id": "sc_call_cc9d2ab84a",
+    "arquetipo_label": "Cocinero ambicioso, busca libertad financiera, con presupuesto ajustado",
+    "nicho": "trading",
+    "dificultad_1_5": 4,
+    "resistencia_1_5": 3,
+    "estado_inicial": {
+      "tono": "cauteloso",
+      "nivel_experiencia": "principiante",
+      "motivacion": "Generar ingresos a través del trading para comprar una casa en México y reducir el trabajo físico exigente.",
+      "presupuesto": "mucho menor a $4,500"
+    },
+    "value_for_training": "Esta llamada es valiosa para entrenar a un closer en el manejo de objeciones de presupuesto, la necesidad de consultar con terceros y la resolución de problemas técnicos de pago.",
+    "source_call_id": "call_cc9d2ab84a"
+  },
+  {
+    "scenario_id": "sc_call_b4ceb2a1aa",
+    "arquetipo_label": "trabajadora con ingresos ajustados, desconfiada por estafa previa, busca libertad financiera",
+    "nicho": "trading",
+    "dificultad_1_5": 4,
+    "resistencia_1_5": 4,
+    "estado_inicial": {
+      "tono": "cautelosa, esceptica",
+      "nivel_experiencia": "novato",
+      "motivacion": "Aprender trading para generar ingresos extra y construir capital a largo plazo.",
+      "presupuesto": "$800"
+    },
+    "value_for_training": "Esta llamada es valiosa para entrenar a un closer en el manejo de objeciones de presupuesto y desconfianza profunda por experiencias pasadas, requiriendo una oferta flexible y un incentivo por acción.",
+    "source_call_id": "call_b4ceb2a1aa"
+  },
+  {
+    "scenario_id": "sc_call_4059c20224",
+    "arquetipo_label": "Padre frustrado, busca libertad y tiempo para su hija",
+    "nicho": "trading",
+    "dificultad_1_5": 4,
+    "resistencia_1_5": 3,
+    "estado_inicial": {
+      "tono": "frustrado y cauteloso",
+      "nivel_experiencia": "novato",
+      "motivacion": "Ganar libertad financiera y de tiempo para mudarse cerca de su hija y viajar.",
+      "presupuesto": null
+    },
+    "value_for_training": "Esta llamada es valiosa para entrenar a un closer en cómo manejar objeciones de pago y dudas técnicas, mientras se apalanca un dolor emocional profundo y una motivación clara.",
+    "source_call_id": "call_4059c20224"
+  },
+  {
+    "scenario_id": "sc_call_5c2d786057",
+    "arquetipo_label": "Albañil estancado, busca libertad financiera",
+    "nicho": "trading",
+    "dificultad_1_5": 4,
+    "resistencia_1_5": 3,
+    "estado_inicial": {
+      "tono": "frustrado",
+      "nivel_experiencia": "principiante",
+      "motivacion": "Alcanzar metas financieras como comprar una casa y dejar de sentirse estancado por sus bajos ingresos.",
+      "presupuesto": "ajustado, $400-500/mes de ingreso"
+    },
+    "value_for_training": "Manejo de objeciones de presupuesto y confianza en un cliente con ingresos limitados y experiencia previa de estafa.",
+    "source_call_id": "call_5c2d786057"
+  },
+  {
+    "scenario_id": "sc_call_e460f3c8f3",
+    "arquetipo_label": "Trader frustrado por pérdidas, busca seguridad y libertad financiera.",
+    "nicho": "trading",
+    "dificultad_1_5": 4,
+    "resistencia_1_5": 4,
+    "estado_inicial": {
+      "tono": "cauteloso",
+      "nivel_experiencia": "principiante",
+      "motivacion": "Recuperar pérdidas y lograr libertad financiera para estudios y bienes.",
+      "presupuesto": "$1,000 (propuesta)"
+    },
+    "value_for_training": "Manejo de objeciones de precio y confianza post-trauma financiero, negociación de planes de pago y uso de garantías.",
+    "source_call_id": "call_e460f3c8f3"
+  },
+  {
+    "scenario_id": "sc_call_8d5120faa7",
+    "arquetipo_label": "Caficultor frustrado, busca libertad y estabilidad",
+    "nicho": "trading",
+    "dificultad_1_5": 4,
+    "resistencia_1_5": 3,
+    "estado_inicial": {
+      "tono": "cauteloso",
+      "nivel_experiencia": "intermedio",
+      "motivacion": "Busca un ingreso estable de trading ($2k+/mes) para salir de su trabajo estacional y físicamente exigente y ganar más tiempo con su familia.",
+      "presupuesto": null
+    },
+    "value_for_training": "Esta llamada es valiosa para entrenar a un closer en el manejo de objeciones de presupuesto encadenadas, la importancia de la validación familiar y la venta de valor sobre el dolor psicológico.",
+    "source_call_id": "call_8d5120faa7"
+  },
+  {
+    "scenario_id": "sc_call_041d4739f5",
+    "arquetipo_label": "Trader autodidacta frustrado, busca estructura y libertad",
+    "nicho": "trading",
+    "dificultad_1_5": 4,
+    "resistencia_1_5": 3,
+    "estado_inicial": {
+      "tono": "cauteloso",
+      "nivel_experiencia": "principiante",
+      "motivacion": "Lograr rentabilidad consistente en trading para alcanzar libertad financiera y viajar por Europa.",
+      "presupuesto": null
+    },
+    "value_for_training": "Esta llamada es valiosa para entrenar a un closer en el manejo de objeciones de presupuesto que requieren planes de pago creativos, y en la construcción de confianza en un programa estructurado para un cliente con experiencia previa pero sin resultados.",
+    "source_call_id": "call_041d4739f5"
+  },
+  {
+    "scenario_id": "sc_call_d2bcbd5cbd",
+    "arquetipo_label": "Emprendedor frustrado, novato cauteloso, busca libertad",
+    "nicho": "trading",
+    "dificultad_1_5": 4,
+    "resistencia_1_5": 4,
+    "estado_inicial": {
+      "tono": "cauteloso, frustrado",
+      "nivel_experiencia": "novato",
+      "motivacion": "Lograr libertad financiera y trabajar por elección, no por necesidad, escapando de la 'esclavitud' de su negocio.",
+      "presupuesto": null
+    },
+    "value_for_training": "Esta llamada es valiosa para entrenar a un closer en el manejo de objeciones de confianza y miedo al éxito, además de la gestión de problemas de pago y la venta de valor sobre el riesgo.",
+    "source_call_id": "call_d2bcbd5cbd"
+  },
+  {
+    "scenario_id": "sc_call_55820b4e60",
+    "arquetipo_label": "Obrero sacrificado, busca libertad y propósito",
+    "nicho": "trading",
+    "dificultad_1_5": 4,
+    "resistencia_1_5": 4,
+    "estado_inicial": {
+      "tono": "cauteloso, sincero",
+      "nivel_experiencia": "novato",
+      "motivacion": "Alcanzar la libertad financiera para escapar del exigente horario de trabajo y dedicar tiempo a su familia y metas personales.",
+      "presupuesto": null
+    },
+    "value_for_training": "Esta llamada es valiosa para entrenar a un closer en el manejo de objeciones de presupuesto severas, la adaptación de la oferta y la conexión con motivaciones profundas del cliente.",
+    "source_call_id": "call_55820b4e60"
+  },
+  {
+    "scenario_id": "sc_call_f45c41a46b",
+    "arquetipo_label": "Trader autodidacta estancado, padre motivado por la familia",
+    "nicho": "trading",
+    "dificultad_1_5": 4,
+    "resistencia_1_5": 4,
+    "estado_inicial": {
+      "tono": "cauteloso",
+      "nivel_experiencia": "intermedio",
+      "motivacion": "Libertad financiera y de tiempo para su familia, motivado por su hijo de 7 meses.",
+      "presupuesto": "Aproximadamente la mitad de $1800"
+    },
+    "value_for_training": "Esta llamada es valiosa para entrenar a un closer en el manejo de objeciones de presupuesto y la creación de planes de pago personalizados, manteniendo el enfoque en la motivación profunda del cliente.",
+    "source_call_id": "call_f45c41a46b"
+  },
+  {
+    "scenario_id": "sc_call_d96c84ccae",
+    "arquetipo_label": "Trader autodidacta frustrado, busca mentoría y libertad familiar",
+    "nicho": "trading",
+    "dificultad_1_5": 4,
+    "resistencia_1_5": 3,
+    "estado_inicial": {
+      "tono": "frustrado y cauteloso",
+      "nivel_experiencia": "intermedio",
+      "motivacion": "Lograr libertad financiera y de tiempo para pasar más tiempo de calidad con sus hijos.",
+      "presupuesto": "menos de $1800"
+    },
+    "value_for_training": "Esta llamada es valiosa para entrenar a un closer en el manejo de objeciones de presupuesto reales, la presentación de opciones escalonadas y planes de pago flexibles, y la construcción de una ruta de crecimiento a largo plazo para el cliente.",
+    "source_call_id": "call_d96c84ccae"
+  },
+  {
+    "scenario_id": "sc_call_791cc20af9",
+    "arquetipo_label": "Policía endeudado, busca libertad financiera familiar",
+    "nicho": "trading",
+    "dificultad_1_5": 4,
+    "resistencia_1_5": 3,
+    "estado_inicial": {
+      "tono": "frustrado",
+      "nivel_experiencia": "principiante",
+      "motivacion": "Alcanzar la libertad financiera para estar libre de deudas y tener ingresos extra para experiencias familiares, ofreciendo un mejor futuro a sus dos hijos.",
+      "presupuesto": null
+    },
+    "value_for_training": "Esta llamada es valiosa para entrenar a un closer en el manejo de objeciones de proceso, duración de acceso, preocupaciones de la pareja y planes de pago, con un cliente altamente motivado por el dolor.",
+    "source_call_id": "call_791cc20af9"
+  },
+  {
+    "scenario_id": "sc_call_a0a7092068",
+    "arquetipo_label": "Madre autodidacta cautelosa, busca libertad financiera sin riesgo.",
+    "nicho": "trading",
+    "dificultad_1_5": 4,
+    "resistencia_1_5": 3,
+    "estado_inicial": {
+      "tono": "cauteloso, buscando conocimiento",
+      "nivel_experiencia": "principiante",
+      "motivacion": "Alcanzar independencia financiera y evitar volver a su trabajo de microbiología, permitiéndole quedarse en casa con su hijo.",
+      "presupuesto": "ajustado, cauteloso"
+    },
+    "value_for_training": "Esta llamada es valiosa para entrenar a un closer en el manejo de objeciones de confianza, miedo al riesgo de capital, y la gestión de decisiones que involucran a terceros (pareja), ofreciendo soluciones creativas de pago.",
+    "source_call_id": "call_a0a7092068"
+  },
+  {
+    "scenario_id": "sc_call_8fbcdadc14",
+    "arquetipo_label": "Ingeniero frustrado, trader autodidacta inconsistente, busca libertad financiera para su familia.",
+    "nicho": "trading",
+    "dificultad_1_5": 4,
+    "resistencia_1_5": 3,
+    "estado_inicial": {
+      "tono": "cauteloso",
+      "nivel_experiencia": "principiante",
+      "motivacion": "Reemplazar su trabajo exigente con el trading para lograr independencia financiera y jubilar a su madre.",
+      "presupuesto": null
+    },
+    "value_for_training": "Esta llamada es valiosa para entrenar a un closer en el manejo de objeciones de presupuesto y método de pago, la resolución de problemas técnicos en vivo, y la conexión con la motivación profunda del cliente para superar obstáculos.",
+    "source_call_id": "call_8fbcdadc14"
+  },
+  {
+    "scenario_id": "sc_call_22589d834f",
+    "arquetipo_label": "Soldador frustrado, padre de familia, busca mentoría real",
+    "nicho": "trading",
+    "dificultad_1_5": 4,
+    "resistencia_1_5": 4,
+    "estado_inicial": {
+      "tono": "frustrado y cauteloso",
+      "nivel_experiencia": "intermedio",
+      "motivacion": "Lograr independencia financiera a través del trading para mantener y dar una mejor vida a su familia, especialmente por la situación médica de su pareja.",
+      "presupuesto": "ajustado, alrededor de $1,200/mes de ingreso"
+    },
+    "value_for_training": "Esta llamada es valiosa para entrenar a un closer en el manejo de objeciones de precio y método de pago, la construcción de confianza tras malas experiencias, y el apalancamiento de una fuerte motivación familiar.",
+    "source_call_id": "call_22589d834f"
+  },
+  {
+    "scenario_id": "sc_call_79629f01f5",
+    "arquetipo_label": "Tester frustrado, busca libertad financiera tras estafa",
+    "nicho": "trading",
+    "dificultad_1_5": 4,
+    "resistencia_1_5": 3,
+    "estado_inicial": {
+      "tono": "cauteloso y frustrado",
+      "nivel_experiencia": "principiante",
+      "motivacion": "Alcanzar libertad financiera y asegurar la tranquilidad de su familia.",
+      "presupuesto": "ajustado, menos de $780"
+    },
+    "value_for_training": "Manejo de objeciones de confianza por estafa previa, gestión de presupuesto limitado y necesidad de fraccionar el pago.",
+    "source_call_id": "call_79629f01f5"
+  }
+]

@@ -12,6 +12,7 @@ type CallState = 'idle' | 'connecting' | 'active' | 'ended'
 interface PhoneUIProps {
   roleplayType: RoleplayType | null
   systemPromptOverride?: string
+  voiceName?: string
   onCallEnd?: (
     transcript: { role: 'user' | 'model'; text: string }[],
     durationSeconds: number,
@@ -25,7 +26,7 @@ function formatDuration(seconds: number): string {
   return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`
 }
 
-export function PhoneUI({ roleplayType, systemPromptOverride, onCallEnd }: PhoneUIProps) {
+export function PhoneUI({ roleplayType, systemPromptOverride, voiceName, onCallEnd }: PhoneUIProps) {
   const [callState, setCallState] = useState<CallState>('idle')
   const [isMuted, setIsMuted] = useState(false)
   const [duration, setDuration] = useState(0)
@@ -43,7 +44,7 @@ export function PhoneUI({ roleplayType, systemPromptOverride, onCallEnd }: Phone
 
   const gemini = useGeminiLive({
     systemPrompt,
-    voiceName: 'Kore',
+    voiceName: voiceName ?? 'Kore',
     onTranscript: useCallback((entry: { role: 'user' | 'model'; text: string }) => {
       setLastText(entry.text)
     }, []),
