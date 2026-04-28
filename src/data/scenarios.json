@@ -1,138 +1,87 @@
 [
   {
-    "scenario_id": "sc_call_342fe48e6b",
-    "arquetipo_label": "Trader inconsistente, busca estructura y libertad",
-    "nicho": "trading",
-    "dificultad_1_5": 4,
-    "resistencia_1_5": 3,
-    "estado_inicial": {
-      "tono": "cauteloso",
-      "nivel_experiencia": "principiante",
-      "motivacion": "Lograr rentabilidad constante en trading para obtener independencia financiera y apoyar a su familia en Venezuela.",
-      "presupuesto": "$1,000"
-    },
-    "value_for_training": "Esta llamada es valiosa para entrenar a un closer en el manejo de objeciones de presupuesto significativas y la construcción de valor para justificar una inversión mayor a la esperada por el cliente, utilizando planes de pago y garantías.",
-    "source_call_id": "call_342fe48e6b"
-  },
-  {
-    "scenario_id": "sc_call_458a33e7d3",
-    "arquetipo_label": "Ingeniero frustrado, padre reciente, busca libertad financiera familiar",
-    "nicho": "trading",
-    "dificultad_1_5": 4,
-    "resistencia_1_5": 4,
-    "estado_inicial": {
-      "tono": "cauteloso",
-      "nivel_experiencia": "principiante",
-      "motivacion": "Lograr libertad financiera para mejorar la calidad de vida de su familia, especialmente para apoyar a su madre en Madrid y ver a su hijo.",
-      "presupuesto": "unos $200 mensuales variables"
-    },
-    "value_for_training": "Manejo de una objeción de presupuesto real y compleja que requirió una solución de pago creativa y flexible, además de la conexión emocional con el cliente.",
-    "source_call_id": "call_458a33e7d3"
-  },
-  {
-    "scenario_id": "sc_call_e57b23c945",
-    "arquetipo_label": "Trader autodidacta frustrado, busca libertad financiera",
-    "nicho": "trading",
-    "dificultad_1_5": 4,
-    "resistencia_1_5": 3,
-    "estado_inicial": {
-      "tono": "cauteloso, frustrado",
-      "nivel_experiencia": "principiante",
-      "motivacion": "Convertirse en trader a tiempo completo para dejar su trabajo de montacarguista y mudarse de vuelta a Miami.",
-      "presupuesto": "$2,000/mes de ingreso"
-    },
-    "value_for_training": "Manejo de objeciones de presupuesto y disciplina, y resolución de problemas logísticos de pago con un cliente altamente motivado.",
-    "source_call_id": "call_e57b23c945"
-  },
-  {
     "scenario_id": "sc_call_9756b0163d",
     "arquetipo_label": "trader autodidacta estancado, busca libertad financiera",
     "nicho": "trading",
     "dificultad_1_5": 4,
     "resistencia_1_5": 4,
     "estado_inicial": {
-      "tono": "cauteloso, esceptico",
+      "tono_inicial": "cauteloso, esceptico",
       "nivel_experiencia": "intermedio",
+      "estilo_decision": "analitico",
+      "relacion_con_dinero": "ajustado",
+      "estilo_habla": "coloquial",
+      "muletillas": [
+        "vale?",
+        "sabes?"
+      ],
+      "regionalismos": [
+        "tío",
+        "flipas"
+      ],
+      "genero": "M",
+      "pais": "España",
+      "ocupacion": "camarero",
+      "situacion_familiar": null,
+      "presupuesto_inicial": null,
       "motivacion": "Convertirse en trader a tiempo completo para lograr libertad financiera y, en el futuro, mudarse a Dubái.",
-      "presupuesto": null
+      "dolor": "Estancamiento después del éxito inicial y riesgo de perder una cuenta de 80k debido a un cambio forzado de sesión de trading.",
+      "que_lo_trajo": "Está estancado tras aprobar dos challenges de fondeo de 10k, pero ahora corre el riesgo de fallar una cuenta de 80k.",
+      "experiencia_previa": "Aprendió a hacer trading con videos pirateados del “Manual de Vallas” y aprobó dos challenges de fondeo."
     },
-    "value_for_training": "Esta llamada es valiosa para entrenar a un closer en el manejo de objeciones de valor y financiación, y en cómo presentar soluciones de pago flexibles a clientes con presupuesto ajustado pero alta motivación.",
+    "objeciones_a_plantear": [
+      {
+        "texto": "Digo, ¿qué me va a aportar una persona así? Por nada.",
+        "tipo": "confianza",
+        "profundidad": "superficial",
+        "orden": 1
+      },
+      {
+        "texto": "¿La formación esa tiene un límite de que se acaba o es continuo?",
+        "tipo": "tiempo",
+        "profundidad": "superficial",
+        "orden": 2
+      },
+      {
+        "texto": "Porque si la pagas poco a poco tiene intereses, ¿no?",
+        "tipo": "precio",
+        "profundidad": "real",
+        "orden": 3
+      },
+      {
+        "texto": "¿Pero te dejan, por ejemplo, pagarlo todo luego de golpe?",
+        "tipo": "metodo_pago",
+        "profundidad": "real",
+        "orden": 4
+      },
+      {
+        "texto": "¿Pero eso del curso de qué? ¿De las clases y todo eso?",
+        "tipo": "tecnica",
+        "profundidad": "superficial",
+        "orden": 5
+      }
+    ],
+    "preguntas_a_hacer": [
+      "¿En cuánto tiempo crees que consiguió Juan este retiro?",
+      "¿La formación esa tiene un límite de que se acaba o es continuo?",
+      "¿Y eso luego entonces la puedes renovar o algo? ¿Cómo vais?",
+      "Porque si la pagas poco a poco tiene intereses, ¿no?",
+      "¿Pero te dejan, por ejemplo, pagarlo todo luego de golpe?",
+      "¿Y las clases en directo sobre qué horas suelen ser?",
+      "¿Y para entrar es que pongo mi correo y la contraseña me la creo ahí o cómo?"
+    ],
+    "frases_de_estilo": [
+      "Digo, ¿qué me va a aportar una persona así? Por nada.",
+      "Yo, mi mentalidad, yo quiero, o sea, yo no quiero ser un alumno nomás, ¿sabes lo que te digo?",
+      "El próximo Sergio Carrillo, ¿no?",
+      "Ya ves, estás todo el día haciendo llamadas, ¿no?",
+      "Se ha comprado coches ya, ¿no? Bueno, bueno, flipas.",
+      "Sí, pues entonces luego, si cuando vaya a entrar, le doy a siguiente y ya me cobra, ¿no? Y ya sé todos los meses pagar eso, ¿no?>",
+      "¿Pero eso del curso de qué? ¿De las clases y todo eso?",
+      "¿Qué pasa, que se está lloviendo ahora abajo o qué?"
+    ],
+    "valor_para_entrenamiento": "Esta llamada es valiosa para entrenar a un closer en el manejo de objeciones de valor y financiación, y en cómo presentar soluciones de pago flexibles a clientes con presupuesto ajustado pero alta motivación.",
     "source_call_id": "call_9756b0163d"
-  },
-  {
-    "scenario_id": "sc_call_bb2e1a60e1",
-    "arquetipo_label": "Joven trabajador frustrado, busca libertad financiera para su familia",
-    "nicho": "trading",
-    "dificultad_1_5": 4,
-    "resistencia_1_5": 3,
-    "estado_inicial": {
-      "tono": "frustrado, cauteloso",
-      "nivel_experiencia": "novato",
-      "motivacion": "Lograr libertad financiera para apoyar a su familia en Guatemala y mejorar su calidad de vida.",
-      "presupuesto": null
-    },
-    "value_for_training": "Manejo de objeciones de tiempo y expectativas, resolución creativa de bloqueos de pago y construcción de confianza con un cliente novato.",
-    "source_call_id": "call_bb2e1a60e1"
-  },
-  {
-    "scenario_id": "sc_call_756537c028",
-    "arquetipo_label": "Instalador frustrado, busca libertad y seguridad",
-    "nicho": "trading",
-    "dificultad_1_5": 4,
-    "resistencia_1_5": 4,
-    "estado_inicial": {
-      "tono": "cauteloso, esceptico",
-      "nivel_experiencia": "principiante",
-      "motivacion": "Lograr libertad financiera para apoyar a su familia y viajar por el mundo.",
-      "presupuesto": null
-    },
-    "value_for_training": "Manejo de objeciones de confianza profunda y escepticismo por experiencias pasadas, y cómo una garantía sólida puede ser el factor decisivo.",
-    "source_call_id": "call_756537c028"
-  },
-  {
-    "scenario_id": "sc_call_ca0bab8db7",
-    "arquetipo_label": "Inmigrante resiliente, trader novato, busca escape laboral",
-    "nicho": "trading",
-    "dificultad_1_5": 4,
-    "resistencia_1_5": 3,
-    "estado_inicial": {
-      "tono": "frustrado y motivado",
-      "nivel_experiencia": "novato",
-      "motivacion": "Escapar de un trabajo hostil y mal pagado para lograr independencia financiera a través del trading.",
-      "presupuesto": "$3,000 (aspiracional)"
-    },
-    "value_for_training": "Esta llamada es valiosa para entrenar a un closer en cómo manejar objeciones de presupuesto reales y denegaciones de financiación, pivotar a una oferta alternativa y estructurar planes de pago flexibles.",
-    "source_call_id": "call_ca0bab8db7"
-  },
-  {
-    "scenario_id": "sc_call_f74c5c53b6",
-    "arquetipo_label": "trabajador esforzado quemado, busca libertad y seguridad",
-    "nicho": "trading",
-    "dificultad_1_5": 4,
-    "resistencia_1_5": 4,
-    "estado_inicial": {
-      "tono": "cauteloso pero motivado",
-      "nivel_experiencia": "principiante",
-      "motivacion": "Lograr libertad de tiempo para pasar más tiempo con la familia y complementar ingresos.",
-      "presupuesto": "$2250 aprox"
-    },
-    "value_for_training": "Manejo de objeciones de confianza profunda por trauma pasado y objeciones de presupuesto que requieren flexibilidad en el pago.",
-    "source_call_id": "call_f74c5c53b6"
-  },
-  {
-    "scenario_id": "sc_call_a374ff0933",
-    "arquetipo_label": "Relojero frustrado, busca libertad y jubilar a su madre",
-    "nicho": "trading",
-    "dificultad_1_5": 4,
-    "resistencia_1_5": 2,
-    "estado_inicial": {
-      "tono": "frustrado y cauteloso",
-      "nivel_experiencia": "principiante",
-      "motivacion": "Lograr libertad financiera a través del trading para escapar de un trabajo físicamente exigente y jubilar a su madre.",
-      "presupuesto": "muy ajustado, $500/mes"
-    },
-    "value_for_training": "Manejo de objeciones de confianza por experiencias pasadas, objeciones de presupuesto real y la necesidad de conectar con una motivación profunda y emocional.",
-    "source_call_id": "call_a374ff0933"
   },
   {
     "scenario_id": "sc_call_b25566d4a0",
@@ -141,43 +90,93 @@
     "dificultad_1_5": 4,
     "resistencia_1_5": 4,
     "estado_inicial": {
-      "tono": "cauteloso, esceptico",
+      "tono_inicial": "cauteloso, esceptico",
       "nivel_experiencia": "novato",
+      "estilo_decision": "consulta_con_pareja_familia",
+      "relacion_con_dinero": "ajustado",
+      "estilo_habla": "coloquial",
+      "muletillas": [
+        "Vale",
+        "Ok",
+        "digo yo"
+      ],
+      "regionalismos": [
+        "Oíme"
+      ],
+      "genero": "F",
+      "pais": "Nicaragua (reside en Estados Unidos)",
+      "ocupacion": "Operadora de escaneo telefónico",
+      "situacion_familiar": "casada, 1 hijo",
+      "presupuesto_inicial": null,
       "motivacion": "Lograr libertad financiera a través del trading para mejorar la vida familiar y ofrecer mejores oportunidades a su hijo.",
-      "presupuesto": null
+      "dolor": "Los ingresos actuales no son suficientes para cubrir los gastos y un curso previo de marketing digital fracasó.",
+      "que_lo_trajo": "Interés por el trading visto en redes sociales y búsqueda de un cambio de vida.",
+      "experiencia_previa": "Ya intentó un curso de marketing digital de $1,600 que fracasó por altos gastos en anuncios y falta de resultados."
     },
-    "value_for_training": "Manejo de objeciones de confianza por experiencias pasadas, objeciones de precio/pago, y la necesidad de involucrar a un tercero en la decisión.",
+    "objeciones_a_plantear": [
+      {
+        "texto": "¿Todo de los planes es de una vez?",
+        "tipo": "precio",
+        "profundidad": "superficial",
+        "orden": 1
+      },
+      {
+        "texto": "¿Hay mucha diferencia entre los dos más accesibles?",
+        "tipo": "precio",
+        "profundidad": "superficial",
+        "orden": 2
+      },
+      {
+        "texto": "¿Hay algún lector de gráfico? Porque yo siento que ahí, yo en lo personal siento que ahí es donde me daría un poco de trabajo.",
+        "tipo": "tecnica",
+        "profundidad": "real",
+        "orden": 3
+      },
+      {
+        "texto": "¿Esa operación, yo la primera, hablando de la primera, la harías sola o tendría algún acompañamiento?",
+        "tipo": "confianza",
+        "profundidad": "real",
+        "orden": 4
+      },
+      {
+        "texto": "Pero digo yo, ¿para qué me prometes algo y al final me vas a salir con otra cosa? Entonces no está bien.",
+        "tipo": "confianza",
+        "profundidad": "real",
+        "orden": 5
+      },
+      {
+        "texto": "¿Cómo yo las haría si yo estaría en el trabajo?",
+        "tipo": "tiempo",
+        "profundidad": "real",
+        "orden": 6
+      },
+      {
+        "texto": "Necesidad de consultar con mi pareja (inferido por pregunta del closer y resumen)",
+        "tipo": "pareja_familia",
+        "profundidad": "real",
+        "orden": 7
+      }
+    ],
+    "preguntas_a_hacer": [
+      "¿Todo de los planes es de una vez?",
+      "¿Hay mucha diferencia entre los dos más accesibles?",
+      "¿Eso 1.400 que me acabas de mostrar, eso es una ganancia de estar en la academia?",
+      "¿Hay algún lector de gráfico? Porque yo siento que ahí, yo en lo personal siento que ahí es donde me daría un poco de trabajo.",
+      "¿Esa operación, yo la primera, hablando de la primera, la harías sola o tendría algún acompañamiento?",
+      "¿Cómo yo las haría si yo estaría en el trabajo?",
+      "¿Cuándo yo comience a ganar haciendo el trading?"
+    ],
+    "frases_de_estilo": [
+      "Bueno, de trading no sé nada, más de lo que he visto en redes, ¿ok?",
+      "Y entonces, yo digo, bueno, voy a probarlo a ver si es lo mío, ¿no?",
+      "Y eso nada más sería por dedicar un tiempo más a mi familia y tener ese ingreso como extra.",
+      "Yo ahora mismo trabajo en warehouse de teléfonos.",
+      "Pero digo yo, ¿para qué me prometes algo y al final me vas a salir con otra cosa? Entonces no está bien.",
+      "De una, sin dudarlo.",
+      "No, pues sí, claro, pero paso a paso."
+    ],
+    "valor_para_entrenamiento": "Manejo de objeciones de confianza por experiencias pasadas, objeciones de precio/pago, y la necesidad de involucrar a un tercero en la decisión.",
     "source_call_id": "call_b25566d4a0"
-  },
-  {
-    "scenario_id": "sc_call_2c2a7a42e7",
-    "arquetipo_label": "Inmigrante agotada, busca libertad financiera y reunión familiar.",
-    "nicho": "trading",
-    "dificultad_1_5": 4,
-    "resistencia_1_5": 4,
-    "estado_inicial": {
-      "tono": "frustrado y cauteloso",
-      "nivel_experiencia": "principiante",
-      "motivacion": "Escapar de una extenuante jornada laboral de 10–16 horas/día y reunirse con su familia.",
-      "presupuesto": null
-    },
-    "value_for_training": "Esta llamada es valiosa para entrenar a un closer en el manejo de objeciones de tiempo, presupuesto y confianza, así como en la importancia de conectar con el dolor profundo del cliente (agotamiento, separación familiar).",
-    "source_call_id": "call_2c2a7a42e7"
-  },
-  {
-    "scenario_id": "sc_call_dedaafc015",
-    "arquetipo_label": "dueña de negocio frustrada, trader autodidacta miedosa",
-    "nicho": "trading",
-    "dificultad_1_5": 4,
-    "resistencia_1_5": 3,
-    "estado_inicial": {
-      "tono": "cautelosa, frustrada",
-      "nivel_experiencia": "intermedio",
-      "motivacion": "Reemplazar los ingresos de su negocio fallido de transporte con el trading para poder dejarlo y generar $50k/mes.",
-      "presupuesto": "$600"
-    },
-    "value_for_training": "Esta llamada es valiosa para entrenar a un closer en cómo manejar objeciones de presupuesto reales con soluciones creativas de pago, y cómo abordar la frustración y el miedo de clientes con experiencia previa fallida.",
-    "source_call_id": "call_dedaafc015"
   },
   {
     "scenario_id": "sc_call_0e42bca73d",
@@ -186,267 +185,2517 @@
     "dificultad_1_5": 4,
     "resistencia_1_5": 4,
     "estado_inicial": {
-      "tono": "cauteloso",
+      "tono_inicial": "cauteloso",
       "nivel_experiencia": "novato",
+      "estilo_decision": "analitico",
+      "relacion_con_dinero": "ajustado",
+      "estilo_habla": "coloquial",
+      "muletillas": [
+        "me entiendes?",
+        "verdad?"
+      ],
+      "regionalismos": [
+        "vuelta"
+      ],
+      "genero": "M",
+      "pais": null,
+      "ocupacion": "barbero",
+      "situacion_familiar": "casado, 1 hija, pareja embarazada",
+      "presupuesto_inicial": null,
       "motivacion": "Reemplazar su empleo con ingresos del trading para ganar tiempo y libertad financiera y mejorar el estilo de vida de su familia.",
-      "presupuesto": null
+      "dolor": "Trabaja más de 40 horas/semana como barbero, siente que está 'sobreviviendo' en lugar de 'viviendo' y no tiene tiempo para su familia.",
+      "que_lo_trajo": "Ha seguido al mentor Sebas por ~2 años y siente una fuerte conexión con su historia de éxito 'desde abajo'.",
+      "experiencia_previa": "Cero experiencia en trading."
     },
-    "value_for_training": "Manejo de múltiples objeciones de entendimiento y logística, objeción de confianza/comparación, y negociación de plan de pago para un cliente motivado pero cauteloso.",
+    "objeciones_a_plantear": [
+      {
+        "texto": "¿Y cómo es rentable? ¿Cómo? O sea, ¿qué quiere decir rentable?",
+        "tipo": "tecnica",
+        "profundidad": "superficial",
+        "orden": 1
+      },
+      {
+        "texto": "You have told me that of the 100% those, I take like the 10-15%, right? Why did have told me not all are the same, but he told me that he took the 90%?",
+        "tipo": "confianza",
+        "profundidad": "real",
+        "orden": 2
+      },
+      {
+        "texto": "Cuando uno le da para cobrar, ¿cuánto se tarda eso? ¿Cómo depositáis en la cuenta de uno? Pero cuando tú los retiras ya, ¿eso cae rápido en tu cuenta o se tarda unos días?",
+        "tipo": "metodo_pago",
+        "profundidad": "superficial",
+        "orden": 3
+      },
+      {
+        "texto": "¿En cuántas cuotas estarías tú?",
+        "tipo": "precio",
+        "profundidad": "superficial",
+        "orden": 4
+      },
+      {
+        "texto": "¿O me van a chequear el crédito?",
+        "tipo": "metodo_pago",
+        "profundidad": "superficial",
+        "orden": 5
+      }
+    ],
+    "preguntas_a_hacer": [
+      "¿Y cómo es rentable? ¿Cómo? O sea, ¿qué quiere decir rentable?",
+      "Ok, pero en esos tres meses, esos 90 días, ¿es todos los días que tengo que hacerlo una o dos horas, verdad?",
+      "You have told me that of the 100% those, I take like the 10-15%, right? Why did have told me not all are the same, but he told me that he took the 90%?",
+      "Cuando uno le da para cobrar, ¿cuánto se tarda eso? ¿Cómo depositáis en la cuenta de uno?",
+      "¿En cuántas cuotas estarías tú?",
+      "¿O me van a chequear el crédito?"
+    ],
+    "frases_de_estilo": [
+      "Bueno, quiero entrar en esto que es lo del trading, ¿verdad?",
+      "Mi mentalidad es, en un futuro, ¿me entiendes? Poder dejar el trabajo y poder vivir de esto también.",
+      "No, claro, me gustaría moverme de donde estoy viviendo actualmente, ¿me entiendes? Ya que no es tan bueno tampoco donde estoy viviendo.",
+      "Que, ¿me entiendes? Hay que buscar las maneras de salir adelante.",
+      "No estaría mal, ¿me entiendes? Intentarlo y meter mano y si me va bien seguir por ahí para abajo.",
+      "Me gusta la vibra de él, como él, ¿me entiende? Te trámite bien, ¿no?",
+      "Todo lo que yo no he podido tener desde chiquito.",
+      "No tener suficiente tiempo, porque pues a veces los sábados también trabajo, ¿me entiendes?",
+      "Desde que empezó el año yo estoy ya como que tengo que buscar otra manera de poder salir adelante, de hacer dinero, ¿me entiendes?",
+      "Me pueden ayudar y me pueden dar, o sea, me pueden enseñar, pienso yo que muy bien, para yo también poder, o ayudarme yo mismo, ¿me entiendes?"
+    ],
+    "valor_para_entrenamiento": "Manejo de múltiples objeciones de entendimiento y logística, objeción de confianza/comparación, y negociación de plan de pago para un cliente motivado pero cauteloso.",
     "source_call_id": "call_0e42bca73d"
   },
   {
-    "scenario_id": "sc_call_9a7f3afc35",
-    "arquetipo_label": "Trader frustrada, busca independencia y método real",
-    "nicho": "trading",
-    "dificultad_1_5": 4,
-    "resistencia_1_5": 3,
-    "estado_inicial": {
-      "tono": "frustrada",
-      "nivel_experiencia": "principiante",
-      "motivacion": "Obtener un ingreso estable para recuperar independencia financiera y libertad de tiempo.",
-      "presupuesto": "$3000+"
-    },
-    "value_for_training": "Esta llamada es valiosa para entrenar a un closer en cómo manejar objeciones de presupuesto y la necesidad de consultar a un tercero (gatekeeper financiero) en un cliente con alta frustración y motivación.",
-    "source_call_id": "call_9a7f3afc35"
-  },
-  {
-    "scenario_id": "sc_call_cc9d2ab84a",
-    "arquetipo_label": "Cocinero ambicioso, busca libertad financiera, con presupuesto ajustado",
-    "nicho": "trading",
-    "dificultad_1_5": 4,
-    "resistencia_1_5": 3,
-    "estado_inicial": {
-      "tono": "cauteloso",
-      "nivel_experiencia": "principiante",
-      "motivacion": "Generar ingresos a través del trading para comprar una casa en México y reducir el trabajo físico exigente.",
-      "presupuesto": "mucho menor a $4,500"
-    },
-    "value_for_training": "Esta llamada es valiosa para entrenar a un closer en el manejo de objeciones de presupuesto, la necesidad de consultar con terceros y la resolución de problemas técnicos de pago.",
-    "source_call_id": "call_cc9d2ab84a"
-  },
-  {
-    "scenario_id": "sc_call_b4ceb2a1aa",
-    "arquetipo_label": "trabajadora con ingresos ajustados, desconfiada por estafa previa, busca libertad financiera",
+    "scenario_id": "sc_call_1327a7084c",
+    "arquetipo_label": "Trader frustrado, busca consistencia y libertad financiera, con presupuesto ajustado y decisión familiar.",
     "nicho": "trading",
     "dificultad_1_5": 4,
     "resistencia_1_5": 4,
     "estado_inicial": {
-      "tono": "cautelosa, esceptica",
-      "nivel_experiencia": "novato",
-      "motivacion": "Aprender trading para generar ingresos extra y construir capital a largo plazo.",
-      "presupuesto": "$800"
-    },
-    "value_for_training": "Esta llamada es valiosa para entrenar a un closer en el manejo de objeciones de presupuesto y desconfianza profunda por experiencias pasadas, requiriendo una oferta flexible y un incentivo por acción.",
-    "source_call_id": "call_b4ceb2a1aa"
-  },
-  {
-    "scenario_id": "sc_call_4059c20224",
-    "arquetipo_label": "Padre frustrado, busca libertad y tiempo para su hija",
-    "nicho": "trading",
-    "dificultad_1_5": 4,
-    "resistencia_1_5": 3,
-    "estado_inicial": {
-      "tono": "frustrado y cauteloso",
-      "nivel_experiencia": "novato",
-      "motivacion": "Ganar libertad financiera y de tiempo para mudarse cerca de su hija y viajar.",
-      "presupuesto": null
-    },
-    "value_for_training": "Esta llamada es valiosa para entrenar a un closer en cómo manejar objeciones de pago y dudas técnicas, mientras se apalanca un dolor emocional profundo y una motivación clara.",
-    "source_call_id": "call_4059c20224"
-  },
-  {
-    "scenario_id": "sc_call_5c2d786057",
-    "arquetipo_label": "Albañil estancado, busca libertad financiera",
-    "nicho": "trading",
-    "dificultad_1_5": 4,
-    "resistencia_1_5": 3,
-    "estado_inicial": {
-      "tono": "frustrado",
-      "nivel_experiencia": "principiante",
-      "motivacion": "Alcanzar metas financieras como comprar una casa y dejar de sentirse estancado por sus bajos ingresos.",
-      "presupuesto": "ajustado, $400-500/mes de ingreso"
-    },
-    "value_for_training": "Manejo de objeciones de presupuesto y confianza en un cliente con ingresos limitados y experiencia previa de estafa.",
-    "source_call_id": "call_5c2d786057"
-  },
-  {
-    "scenario_id": "sc_call_e460f3c8f3",
-    "arquetipo_label": "Trader frustrado por pérdidas, busca seguridad y libertad financiera.",
-    "nicho": "trading",
-    "dificultad_1_5": 4,
-    "resistencia_1_5": 4,
-    "estado_inicial": {
-      "tono": "cauteloso",
-      "nivel_experiencia": "principiante",
-      "motivacion": "Recuperar pérdidas y lograr libertad financiera para estudios y bienes.",
-      "presupuesto": "$1,000 (propuesta)"
-    },
-    "value_for_training": "Manejo de objeciones de precio y confianza post-trauma financiero, negociación de planes de pago y uso de garantías.",
-    "source_call_id": "call_e460f3c8f3"
-  },
-  {
-    "scenario_id": "sc_call_8d5120faa7",
-    "arquetipo_label": "Caficultor frustrado, busca libertad y estabilidad",
-    "nicho": "trading",
-    "dificultad_1_5": 4,
-    "resistencia_1_5": 3,
-    "estado_inicial": {
-      "tono": "cauteloso",
+      "tono_inicial": "cauteloso, con frustración subyacente",
       "nivel_experiencia": "intermedio",
-      "motivacion": "Busca un ingreso estable de trading ($2k+/mes) para salir de su trabajo estacional y físicamente exigente y ganar más tiempo con su familia.",
-      "presupuesto": null
+      "estilo_decision": "consulta_con_pareja_familia",
+      "relacion_con_dinero": "ajustado",
+      "estilo_habla": "mixto",
+      "muletillas": [
+        "verdad?",
+        "sí?"
+      ],
+      "regionalismos": [],
+      "genero": "M",
+      "pais": "Estados Unidos",
+      "ocupacion": "empleado (8 a 5)",
+      "situacion_familiar": "casado, 2 hijos pequeños",
+      "presupuesto_inicial": "limitado, menos de $1800",
+      "motivacion": "Alcanzar la libertad financiera para dejar su trabajo de 8 a 5 y proveer para su familia.",
+      "dolor": "Falta de consistencia en el trading y una barrera financiera significativa para la formación de alto nivel.",
+      "que_lo_trajo": "Busca una estrategia de trading consistente para la libertad financiera.",
+      "experiencia_previa": "Hace trading desde finales de 2019; familiarizado con Nasdaq, S&P 500, Forex y futuros. Reprobó un challenge de cuenta fondeada de $50k."
     },
-    "value_for_training": "Esta llamada es valiosa para entrenar a un closer en el manejo de objeciones de presupuesto encadenadas, la importancia de la validación familiar y la venta de valor sobre el dolor psicológico.",
-    "source_call_id": "call_8d5120faa7"
+    "objeciones_a_plantear": [
+      {
+        "texto": "Son tres mil dólares, ¿verdad? A ver, ¿cómo puedo? ¿No hubiera una forma de ajustar eso un poco como para...?",
+        "tipo": "precio",
+        "profundidad": "real",
+        "orden": 1
+      },
+      {
+        "texto": "Es que es la realidad en la que yo tengo, ¿sí? 1800.",
+        "tipo": "precio",
+        "profundidad": "real",
+        "orden": 2
+      },
+      {
+        "texto": "¿Y cuál sería la grandía entonces que dice ahí que...? La devolución.",
+        "tipo": "confianza",
+        "profundidad": "superficial",
+        "orden": 3
+      },
+      {
+        "texto": "La diferencia entre el manual de BIOS y el del Instituto del Trading es las clases en vivo que son más, son más clases en vivo, y la diferencia también se radica en que habla del material de cuentas de fondeo, que ahí me quedé con la duda, ¿qué tiene...",
+        "tipo": "tecnica",
+        "profundidad": "superficial",
+        "orden": 4
+      },
+      {
+        "texto": "Así que yo voy a conversarlo y ya tengo la respuesta el día de hoy, ¿ya?",
+        "tipo": "pareja_familia",
+        "profundidad": "real",
+        "orden": 5
+      }
+    ],
+    "preguntas_a_hacer": [
+      "O ¿cómo se extiende un año? Es lo que aparte me perdió.",
+      "A ver, ¿cómo puedo? ¿No hubiera una forma de ajustar eso un poco como para...?",
+      "Son tres mil dólares, ¿verdad?",
+      "¿Cómo? En los lunes, ¿qué es lo que hacen en el calendario?",
+      "¿Y cuál sería la grandía entonces que dice ahí que...? La devolución.",
+      "La diferencia entre el manual de BIOS y el del Instituto del Trading es las clases en vivo que son más, son más clases en vivo, y la diferencia también se radica en que habla del material de cuentas de fondeo, que ahí me quedé con la duda, ¿qué tiene...",
+      "¿Tú crees que tal vez yo pudiera...? So the next, I don't in the next, I don't in I'll able to get some benefit, to implement all this strategy and all that we have talked about."
+    ],
+    "frases_de_estilo": [
+      "A ver, ¿cómo puedo? ¿No hubiera una forma de ajustar eso un poco como para...?",
+      "Son tres mil dólares, ¿verdad?",
+      "Es que es la realidad en la que yo tengo, ¿sí? 1800.",
+      "¿Algando los meses? Sí, sea, tal vez algunos meses más, para que se pueda conseguir algo más, algún descuento o algo, no sé, yo necesito ayuda, pero yo no quiero dejar de participar, porque de verdad que me interesa.",
+      "O ¿cómo se extiende un año? Es lo que aparte me perdió.",
+      "¿Y cuál sería la grandía entonces que dice ahí que...? La devolución.",
+      "La diferencia entre el manual de BIOS y el del Instituto del Trading es las clases en vivo que son más, son más clases en vivo, y la diferencia también se radica en que habla del material de cuentas de fondeo, que ahí me quedé con la duda, ¿qué tiene...",
+      "Así que yo voy a conversarlo y ya tengo la respuesta el día de hoy, ¿ya?'"
+    ],
+    "valor_para_entrenamiento": "Manejo de objeciones de precio y presupuesto con soluciones creativas (niveles de producto, ruta de actualización) y objeción de consulta con pareja.",
+    "source_call_id": "call_1327a7084c"
   },
   {
-    "scenario_id": "sc_call_041d4739f5",
-    "arquetipo_label": "Trader autodidacta frustrado, busca estructura y libertad",
-    "nicho": "trading",
-    "dificultad_1_5": 4,
-    "resistencia_1_5": 3,
-    "estado_inicial": {
-      "tono": "cauteloso",
-      "nivel_experiencia": "principiante",
-      "motivacion": "Lograr rentabilidad consistente en trading para alcanzar libertad financiera y viajar por Europa.",
-      "presupuesto": null
-    },
-    "value_for_training": "Esta llamada es valiosa para entrenar a un closer en el manejo de objeciones de presupuesto que requieren planes de pago creativos, y en la construcción de confianza en un programa estructurado para un cliente con experiencia previa pero sin resultados.",
-    "source_call_id": "call_041d4739f5"
-  },
-  {
-    "scenario_id": "sc_call_d2bcbd5cbd",
-    "arquetipo_label": "Emprendedor frustrado, novato cauteloso, busca libertad",
+    "scenario_id": "sc_call_d9ce03d5b5",
+    "arquetipo_label": "Viajero cauteloso, busca libertad financiera",
     "nicho": "trading",
     "dificultad_1_5": 4,
     "resistencia_1_5": 4,
     "estado_inicial": {
-      "tono": "cauteloso, frustrado",
+      "tono_inicial": "cauteloso/esceptico",
       "nivel_experiencia": "novato",
-      "motivacion": "Lograr libertad financiera y trabajar por elección, no por necesidad, escapando de la 'esclavitud' de su negocio.",
-      "presupuesto": null
+      "estilo_decision": "analitico/cauteloso",
+      "relacion_con_dinero": "comodo pero cauteloso con inversiones",
+      "estilo_habla": "coloquial",
+      "muletillas": [
+        "no?",
+        "digamos"
+      ],
+      "regionalismos": [
+        "joder"
+      ],
+      "genero": "M",
+      "pais": "España (reside en Alemania/viajando)",
+      "ocupacion": "trabajador temporal/mochilero",
+      "situacion_familiar": "soltero, busca estabilidad",
+      "presupuesto_inicial": "€3,000 (con dudas por inconsistencia)",
+      "motivacion": "Construir su propio futuro para tener libertad y estabilidad.",
+      "dolor": "Desconfianza por una mala experiencia de ventas previa con precios inconsistentes y falta de claridad en la oferta.",
+      "que_lo_trajo": "Una interacción previa negativa con otro representante de ventas de la misma empresa.",
+      "experiencia_previa": "Tuvo una mala experiencia con una llamada de ventas previa de la misma empresa, con precios inconsistentes y tácticas agresivas."
     },
-    "value_for_training": "Esta llamada es valiosa para entrenar a un closer en el manejo de objeciones de confianza y miedo al éxito, además de la gestión de problemas de pago y la venta de valor sobre el riesgo.",
-    "source_call_id": "call_d2bcbd5cbd"
+    "objeciones_a_plantear": [
+      {
+        "texto": "No entiendo por qué el precio cambió de 10k a 3k y la oferta de 3k no era clara.",
+        "tipo": "confianza",
+        "profundidad": "real",
+        "orden": 1
+      },
+      {
+        "texto": "El vendedor anterior fue muy agresivo y despectivo, y no me gustó su trato.",
+        "tipo": "confianza",
+        "profundidad": "real",
+        "orden": 2
+      },
+      {
+        "texto": "¿Cuál era la diferencia al final del de 3 y el de 10?",
+        "tipo": "tecnica",
+        "profundidad": "real",
+        "orden": 3
+      },
+      {
+        "texto": "¿En el momento en el que él va a operar, cuando uno está en este curso, o sea, esto de las clases, ¿es sus operaciones cuando las está haciendo en vivo o son clases de otra cosa?",
+        "tipo": "tecnica",
+        "profundidad": "superficial",
+        "orden": 4
+      },
+      {
+        "texto": "Realmente es, las personas operan, o sea, ¿es mejor operar con una cuenta fondeada o con el propio dinero de uno?",
+        "tipo": "tecnica",
+        "profundidad": "superficial",
+        "orden": 5
+      },
+      {
+        "texto": "Si yo puedo entonces entrar con USDT, ¿está bien?",
+        "tipo": "metodo_pago",
+        "profundidad": "superficial",
+        "orden": 6
+      }
+    ],
+    "preguntas_a_hacer": [
+      "¿En el momento en el que él va a operar, cuando uno está en este curso, o sea, esto de las clases, ¿es sus operaciones cuando las está haciendo en vivo o son clases de otra cosa?",
+      "¿Y la dirección de lunes a viernes también queda grabada?",
+      "Realmente es, las personas operan, o sea, ¿es mejor operar con una cuenta fondeada o con el propio dinero de uno?",
+      "Entonces, ¿cuál era la diferencia al final del de 3 y el de 10?",
+      "Si yo puedo entonces entrar con USDT, ¿está bien?",
+      "¿Y por qué te fuiste a Alemania en concreto?",
+      "¿Y a ti cuál es el país que más te gustado, por así decirlo, de los que has estado hasta ahora?"
+    ],
+    "frases_de_estilo": [
+      "Veremos cómo va sufriendo el tiempo, ¿no?",
+      "Ni modo que invitas el tren para viajar de un punto a otro, ¿no?",
+      "Y ella también ha dicho, no, trabaja conmigo, pero ya es mucho compromiso, ¿no? Por eso no.",
+      "Ya, eso debe estar bien bonito por allá, ¿no? Es que lo veo tanto en redes sociales que digo, joder.",
+      "Está bastante bien, la verdad que comparar crucero normal y crucero fluvial es más dinámico porque al final estás viendo cosas todo el día y todo el día tienes como cositas que ver, digamos, ¿no?",
+      "Bueno, pues sigues tiempo, ¿eh? Y se dice pronto cinco años.",
+      "No, no, no.",
+      "Digamos que estoy haciendo un poquito de mochilero, ¿no? Estoy ahora conociendo distintas partes del mundo, al final, para ver cuál me gusta más y, bueno, estabilizar ahí una familia ya.",
+      "¿Sabes el problema que he tenido? Que todos los países que he visitado hasta ahora me han gustado mucho, pero no como para vivir.",
+      "Bueno, ¿te imaginas que acabamos en el mismo país?"
+    ],
+    "valor_para_entrenamiento": "Esta llamada es valiosa para entrenar a un closer en cómo manejar objeciones de confianza y precio derivadas de una mala experiencia previa, y cómo reconstruir la credibilidad.",
+    "source_call_id": "call_d9ce03d5b5"
   },
   {
-    "scenario_id": "sc_call_55820b4e60",
-    "arquetipo_label": "Obrero sacrificado, busca libertad y propósito",
+    "scenario_id": "sc_call_b9893ae463",
+    "arquetipo_label": "Jubilado precavido, busca seguridad financiera familiar",
     "nicho": "trading",
     "dificultad_1_5": 4,
     "resistencia_1_5": 4,
     "estado_inicial": {
-      "tono": "cauteloso, sincero",
+      "tono_inicial": "cauteloso",
+      "nivel_experiencia": "principiante",
+      "estilo_decision": "analitico",
+      "relacion_con_dinero": "comodo",
+      "estilo_habla": "mixto",
+      "muletillas": [
+        "O sea,",
+        "Verdad que bien?"
+      ],
+      "regionalismos": [],
+      "genero": "M",
+      "pais": "USA",
+      "ocupacion": "jubilado",
+      "situacion_familiar": "casado, con nietos, apoya a padres/hermanos",
+      "presupuesto_inicial": "3000 dólares, pero con necesidad de fraccionar",
+      "motivacion": "Generar ingresos para viajar y apoyar a su familia (universidad de sus nietos, padres, hermanos).",
+      "dolor": "Jubilado debido a un derrame cerebral, perdió capacidad de viajar y necesita nuevos ingresos.",
+      "que_lo_trajo": "Vio videos de YouTube del Sensei y busca guía estructurada.",
+      "experiencia_previa": "Ya intentó un curso de Amazon FBA que no cumplió sus promesas."
+    },
+    "objeciones_a_plantear": [
+      {
+        "texto": "¿Y por qué ayer decía que eran 1.500 dólares que se necesitaron?",
+        "tipo": "precio",
+        "profundidad": "superficial",
+        "orden": 1
+      },
+      {
+        "texto": "¿Cuáles son los chances de que ese dinero se pierda, a pesar de que yo le puedo poner un stop loss?",
+        "tipo": "tecnica",
+        "profundidad": "real",
+        "orden": 2
+      },
+      {
+        "texto": "O sea, ¿voy a pagar el contrato por completo antes de empezar?",
+        "tipo": "confianza",
+        "profundidad": "real",
+        "orden": 3
+      },
+      {
+        "texto": "O sea, ¿en qué tiempo yo tengo para pagar? Porque yo puedo pagar los 3,000, por ejemplo, ahora, pero luego darme cuenta a los dos meses que no me están enseñando lo que yo esperaba, o que, o sea, todo puede suceder, como dicen los americanos, all things must pass.",
+        "tipo": "confianza",
+        "profundidad": "real",
+        "orden": 4
+      },
+      {
+        "texto": "¿Y no hay una forma que, como son 90 días, una hora y la otra la hacemos en dos meses, que son 60 días?",
+        "tipo": "metodo_pago",
+        "profundidad": "real",
+        "orden": 5
+      }
+    ],
+    "preguntas_a_hacer": [
+      "¿Verdad que bien? O sea, que si yo estoy en Portugal, ¿qué tiempo estaría, por ejemplo, manejando?",
+      "¿Cuáles son los chances de que ese dinero se pierda, a pesar de que yo le puedo poner un stop loss?",
+      "¿Y por qué ayer decía que eran 1.500 dólares que se necesitaron?",
+      "¿En qué tiempo lo pago? ¿En qué tiempo? ¿Cómo? ¿En qué tiempo?",
+      "O sea, ¿voy a pagar el contrato por completo antes de empezar?",
+      "¿Y no hay una forma que, como son 90 días, una hora y la otra la hacemos en dos meses, que son 60 días?",
+      "¿Esos 33 dólares son de qué?"
+    ],
+    "frases_de_estilo": [
+      "Sí, sí, sí, sí.",
+      "all things must pass.",
+      "Thank Acá está, ¿me han dado el link por? Por WhatsApp.",
+      "¿Verdad que me dices aquí? Añada tarjeta de pago, pero le doy y no se mueve en la cenada.",
+      "¿Me escucha o no me escucha?",
+      "Y luego yo te mando, necesito una captura de pantalla, ¿vale? Ok.",
+      "De New York.",
+      "40 años.",
+      "Así es.",
+      "Ok."
+    ],
+    "valor_para_entrenamiento": "Esta llamada es valiosa para entrenar a un closer en el manejo de objeciones de precio y confianza basadas en experiencias negativas previas, y la negociación de planes de pago.",
+    "source_call_id": "call_b9893ae463"
+  },
+  {
+    "scenario_id": "sc_call_0f62d13563",
+    "arquetipo_label": "Obrero frustrado, estafado, busca cambio de vida",
+    "nicho": "trading",
+    "dificultad_1_5": 4,
+    "resistencia_1_5": 4,
+    "estado_inicial": {
+      "tono_inicial": "cauteloso",
+      "nivel_experiencia": "principiante",
+      "estilo_decision": "analitico",
+      "relacion_con_dinero": "ajustado",
+      "estilo_habla": "coloquial",
+      "muletillas": [
+        "así como",
+        "en este caso",
+        "por ejemplo"
+      ],
+      "regionalismos": [],
+      "genero": "M",
+      "pais": "Guatemala",
+      "ocupacion": "Obrero de fábrica",
+      "situacion_familiar": null,
+      "presupuesto_inicial": null,
+      "motivacion": "Escapar de un trabajo físicamente exigente y mal pagado para lograr libertad financiera a través del trading.",
+      "dolor": "El agotamiento físico y el bajo salario de su trabajo actual, sumado a la frustración de una estafa previa de trading.",
+      "que_lo_trajo": "Búsqueda activa de una oportunidad legítima y transparente en el trading tras una mala experiencia.",
+      "experiencia_previa": "Sufrió una estafa de trading de $2,000 que lo dejó precavido."
+    },
+    "objeciones_a_plantear": [
+      {
+        "texto": "Sí, así como por ejemplo los retiros que ellos hacen, ¿los hacen mensuales o en cada operación?",
+        "tipo": "tecnica",
+        "profundidad": "superficial",
+        "orden": 1
+      },
+      {
+        "texto": "En este caso, así como ustedes, que retiran cada 15 días de una operación, de las operaciones que hicieron, ¿siempre hay que dejar una capital o lo retiran todo?",
+        "tipo": "tecnica",
+        "profundidad": "real",
+        "orden": 2
+      },
+      {
+        "texto": "Con ustedes que están trabajando, o que yo voy a trabajar con ustedes, ¿cuánto es lo que tendrían que darle ustedes, o de comisión, o cómo se trabaja esto?",
+        "tipo": "precio",
+        "profundidad": "real",
+        "orden": 3
+      },
+      {
+        "texto": "Y en este caso, después de los 700 dólares, tengo que tener mi capital aparte, ¿verdad?",
+        "tipo": "precio",
+        "profundidad": "real",
+        "orden": 4
+      },
+      {
+        "texto": "Un ejemplo, si yo iniciara con 300 dólares de capital, ¿con eso se puede seguir escalando?",
+        "tipo": "tecnica",
+        "profundidad": "real",
+        "orden": 5
+      },
+      {
+        "texto": "Para conseguirlo, por ejemplo, son tres partes, ¿verdad? ¿Tendría que conseguir cuánto?",
+        "tipo": "precio",
+        "profundidad": "real",
+        "orden": 6
+      },
+      {
+        "texto": "Sí, porque a la hora que yo no cumpla con la primera cuota, con la segunda cuota, la primera se me pierde totalmente, ¿no?",
+        "tipo": "confianza",
+        "profundidad": "real",
+        "orden": 7
+      },
+      {
+        "texto": "Ok, así como me dijiste sobre el contrato, ¿el contrato a mí en qué me protege o en qué nos...?",
+        "tipo": "confianza",
+        "profundidad": "real",
+        "orden": 8
+      }
+    ],
+    "preguntas_a_hacer": [
+      "Sí, así como por ejemplo los retiros que ellos hacen, ¿los hacen mensuales o en cada operación?",
+      "En este caso, así como ustedes, que retiran cada 15 días de una operación, de las operaciones que hicieron, ¿siempre hay que dejar una capital o lo retiran todo?",
+      "Con ustedes que están trabajando, o que yo voy a trabajar con ustedes, ¿cuánto es lo que tendrían que darle ustedes, o de comisión, o cómo se trabaja esto?",
+      "Y en este caso, después de los 700 dólares, tengo que tener mi capital aparte, ¿verdad?",
+      "Un ejemplo, si yo iniciara con 300 dólares de capital, ¿con eso se puede seguir escalando?",
+      "Para conseguirlo, por ejemplo, son tres partes, ¿verdad? ¿Tendría que conseguir cuánto?",
+      "Ok, así como me dijiste sobre el contrato, ¿el contrato a mí en qué me protege o en qué nos...?"
+    ],
+    "frases_de_estilo": [
+      "Sí, así como por ejemplo los retiros que ellos hacen, ¿los hacen mensuales o en cada operación?",
+      "En este caso, así como ustedes, que retiran cada 15 días de una operación, de las operaciones que hicieron, ¿siempre hay que dejar una capital o lo retiran todo?",
+      "Con ustedes que están trabajando, o que yo voy a trabajar con ustedes, ¿cuánto es lo que tendrían que darle ustedes, o de comisión, o cómo se trabaja esto?",
+      "Y en este caso, después de los 700 dólares, tengo que tener mi capital aparte, ¿verdad?",
+      "Un ejemplo, si yo iniciara con 300 dólares de capital, ¿con eso se puede seguir escalando?",
+      "Para conseguirlo, por ejemplo, son tres partes, ¿verdad? ¿Tendría que conseguir cuánto?",
+      "Sí, porque a la hora que yo no cumpla con la primera cuota, con la segunda cuota, la primera se me pierde totalmente, ¿no?",
+      "Ok, así como me dijiste sobre el contrato, ¿el contrato a mí en qué me protege o en qué nos...?",
+      "Sí."
+    ],
+    "valor_para_entrenamiento": "Esta llamada es valiosa para entrenar a un closer en el manejo de objeciones de confianza y presupuesto, especialmente con clientes que tienen un historial de estafas y recursos económicos limitados, requiriendo flexibilidad en el pago.",
+    "source_call_id": "call_0f62d13563"
+  },
+  {
+    "scenario_id": "sc_call_b306c82e32",
+    "arquetipo_label": "Inmigrante urgido, ex-alumno frustrado, busca estabilidad",
+    "nicho": "trading",
+    "dificultad_1_5": 4,
+    "resistencia_1_5": 4,
+    "estado_inicial": {
+      "tono_inicial": "cauteloso y urgido",
+      "nivel_experiencia": "principiante",
+      "estilo_decision": "analitico",
+      "relacion_con_dinero": "ajustado",
+      "estilo_habla": "coloquial",
+      "muletillas": [
+        "no?",
+        "sabes?",
+        "o sea",
+        "hermano"
+      ],
+      "regionalismos": [],
+      "genero": "M",
+      "pais": "Venezuela (residiendo en EE. UU.)",
+      "ocupacion": "Ex-alumno de trading, con ingresos inestables por situación migratoria",
+      "situacion_familiar": null,
+      "presupuesto_inicial": "No puede pagar $2,280 de golpe",
+      "motivacion": "Lograr un ingreso estable a través del trading para evitar regresar a Venezuela con un salario mínimo.",
+      "dolor": "La inestabilidad financiera y la inminente deportación a Venezuela con un futuro económico incierto.",
+      "que_lo_trajo": "Su experiencia previa como exmiembro de 'Proyecto 2.0' y la necesidad urgente de una solución económica.",
+      "experiencia_previa": "Fue exmiembro de 'Proyecto 2.0' pero se retiró por estrés y compromisos laborales."
+    },
+    "objeciones_a_plantear": [
+      {
+        "texto": "Bueno, 2.200 dólares no es que se los pueda tener ahora sí, así y ya no más",
+        "tipo": "precio",
+        "profundidad": "real",
+        "orden": 1
+      },
+      {
+        "texto": "no me quiero complicar yo con mis cosas ahora y yo sé que esto tiene un poco de tiempo",
+        "tipo": "tiempo",
+        "profundidad": "superficial",
+        "orden": 2
+      },
+      {
+        "texto": "Lo que pasa es que, hermano, sí, yo entiendo que esto es un valor bastante importante... pero lo que pasa es que te voy a sacar cuentas con mis tarjetas, ¿no?",
+        "tipo": "precio",
+        "profundidad": "real",
+        "orden": 3
+      },
+      {
+        "texto": "No sé, en el dado caso de que, bueno, yo causo un problema acá, o porque con el tema de la inmigración acá está un poco complicado, y que yo, no sé, tenga que ir arrestado, lo que sea, por este tema de inmigración, y...",
+        "tipo": "confianza",
+        "profundidad": "real",
+        "orden": 4
+      },
+      {
+        "texto": "Ok, al empezar esto, ¿cuáles son los horarios? ¿Qué pasa si yo vivo acá? No sé si es una sola habitación, pero que hay otras personas, entonces por eso más temprano no puedo porque ellos están durmiendo, ¿no?",
+        "tipo": "tiempo",
+        "profundidad": "real",
+        "orden": 5
+      }
+    ],
+    "preguntas_a_hacer": [
+      "¿Y cuándo empezaríamos esto? Ahora mismo.",
+      "¿Qué es Hotmart?",
+      "¿9 de la mañana ahora en Nueva York? ¿Son las claves?",
+      "¿Qué pasa si yo vivo acá? No sé si es una sola habitación, pero que hay otras personas, entonces por eso más temprano no puedo porque ellos están durmiendo, ¿no?",
+      "¿Qué pasa si tengo problemas con la inmigración y me arrestan, afectando mi inversión?",
+      "O sea, la tarjeta que utilizo con esto, ¿no?",
+      "La verdad no lo sé, no recuerdo muy bien cuánto fue que pagué el proyecto Sensei, pero bueno, la suma de eso, más lo que ahora están dando, imagino que es un poco más elevado lo que pagué, ¿no?"
+    ],
+    "frases_de_estilo": [
+      "No recuerdo muy bien, pero eran como miles, ¿no? Un montón, ¿no? Muchísimas, muchísimas, muchísimas.",
+      "La verdad no lo sé, no recuerdo muy bien cuánto fue que pagué el proyecto Sensei, pero bueno, la suma de eso, más lo que ahora están dando, imagino que es un poco más elevado lo que pagué, ¿no? Claro, antes.",
+      "Bueno, 2.200 dólares no es que se los pueda tener ahora sí, así y ya no más, pero creo que lo vale, ¿no? Y debería de poder pagarlos, pero justo ahora, bueno, le estaba sacando cuenta porque evidentemente yo vine acá con la idea de ser parte, ¿no? Y después,...",
+      "Ok, ok, estaría bueno, ¿no? ¿Quieres que probemos a ver si te deja realmente? Sí, puede ser que tengo que descargar esa...",
+      "Wow, pero bueno, es que no me quiero complicar yo con mis cosas ahora y yo sé que esto tiene un poco de tiempo, ¿no?",
+      "Lo que pasa es que, hermano, sí, yo entiendo que esto es un valor bastante importante porque no es la cantidad que tiene que pagar una persona nueva, pero lo que pasa es que te voy a sacar cuentas con mis tarjetas, ¿no? Porque, a ver, dame un segundo.",
+      "Entonces es un montón para mí, ¿sabes? O sea...",
+      "Creo que se pudo, ¿no?"
+    ],
+    "valor_para_entrenamiento": "Esta llamada es valiosa para entrenar a un closer en el manejo de objeciones de presupuesto complejas, la superación de miedos profundos relacionados con la situación personal del cliente y la búsqueda de soluciones de pago creativas.",
+    "source_call_id": "call_b306c82e32"
+  },
+  {
+    "scenario_id": "sc_call_5f31050930",
+    "arquetipo_label": "empleada frustrada, busca libertad, procastinadora",
+    "nicho": "trading",
+    "dificultad_1_5": 4,
+    "resistencia_1_5": 4,
+    "estado_inicial": {
+      "tono_inicial": "cauteloso, con frustración",
+      "nivel_experiencia": "principiante",
+      "estilo_decision": "analitico, propenso a la inacción",
+      "relacion_con_dinero": "ajustado",
+      "estilo_habla": "mixto",
+      "muletillas": [
+        "o sea",
+        "me entiendes"
+      ],
+      "regionalismos": [
+        "Flipando",
+        "darle caña"
+      ],
+      "genero": "F",
+      "pais": "Estados Unidos (posible origen latinoamericano)",
+      "ocupacion": "empleada, 10 horas/día",
+      "situacion_familiar": null,
+      "presupuesto_inicial": "menos de $3000",
+      "motivacion": "Generar una fuente de ingresos a corto plazo para lograr libertad financiera de su trabajo de 10 horas/día.",
+      "dolor": "Su trabajo actual es una 'jaula de oro' de 10 horas diarias que la mantiene atada y sin libertad.",
+      "que_lo_trajo": "Vio contenido de Sebas en YouTube y lo empezó a seguir en redes por su enfoque en Forex.",
+      "experiencia_previa": "Experiencia básica en cripto/acciones desde 2020 a través de Robinhood, y probando con cuentas fondeadas."
+    },
+    "objeciones_a_plantear": [
+      {
+        "texto": "siempre el dinero es la situación, no sé cuánto yo pudiera pagar ahora mismo por el curso",
+        "tipo": "precio",
+        "profundidad": "real",
+        "orden": 1
+      },
+      {
+        "texto": "me paso mucho tiempo pensando algo y pienso tanto que no tomo acción",
+        "tipo": "confianza",
+        "profundidad": "real",
+        "orden": 2
+      },
+      {
+        "texto": "nunca había escuchado así el número tan alto",
+        "tipo": "precio",
+        "profundidad": "real",
+        "orden": 3
+      },
+      {
+        "texto": "¿Tiene que ser ahora mismo? ¿Es ahora o nunca?",
+        "tipo": "urgencia",
+        "profundidad": "real",
+        "orden": 4
+      },
+      {
+        "texto": "¿El único curso que tienen es de 3.000 o tienes otros cursos con otros precios?",
+        "tipo": "precio",
+        "profundidad": "real",
+        "orden": 5
+      },
+      {
+        "texto": "¿Qué tiempo llevan ya con estas clases?",
+        "tipo": "confianza",
+        "profundidad": "superficial",
+        "orden": 6
+      }
+    ],
+    "preguntas_a_hacer": [
+      "¿O sea, tú venido acá a los Estados Unidos o no?",
+      "¿Y son compañías, o sea, en Europa, o sea, son de cualquier lugar? ¿Ese fondeo tiene que ver eso? O sea, uno tiene que buscarse eso por uno mismo o...?",
+      "¿Y cómo trabaja, por ejemplo, el porcentaje que te pagan? O sea, ¿cómo funciona eso?",
+      "¿Es una red de estudiantes que están ahora activos aprendiendo o es personas ya que han aprendido y tienen acceso todavía?",
+      "¿Qué tiempo llevan ya con estas clases?",
+      "¿El único curso que tienen es de 3.000 o tienes otros cursos con otros precios?",
+      "¿Tiene que ser ahora mismo? ¿Es ahora o nunca? ¿O cómo es la situación?",
+      "¿Cómo con la gráfica? Te digo, o sea, la estrategia es saber cuándo vender y cuándo comprar o cuando dices estrategia es qué cosa.",
+      "¿Qué tiempo lleva esto de Forex? O sea, ¿esto es algo que ha pasado toda la vida? ¿O es que yo estoy un poco tarde llegando aquí?"
+    ],
+    "frases_de_estilo": [
+      "Si yo pudiera aprender, como te digo, siempre el dinero es la situación, ¿me entiendes?",
+      "no me he arriesgado más por lo que te digo porque uno tenía, yo tenía otra mentalidad sobre el dinero",
+      "me paso mucho tiempo pensando algo y pienso tanto que no tomo acción",
+      "Jaula de oro, pero jaula, ¿no?",
+      "nunca había escuchado así el número tan alto, ¿entiendes?",
+      "No, yo sí, es que si pago ese dinero, obviamente tengo que darle caña.",
+      "Yo espero que al final de darle caña, pues yo tenga todo el conocimiento para yo hacerlo yo sola, ¿me entiendes?",
+      "Porque sí, puede que uno te quiera estafar, pero no todos, ¿me entiendes?",
+      "es la única forma de crecer.",
+      "Tendría siendo como 1.000 dólares al mes, entonces para empezar lo veo bastante bien"
+    ],
+    "valor_para_entrenamiento": "Manejo de objeciones de precio y compromiso, superación de la inacción del cliente y uso efectivo de garantías y planes de pago.",
+    "source_call_id": "call_5f31050930"
+  },
+  {
+    "scenario_id": "sc_call_69c8e266a1",
+    "arquetipo_label": "Trader autodidacta frustrado, busca libertad financiera para su familia",
+    "nicho": "trading",
+    "dificultad_1_5": 4,
+    "resistencia_1_5": 4,
+    "estado_inicial": {
+      "tono_inicial": "frustrado y cauteloso",
+      "nivel_experiencia": "principiante",
+      "estilo_decision": "analitico",
+      "relacion_con_dinero": "ajustado",
+      "estilo_habla": "coloquial",
+      "muletillas": [
+        "sabes",
+        "como que"
+      ],
+      "regionalismos": [
+        "Mangú"
+      ],
+      "genero": "M",
+      "pais": "República Dominicana",
+      "ocupacion": "soporte técnico call center",
+      "situacion_familiar": "vive con hermano, apoya a su familia",
+      "presupuesto_inicial": "~$700",
+      "motivacion": "Reemplazar su trabajo de call center para ganar libertad de tiempo y convertirse en un pilar financiero para su familia.",
+      "dolor": "Se siente estancado en un trabajo mal pagado y una 'carga' para su familia, sin una metodología consistente ni disciplina psicológica para el trading.",
+      "que_lo_trajo": "Vio videos del Sensei y conectó con su enfoque, buscando una solución a su estancamiento en el trading.",
+      "experiencia_previa": "Autodidacta en trading por 3-4 meses, quemó una cuenta fondeada de $10k y tiene otra de $5k en progreso negativa."
+    },
+    "objeciones_a_plantear": [
+      {
+        "texto": "Pero más no sería que yo pague eso y de aquí a tres meses esté en el mismo lugar, con lo mismo, ¿sabes?",
+        "tipo": "confianza",
+        "profundidad": "real",
+        "orden": 1
+      },
+      {
+        "texto": "¿En dos cuotas cuánto sería? ¿En dos de cuánto?",
+        "tipo": "precio",
+        "profundidad": "real",
+        "orden": 2
+      },
+      {
+        "texto": "Pero si aún intentando, dando los pasos que son, se prolonga a tres años, ¿sabes? Bueno, ya yo llevo ¿cuántos años? ¿Cuatro años en esto? No me voy a morir por tres años más.",
+        "tipo": "tiempo",
+        "profundidad": "real",
+        "orden": 3
+      },
+      {
+        "texto": "¿Hay 54 páginas de 54 personas diferentes? Son 54 páginas de...",
+        "tipo": "confianza",
+        "profundidad": "superficial",
+        "orden": 4
+      },
+      {
+        "texto": "Pero entonces, ¿tienen un simulador donde uno puede operar junto con el Sensei o cómo sería?",
+        "tipo": "tecnica",
+        "profundidad": "superficial",
+        "orden": 5
+      }
+    ],
+    "preguntas_a_hacer": [
+      "¿Y tú logras acostumbrarte a ese cambio de horario cuando tú viajas, que el horario es diferente? ¿Cómo tú manejas eso?",
+      "Pero más no sería que yo pague eso y de aquí a tres meses esté en el mismo lugar, con lo mismo, ¿sabes?",
+      "¿En dos cuotas cuánto sería? ¿En dos de cuánto?",
+      "¿Y la metodología?",
+      "Pero entonces, ¿tienen un simulador donde uno puede operar junto con el Sensei o cómo sería?",
+      "¿Sumplemente porque entré a la comunidad o es para que aprenda...?",
+      "¿Hay 54 páginas de 54 personas diferentes? Son 54 páginas de..."
+    ],
+    "frases_de_estilo": [
+      "Sí, 100%, 100%, y con los videos que yo he visto de él es algo que él hace mucho énfasis, porque él puede en la teleherramienta, pero al final depende de ti, ¿sabes?",
+      "Y yo lo reproducía, pero no entendía de lo que me hablaba, de The Fair Value Gabber, el blog y yo, pero ¿y qué es esto?",
+      "Aparte de, yo quisiera como que poder darle una mano a mis hermanos que están estudiando, que siempre tienen un problema con el tema del estudio y el gasto y eso, como que, ¿sabes? Me gustaría ayudarlo ahí, sacrificarme yo un ejemplo, aunque yo no termine la universidad, yo puedo...",
+      "Como un esclavo, diciéndote lo literal, un esclavo, entonces sabiendo que tienes esta situación, ¿vale?",
+      "Pero más no sería que yo pague eso y de aquí a tres meses esté en el mismo lugar, con lo mismo, ¿sabes?",
+      "No me acuerdo con eso de mí mismo.",
+      "Pero si aún intentando, dando los pasos que son, se prolonga a tres años, ¿sabes? Bueno, ya yo llevo ¿cuántos años? ¿Cuatro años en esto? No me voy a morir por tres años más.",
+      "¿En dos cuotas cuánto sería? ¿En dos de cuánto?",
+      "Porque yo siento que cuando tú te presentas y nadie te conoce aún, como que me cansa mucho, ¿sabes? No como que te vayan a apoyar."
+    ],
+    "valor_para_entrenamiento": "Esta llamada es valiosa para entrenar a un closer en el manejo de objeciones de presupuesto y confianza, la empatía con un cliente con fuerte dolor y la estructuración de un plan de pago.",
+    "source_call_id": "call_69c8e266a1"
+  },
+  {
+    "scenario_id": "sc_call_d703f2aacd",
+    "arquetipo_label": "Trader autodidacta frustrado, busca disciplina y libertad",
+    "nicho": "trading",
+    "dificultad_1_5": 4,
+    "resistencia_1_5": 4,
+    "estado_inicial": {
+      "tono_inicial": "frustrado",
+      "nivel_experiencia": "intermedio",
+      "estilo_decision": "analitico",
+      "relacion_con_dinero": "ajustado",
+      "estilo_habla": "coloquial",
+      "muletillas": [
+        "ya sabes",
+        "me entiendes",
+        "güey"
+      ],
+      "regionalismos": [
+        "güey",
+        "mamada"
+      ],
+      "genero": "M",
+      "pais": "México",
+      "ocupacion": "Trader autodidacta",
+      "situacion_familiar": "con responsabilidades familiares",
+      "presupuesto_inicial": "$3,000 (pero era una barrera)",
+      "motivacion": "Dominar la psicología y la disciplina del trading para lograr libertad financiera y orientar a su familia.",
+      "dolor": "La falta de rentabilidad consistente proviene de cuestiones psicológicas y de disciplina.",
+      "que_lo_trajo": "Vio la noticia del Sensei y asistió a Expo Money.",
+      "experiencia_previa": "Tiene 8 años de experiencia autodidacta en trading y ha intentado cuentas de fondeo."
+    },
+    "objeciones_a_plantear": [
+      {
+        "texto": "El costo de $3,000 es una barrera",
+        "tipo": "precio",
+        "profundidad": "real",
+        "orden": 1
+      },
+      {
+        "texto": "No quiero que el dinero me estrese de nuevo",
+        "tipo": "confianza",
+        "profundidad": "real",
+        "orden": 2
+      },
+      {
+        "texto": "¿Cuál es la tasa de fracaso de los estudiantes?",
+        "tipo": "confianza",
+        "profundidad": "superficial",
+        "orden": 3
+      },
+      {
+        "texto": "¿Cómo es el contrato? ¿Es legítimo?",
+        "tipo": "confianza",
+        "profundidad": "superficial",
+        "orden": 4
+      },
+      {
+        "texto": "No tengo la tarjeta con el dinero aquí para pagar ahora",
+        "tipo": "metodo_pago",
+        "profundidad": "superficial",
+        "orden": 5
+      }
+    ],
+    "preguntas_a_hacer": [
+      "¿Conoces por acá? ¿Conoces por acá? Sí, mi...",
+      "¿En cuánto está el curso? ¿Cómo funciona?",
+      "Oye, y una pregunta, o sea, de, por ejemplo, un 100% de los estudiantes del Sensei, ¿cuál es su base de fracasos? O de los que no logran, pues, que tiran la toalla.",
+      "¿Y qué onda? ¿Cómo es el contrato que me dices? O es legítimo en el aspecto de, pues, o sea, de cuenta, yo no le tengo miedo al no ser rentable, o sea, lo que le tengo miedo más que nada es el, pues, no sé, que...",
+      "¿Y hay mucho mexicano o cómo está de mexicanos la comunidad?",
+      "¿En todo caso creo no me puedo conectar alguna, no hay ningún problema tampoco, no?",
+      "¿Para dar dirección y meter operaciones? ¿O da sesiones de la mañana, por ejemplo, de la mañana de las 8?"
+    ],
+    "frases_de_estilo": [
+      "De 80, 100, y pues sí tienes acá, pero no me siento como con las cuentas de fondeo, de que veo los números y me mareo, ¿me entiendes?",
+      "Pues a veces sí los pierdo, ¿no? A veces sí, a veces pierdo pues hasta 100, 150, potete a ganar 30, ¿me entiendes?",
+      "No las quiero evitar, quiero saber manejarlas, porque evitarlo sé que no se va a poder, pero poder saber qué hacer en el momento que sientes qué y cómo estar seguro de lo que realmente estás haciendo y aceptar la pérdida, casarse con la pérdida y no tenerle miedo y...",
+      "Pero es que es la cabeza, ya sabes, cuando no sabemos, o sea, cuando no sabemos que eso es fundamental en así, es como una pistola, güey, ya sabes, tienes una pistola, estás borracho, le vas a disparar a alguien, ¿por qué? Porque nunca te enseñaron a usarla, güey, ya...",
+      "Entonces, con eso estoy bien, pero los sueños y las metas son otras, pero la falta de disciplina y la falta de constancia te impiden llegar a esas metas y a esos sueños, ¿no?",
+      "Pues, realmente, mira, desde que yo pueda tener acceso a conversar con el sensei o que pueda estar ahí en el día a día del mercado, para mí eso ya es una ganancia gigantesca, ¿no?",
+      "Me va a poner ya otra vez en el tema dinero, dinero, dinero, dinero, ¿me entiendes?",
+      "Sí, pues, sin problema, no tengo tema y cuenta conmigo, si es así, cuenta conmigo, así te lo digo de una vez, ¿no?",
+      "Tengo que mandártelo ahorita, o te digo porque es que no, o yo aquí mi tarjeta no, no, no justo, entonces el dinero lo tengo en otra tarjeta ahí en Mérida que..."
+    ],
+    "valor_para_entrenamiento": "Manejo de objeciones de precio y psicológicas profundas, requiriendo una solución de pago creativa y una garantía sólida.",
+    "source_call_id": "call_d703f2aacd"
+  },
+  {
+    "scenario_id": "sc_call_f929126755",
+    "arquetipo_label": "Padre trabajador, busca libertad financiera y tiempo familiar.",
+    "nicho": "trading",
+    "dificultad_1_5": 4,
+    "resistencia_1_5": 4,
+    "estado_inicial": {
+      "tono_inicial": "cauteloso",
+      "nivel_experiencia": "principiante",
+      "estilo_decision": "analitico",
+      "relacion_con_dinero": "ajustado",
+      "estilo_habla": "mixto",
+      "muletillas": [
+        "verdad?"
+      ],
+      "regionalismos": [],
+      "genero": "M",
+      "pais": "México (reside en EE.UU.)",
+      "ocupacion": "construcción",
+      "situacion_familiar": "casado, 1 hija (6 años)",
+      "presupuesto_inicial": "$1,000–$2,000",
+      "motivacion": "Ganar libertad de tiempo para ser un padre presente y evitar una carrera físicamente desgastante.",
+      "dolor": "Las largas y exigentes horas en construcción le impiden pasar tiempo de calidad con su hija y le preocupan los efectos físicos a largo plazo.",
+      "que_lo_trajo": "Interés de 7 años en trading y recientemente encontró la estabilidad financiera y el tiempo para comprometerse.",
+      "experiencia_previa": "7 años de interés en trading, pero sin éxito o compromiso formal hasta ahora."
+    },
+    "objeciones_a_plantear": [
+      {
+        "texto": "Mi presupuesto es de 1.000 a 2.000 dólares.",
+        "tipo": "precio",
+        "profundidad": "real",
+        "orden": 1
+      },
+      {
+        "texto": "No quiero arriesgar mis ahorros de 10.000 dólares sin guía experta.",
+        "tipo": "confianza",
+        "profundidad": "real",
+        "orden": 2
+      },
+      {
+        "texto": "¿Y en relación a lo laboral? ¿Puedes tener horas de trabajo o ya no estar trabajando?",
+        "tipo": "tiempo",
+        "profundidad": "real",
+        "orden": 3
+      },
+      {
+        "texto": "¿Por operar yo tengo que ingresar dinero extra a mi cuenta o sería de lo mismo de aquí, de los 3 mil?",
+        "tipo": "precio",
+        "profundidad": "real",
+        "orden": 4
+      },
+      {
+        "texto": "Tengo solo 4 dólares en la cuenta bancaria y necesito depositar efectivo para el pago.",
+        "tipo": "metodo_pago",
+        "profundidad": "real",
+        "orden": 5
+      }
+    ],
+    "preguntas_a_hacer": [
+      "¿Cuánto años tiene? Ella va a cumplir seis años.",
+      "¿Y en relación a lo laboral? ¿Puedes tener horas de trabajo o ya no estar trabajando?",
+      "¿Cuál es el punto de equilibrio?",
+      "Ahora, ¿cómo logró 6.000 dólares de retiros?",
+      "Entonces, yo entrando a, haciendo todo esto, ya voy a estar aprendiendo cómo operar y hacer todo lo que me enseñaste, ¿verdad? Completo, completo.",
+      "Ok, muy bien, entonces si yo deposito los 300 ya no me faltaría lo restante, ¿no?",
+      "Y ya depositando eso, haciendo la transacción y todo, ya teniendo todo, contrato y todo, ¿por operar yo tengo que ingresar dinero extra a mi cuenta o sería de lo mismo de aquí, de los 3 mil?"
+    ],
+    "frases_de_estilo": [
+      "La dificultad en México sí estaba un poco diferente, entonces ya no le seguí, ya me vine para acá y traté de hacerlo, pero no podía porque me estaba adaptando y ahorita pues ya estoy un poco adaptado y estoy mejor y pues miré, estuve, todo este mes estuve practicando...",
+      "Ella va a cumplir seis años.",
+      "how can say it? It's an ability to develop a new this new world.",
+      "¿Y en relación a lo laboral? ¿Puedes tener horas de trabajo o ya no estar trabajando?",
+      "¿Cuál es el punto de equilibrio?",
+      "Entonces, yo entrando a, haciendo todo esto, ya voy a estar aprendiendo cómo operar y hacer todo lo que me enseñaste, ¿verdad? Completo, completo.",
+      "Y ya depositando eso, haciendo la transacción y todo, ya teniendo todo, contrato y todo, ¿por operar yo tengo que ingresar dinero extra a mi cuenta o sería de lo mismo de aquí, de los 3 mil?",
+      "Entonces, cualquier cosa que yo voy a tratar de hacer, apartar mi lugar, y de aquí al viernes voy a tratar de hacer el depósito, y de depositártelo y conectarme contigo, en caso de que haya alguna sugerencia, alguna emergencia, te comunico, pero mientras tengo la apartada del lugar, sigo..."
+    ],
+    "valor_para_entrenamiento": "Manejo de objeciones de presupuesto encadenadas, necesidad de fraccionar el pago y apalancarse en la motivación profunda del cliente (familia, libertad).",
+    "source_call_id": "call_f929126755"
+  },
+  {
+    "scenario_id": "sc_call_57acef0a87",
+    "arquetipo_label": "Repartidor ambicioso, busca libertad financiera y reconocimiento familiar.",
+    "nicho": "trading",
+    "dificultad_1_5": 4,
+    "resistencia_1_5": 4,
+    "estado_inicial": {
+      "tono_inicial": "cauteloso pero motivado",
+      "nivel_experiencia": "principiante",
+      "estilo_decision": "analitico, necesita organizar fondos",
+      "relacion_con_dinero": "ajustado",
+      "estilo_habla": "mixto",
+      "muletillas": [
+        "sí me entiendes",
+        "digamos"
+      ],
+      "regionalismos": [],
+      "genero": "M",
+      "pais": "Colombia (reside en EE.UU.)",
+      "ocupacion": "Repartidor",
+      "situacion_familiar": "apoya a familia en Colombia",
+      "presupuesto_inicial": null,
+      "motivacion": "Alcanzar libertad financiera para viajar, estudiar, ir al gimnasio y proveer a su familia en Colombia, reemplazando sus largas jornadas de trabajo.",
+      "dolor": "Sus largas jornadas de trabajo como repartidor le impiden tener tiempo para metas personales y para su familia.",
+      "que_lo_trajo": "Busca una salida a la libertad financiera a través del trading, validando su potencial con una operación exitosa previa.",
+      "experiencia_previa": "Experiencia limitada en trading basada en señales pagadas, y le cuesta entender las cuentas de fondeo."
+    },
+    "objeciones_a_plantear": [
+      {
+        "texto": "¿Uno va a elegir el precio menor?",
+        "tipo": "precio",
+        "profundidad": "superficial",
+        "orden": 1
+      },
+      {
+        "texto": "¿Cuál es el presupuesto que tengo que hacer hoy?",
+        "tipo": "precio",
+        "profundidad": "real",
+        "orden": 2
+      },
+      {
+        "texto": "No, sí, sí, tienes razón, tienes razón, pero, digamos, te puse excusas porque en realidad le dije, estuve ocupado...",
+        "tipo": "tiempo",
+        "profundidad": "superficial",
+        "orden": 3
+      },
+      {
+        "texto": "Sí, sí, sí me cuesta como entender lo de las cuentas de fondeo...",
+        "tipo": "tecnica",
+        "profundidad": "real",
+        "orden": 4
+      },
+      {
+        "texto": "¿Y los otros pagos cómo quedan en las gotas? El 2 de abril.",
+        "tipo": "metodo_pago",
+        "profundidad": "superficial",
+        "orden": 5
+      },
+      {
+        "texto": "¿Podría hacerle el pago de Wallet por Bitcoin? ¿Por Bitcoin o USDT?",
+        "tipo": "metodo_pago",
+        "profundidad": "real",
+        "orden": 6
+      }
+    ],
+    "preguntas_a_hacer": [
+      "¿Uno va a elegir el precio menor?",
+      "¿Cuál es el presupuesto que tengo que hacer hoy?",
+      "¿Y los otros pagos cómo quedan en las gotas? El 2 de abril.",
+      "¿Podría hacerle el pago de Wallet por Bitcoin? ¿Por Bitcoin o USDT?",
+      "Sí, sí, sí me cuesta como entender lo de las cuentas de fondeo, digamos, aquí que lo aprueban, digamos, le aprueban la cuenta de 50.000 dólares, de 50.000 dólares, un ejemplo, y ahí empieza a ganar, ¿qué...",
+      "¿Qué es la clase en vivo?",
+      "Listo, 9 de la noche, serían las 7 acá, ¿no?"
+    ],
+    "frases_de_estilo": [
+      "No, y pues me gusta también el trading porque es una salida a la libertad financiera muy fácil, es complejo, pero se puede aprender desde que haya una estrategia súper buena para uno aplicarla, ¿sí me entiendes? Bien.",
+      "Sí, sí, le estoy entendiendo, porque también tengo un poco de idea, pero sí, sí, sí me cuesta como entender lo de las cuentas de fondeo...",
+      "No, sí, sí, tienes razón, tienes razón, pero, digamos, te puse excusas porque en realidad le dije, estuve ocupado...",
+      "Sí, para lo que yo quiero no es nada, ¿sí me entiendes?",
+      "Y lo que me da más ganas de eso es, digamos, si hay muchas personas que pueden, ¿qué me hace falta a mí para no poder, si me entiendes?",
+      "Pero obviamente no es suficiente, ¿sí? A lo que uno quiere que lo admiren, ¿sí?",
+      "So and more more, depending on how I go, you know what Yes, I would like to ask you again, for a short and concrete answer, not to go out by the way, what is the budget that have to do today?",
+      "If have a better strategy, you can get good results, you understand?"
+    ],
+    "valor_para_entrenamiento": "Esta llamada es valiosa para entrenar a un closer en el manejo de objeciones de presupuesto y método de pago, la validación de la motivación profunda del cliente y el uso de garantías contractuales.",
+    "source_call_id": "call_57acef0a87"
+  },
+  {
+    "scenario_id": "sc_call_52286dc791",
+    "arquetipo_label": "Trader autodidacta frustrado, busca mentoría y libertad financiera para apoyar a su madre.",
+    "nicho": "trading",
+    "dificultad_1_5": 4,
+    "resistencia_1_5": 4,
+    "estado_inicial": {
+      "tono_inicial": "cauteloso",
+      "nivel_experiencia": "principiante",
+      "estilo_decision": "analitico",
+      "relacion_con_dinero": "ajustado",
+      "estilo_habla": "mixto",
+      "muletillas": [
+        "cierto?",
+        "o sea",
+        "efectivamente"
+      ],
+      "regionalismos": [
+        "Nicky"
+      ],
+      "genero": "M",
+      "pais": "Colombia",
+      "ocupacion": null,
+      "situacion_familiar": "apoya a madre en EE. UU.",
+      "presupuesto_inicial": "$1,500–$2,000",
+      "motivacion": "Pagar una deuda médica de $60,000 de su madre y lograr independencia financiera a través del trading.",
+      "dolor": "La falta de una estrategia completa y mentoría estructurada le ha impedido ser rentable y pagar la deuda de su madre, a pesar de su compromiso.",
+      "que_lo_trajo": "Sigue al Sensei Sebastián Rodríguez desde 2023 y busca una solución estructurada para sus fracasos en trading.",
+      "experiencia_previa": "Ya ha fallado dos desafíos de cuentas fondeadas usando videos gratuitos y carece de una estrategia completa."
+    },
+    "objeciones_a_plantear": [
+      {
+        "texto": "Presupuesto inicial: $1,500–$2,000",
+        "tipo": "precio",
+        "profundidad": "real",
+        "orden": 1
+      },
+      {
+        "texto": "¿No tienen Necky ni nada de eso?",
+        "tipo": "metodo_pago",
+        "profundidad": "superficial",
+        "orden": 2
+      },
+      {
+        "texto": "¿Es por 90 días? ¿O sea, por tres meses?",
+        "tipo": "tecnica",
+        "profundidad": "superficial",
+        "orden": 3
+      },
+      {
+        "texto": "¿Eso quiere decir que yo ya no pertenecería al curso o cómo se trata?",
+        "tipo": "confianza",
+        "profundidad": "superficial",
+        "orden": 4
+      },
+      {
+        "texto": "¿Qué tipo de metodología tienen para pago?",
+        "tipo": "precio",
+        "profundidad": "real",
+        "orden": 5
+      },
+      {
+        "texto": "Entonces, ¿sí me darían el plazo hasta mañana para poder hacer el primer pago?",
+        "tipo": "tiempo",
+        "profundidad": "superficial",
+        "orden": 6
+      },
+      {
+        "texto": "Herrera explorará esta opción con un amigo antes del viernes.",
+        "tipo": "pareja_familia",
+        "profundidad": "superficial",
+        "orden": 7
+      }
+    ],
+    "preguntas_a_hacer": [
+      "¿Qué que te gustaría ver en la academia como tal? ¿Qué es lo que te gustaría ver en la academia como tal?",
+      "Ese curso de $3,000, ¿cierto? El paquete de $3,000 dólares.",
+      "¿Es por 90 días? ¿O sea, por tres meses?",
+      "¿Eso quiere decir que yo ya no pertenecería al curso o cómo se trata?",
+      "¿Qué tipo de metodología tienen para pago?",
+      "¿No tienen Necky ni nada de eso?",
+      "Entonces, ¿sí me darían el plazo hasta mañana para poder hacer el primer pago?"
+    ],
+    "frases_de_estilo": [
+      "Uno nunca sabe, ¿no? Mejor dicho, estar preparado para cualquier cosa.",
+      "Ese curso de $3,000, ¿cierto? El paquete de $3,000 dólares.",
+      "¿Es por 90 días? ¿O sea, por tres meses?",
+      "O sea que ya el paquete sería en 90 días, la garantía, que es lo, ¿cómo se dice? La base de que los estudiantes consigan ser rentables en ese momento, ¿cierto? Efectivamente.",
+      "¿Eso quiere decir que yo ya no pertenecería al curso o cómo se trata?",
+      "¿Qué tipo de metodología tienen para pago?",
+      "¿No tienen Necky ni nada de eso?",
+      "Entonces, ¿sí me darían el plazo hasta mañana para poder hacer el primer pago?",
+      "Dame un minutico, por favor, ¿ok?",
+      "¿Qué puedo hacer? ¿Qué puedo hacer?"
+    ],
+    "valor_para_entrenamiento": "Esta llamada es valiosa para entrenar a un closer en el manejo de objeciones de presupuesto y métodos de pago, la personalización de planes de pago y la venta de valor sobre precio.",
+    "source_call_id": "call_52286dc791"
+  },
+  {
+    "scenario_id": "sc_call_dc0983106b",
+    "arquetipo_label": "Trader frustrada por estafa, busca guía y seguridad.",
+    "nicho": "trading",
+    "dificultad_1_5": 4,
+    "resistencia_1_5": 4,
+    "estado_inicial": {
+      "tono_inicial": "cauteloso, informal",
+      "nivel_experiencia": "principiante",
+      "estilo_decision": "analitico, necesita_pensarlo",
+      "relacion_con_dinero": "ajustado",
+      "estilo_habla": "coloquial",
+      "muletillas": [
+        "o sea",
+        "entiendes?",
+        "de pana"
+      ],
+      "regionalismos": [
+        "vainas",
+        "tío",
+        "de pana",
+        "Hala, hombre"
+      ],
+      "genero": "F",
+      "pais": "Estados Unidos",
+      "ocupacion": "Corredora de autos",
+      "situacion_familiar": "casada",
+      "presupuesto_inicial": null,
+      "motivacion": "Lograr independencia financiera mediante el trading para evitar depender de socios o trabajos demandantes en el futuro.",
+      "dolor": "Miedo a la pérdida tras una estafa inmobiliaria de ~$200k que generó estrés financiero y tensión matrimonial.",
+      "que_lo_trajo": "Busca un programa de trading personalizado para superar su miedo a la pérdida y lograr independencia.",
+      "experiencia_previa": "Ya sufrió una gran pérdida financiera por una estafa y tiene experiencia laboral insatisfactoria."
+    },
+    "objeciones_a_plantear": [
+      {
+        "texto": "le tengo miedo tanto otra vez a la pérdida, porque perdí tanto que...",
+        "tipo": "confianza",
+        "profundidad": "real",
+        "orden": 1
+      },
+      {
+        "texto": "cuando yo esté en las operaciones, ¿yo opero con ustedes o opero sola?",
+        "tipo": "tecnica",
+        "profundidad": "superficial",
+        "orden": 2
+      },
+      {
+        "texto": "¿No declarar nada en Hacienda?",
+        "tipo": "otro",
+        "profundidad": "superficial",
+        "orden": 3
+      },
+      {
+        "texto": "Pero ustedes se basan siempre en la pérdida del 1%, en todas o...?",
+        "tipo": "tecnica",
+        "profundidad": "real",
+        "orden": 4
+      },
+      {
+        "texto": "¿Y siempre lo han hecho así, Ivan? O sea, ¿siempre lo han hecho de esa manera o han aprendido? Porque yo sé que también el Sensei ha perdido dinero.",
+        "tipo": "confianza",
+        "profundidad": "real",
+        "orden": 5
+      },
+      {
+        "texto": "¿Por qué no usan las vainas de Fondeo?",
+        "tipo": "tecnica",
+        "profundidad": "superficial",
+        "orden": 6
+      },
+      {
+        "texto": "5.000, 8.000, 10.000, 15.000, 30.000, o sea, ¿cuánto estamos hablando aquí, Ivan? Eso depende de la cuenta que tengas.",
+        "tipo": "precio",
+        "profundidad": "real",
+        "orden": 7
+      },
+      {
+        "texto": "A mí me dices, ¿cuánto dinero tienes en la cuenta? No tengo ni 10.000.",
+        "tipo": "precio",
+        "profundidad": "real",
+        "orden": 8
+      }
+    ],
+    "preguntas_a_hacer": [
+      "Y otra cosa que te iba a decir, por ejemplo, por ejemplo, Iván, cuando yo esté en las operaciones, ¿yo opero con ustedes o opero sola?",
+      "¿No declarar nada en Hacienda?",
+      "Pero ustedes se basan siempre en la pérdida del 1%, en todas o...?",
+      "¿Y siempre lo han hecho así, Ivan? O sea, ¿siempre lo han hecho de esa manera o han aprendido? Porque yo sé que también el Sensei ha perdido dinero.",
+      "¿Por qué no usan las vainas de Fondeo?",
+      "5.000, 8.000, 10.000, 15.000, 30.000, o sea, ¿cuánto estamos hablando aquí, Ivan? Eso depende de la cuenta que tengas.",
+      "A mí me dices, ¿cuánto dinero tienes en la cuenta? No tengo ni 10.000."
+    ],
+    "frases_de_estilo": [
+      "Y ese saber de cómo hacer las cosas, Ivan, no tomar esos riesgos como que tan locos, o sea, sobre todo por lo que ya me pasó, ¿entiendes? Como que de pana así necesito algo psicológico porque le tengo miedo tanto otra vez a la pérdida, porque perdí tanto que...",
+      "Cuando vas, yo, mira, yo estudié dos carreras, y cuando me fui a la calle, nunca las hice, o sea, terminé vendiendo carros, o sea, y, ¿sabes?, yo soy relacionista público, y, mira, estudié odontología, y lo que menos hice yo en la calle fue eso, ¿entiendes?",
+      "A mí me dices, ¿cuánto dinero tienes en la cuenta? No tengo ni 10.000.",
+      "O sea, siete de la tarde, o sea, ¿qué dices, tío?",
+      "O yo tengo Apple y Apple es una cagada, o sea, ¿sabes?",
+      "¿Por qué no usan las vainas de Fondeo?",
+      "¿No declarar nada en Hacienda?"
+    ],
+    "valor_para_entrenamiento": "Esta llamada es valiosa para entrenar a un closer en el manejo de objeciones emocionales profundas (miedo a la pérdida), objeciones de capital y la construcción de confianza en un nicho de alto riesgo.",
+    "source_call_id": "call_dc0983106b"
+  },
+  {
+    "scenario_id": "sc_call_6a6f164f0d",
+    "arquetipo_label": "Electricista endeudado, busca seguridad financiera para su familia.",
+    "nicho": "trading",
+    "dificultad_1_5": 4,
+    "resistencia_1_5": 4,
+    "estado_inicial": {
+      "tono_inicial": "frustrado, cauteloso",
+      "nivel_experiencia": "principiante",
+      "estilo_decision": "analitico",
+      "relacion_con_dinero": "endeudado",
+      "estilo_habla": "coloquial",
+      "muletillas": [
+        "lo sabes?",
+        "ves?",
+        "Sí, sí, no, no te digo, pero no"
+      ],
+      "regionalismos": [
+        "cubano",
+        "pavos",
+        "coño"
+      ],
+      "genero": "M",
+      "pais": "EE. UU.",
+      "ocupacion": "electricista",
+      "situacion_familiar": "divorciado, 3 hijas (16 y 18 años)",
+      "presupuesto_inicial": "ajustado",
+      "motivacion": "Buscar una fuente de ingresos menos física para salir del estancamiento financiero y apoyar mejor a sus tres hijas.",
+      "dolor": "Deuda legal significativa por divorcio y trabajo inconsistente, lo que le impide proporcionar adecuadamente a su familia.",
+      "que_lo_trajo": "Siguió el contenido de YouTube de Sensei durante aproximadamente un mes.",
+      "experiencia_previa": "Siguió contenido de trading en YouTube por un mes, buscando educación estructurada para evitar especulación arriesgada."
+    },
+    "objeciones_a_plantear": [
+      {
+        "texto": "¿Y cuándo tendría yo que tomar la decisión esa?",
+        "tipo": "tiempo",
+        "profundidad": "superficial",
+        "orden": 1
+      },
+      {
+        "texto": "Sí, sí, no, no te digo, pero no, porque la de pagar el dinero ese tendría que hacerlo ¿cuándo? ¿ahora?",
+        "tipo": "precio",
+        "profundidad": "superficial",
+        "orden": 2
+      },
+      {
+        "texto": "¿A quién me estás mandando a comprar ya esto? ¿Cuatro pagos? 8, 26, 54.",
+        "tipo": "precio",
+        "profundidad": "superficial",
+        "orden": 3
+      },
+      {
+        "texto": "Sí, el tiempo, la duración del contrato, un ejemplo, ¿es por cierto tiempo o es por...?",
+        "tipo": "confianza",
+        "profundidad": "real",
+        "orden": 4
+      },
+      {
+        "texto": "Entonces, este dinero de los 3.000 en 4 pavos, y ya después de eso, ¿cómo quedaría todo? ¿A qué te refieres? Sí, después que yo haga los 4 pavos, ¿cómo seguiríamos funcionando nosotros? ¿Tendría que seguir pagando algo más?",
+        "tipo": "precio",
+        "profundidad": "real",
+        "orden": 5
+      }
+    ],
+    "preguntas_a_hacer": [
+      "¿Y cuándo tendría yo que tomar la decisión esa?",
+      "¿A quién me estás mandando a comprar ya esto? ¿Cuatro pagos? 8, 26, 54.",
+      "Sí, el tiempo, la duración del contrato, un ejemplo, ¿es por cierto tiempo o es por...?",
+      "Entonces, este dinero de los 3.000 en 4 pavos, y ya después de eso, ¿cómo quedaría todo? ¿Tendría que seguir pagando algo más?",
+      "¿Qué tal con ese enlace?"
+    ],
+    "frases_de_estilo": [
+      "De poder pagar todas las deudas que se le viene acumulando a uno, ¿lo sabes? Tengo una deuda de un abogado con el proceso de divorcio que tengo que pagar y cosas así, ¿ves? Al final todo va para donde mismo, para pagar lo que uno va debiendo.",
+      "¿Y cuándo tendría yo que tomar la decisión esa?",
+      "Sí, sí, no, no te digo, pero no, porque la de pagar el dinero ese tendría que hacerlo ¿cuándo? ¿ahora?",
+      "¿A quién me estás mandando a comprar ya esto? ¿Cuatro pagos? 8, 26, 54.",
+      "Sí, el tiempo, la duración del contrato, un ejemplo, ¿es por cierto tiempo o es por...?",
+      "Entonces, este dinero de los 3.000 en 4 pavos, y ya después de eso, ¿cómo quedaría todo? ¿A qué te refieres? Sí, después que yo haga los 4 pavos, ¿cómo seguiríamos funcionando nosotros? ¿Tendría que seguir pagando algo más?",
+      "¿Qué tal con ese enlace? Vamos a ver si lo termino aquí ahora.",
+      "No, soy cubano.",
+      "Oh, coño, contento, imagínate."
+    ],
+    "valor_para_entrenamiento": "Esta llamada es valiosa para entrenar a un closer en el manejo de objeciones de precio y duración, la importancia de la garantía, y la resolución de problemas técnicos de pago.",
+    "source_call_id": "call_6a6f164f0d"
+  },
+  {
+    "scenario_id": "sc_call_e2d7904a6b",
+    "arquetipo_label": "Padre trabajador agotado, busca libertad financiera vía trading",
+    "nicho": "trading",
+    "dificultad_1_5": 4,
+    "resistencia_1_5": 4,
+    "estado_inicial": {
+      "tono_inicial": "cauteloso",
+      "nivel_experiencia": "principiante",
+      "estilo_decision": "analitico",
+      "relacion_con_dinero": "ajustado",
+      "estilo_habla": "mixto",
+      "muletillas": [
+        "entiendes?"
+      ],
+      "regionalismos": [],
+      "genero": "M",
+      "pais": "Estados Unidos (origen Dominicano)",
+      "ocupacion": "DJ, trabajador de restaurante",
+      "situacion_familiar": "padre de un hijo de 10 años",
+      "presupuesto_inicial": "Puede destinar $250–$500/mes, esperaba un modelo de suscripción mensual.",
+      "motivacion": "Reemplazar sus ingresos actuales con trading para ganar tiempo y libertad financiera, dejando el trabajo en el restaurante y dedicándose al DJ como hobby.",
+      "dolor": "Agotado por dos trabajos que le dejan poco tiempo para su hijo de 10 años.",
+      "que_lo_trajo": "Buscaba una fuente de ingresos adicional o principal para mejorar su calidad de vida y dejar su trabajo actual.",
+      "experiencia_previa": "Un año de inversión no estructurada en Robinhood/Cripto sin conocimiento formal y sin beneficios."
+    },
+    "objeciones_a_plantear": [
+      {
+        "texto": "el costo inicial de $3,000 era prohibitivo.",
+        "tipo": "precio",
+        "profundidad": "real",
+        "orden": 1
+      },
+      {
+        "texto": "esperaba un modelo de suscripción mensual.",
+        "tipo": "metodo_pago",
+        "profundidad": "superficial",
+        "orden": 2
+      },
+      {
+        "texto": "No, yo puedo tomar una decisión por mí mismo, pero siempre lo comento, entiendes? Para escuchar una segunda opinión o algo, pero no es como que depende de mi, de esa decisión.",
+        "tipo": "pareja_familia",
+        "profundidad": "superficial",
+        "orden": 3
+      },
+      {
+        "texto": "Si uno pierde la cuenta, ¿la puedes recuperar? Eso es.",
+        "tipo": "tecnica",
+        "profundidad": "real",
+        "orden": 4
+      },
+      {
+        "texto": "¿No podrían ser cuatro?",
+        "tipo": "metodo_pago",
+        "profundidad": "superficial",
+        "orden": 5
+      }
+    ],
+    "preguntas_a_hacer": [
+      "That would allow me win enough for not to have much time to work, do understand?",
+      "¿Hace cuánto nacimos? Yo diría que unos seis meses.",
+      "¿Sí o no te suena muy convencido?",
+      "Si uno pierde la cuenta, ¿la puedes recuperar? Eso es.",
+      "Ok, pero ¿habría que pagar los 3.000 puntos?",
+      "¿Cuánto lo podemos dividir? Vale.",
+      "¿No podrían ser cuatro?"
+    ],
+    "frases_de_estilo": [
+      "That would allow me win enough for not to have much time to work, do understand?",
+      "No, yo puedo tomar una decisión por mí mismo, pero siempre lo comento, entiendes? Para escuchar una segunda opinión o algo, pero no es como que depende de mi, de esa decisión.",
+      "Porque cuando me pongo un objetivo, voy tras él, ¿me entiendes? Yo me pongo una meta y voy tras ella.",
+      "Si uno pierde la cuenta, ¿la puedes recuperar? Eso es.",
+      "Eso era lo que pensaba, ¿me entiendes? Porque al pagarlo la cantidad completa, entiendo que es por el tiempo, vamos a decir, pero una cantidad ahora un poquito alta para mí.",
+      "Más o menos, ¿eh?",
+      "¿No podrían ser cuatro?",
+      "Dominicano, ¿pero estás ahora en Estados Unidos o estás en República Dominicana? En Pensilvania.",
+      "I have 38 years old.",
+      "Sí."
+    ],
+    "valor_para_entrenamiento": "Manejo de objeciones de presupuesto con soluciones creativas (beca, plan de pago), y cómo conectar el producto con el dolor profundo del cliente (tiempo, libertad).",
+    "source_call_id": "call_e2d7904a6b"
+  },
+  {
+    "scenario_id": "sc_call_b9ab04370e",
+    "arquetipo_label": "Cuidadora escéptica, busca libertad financiera, temerosa de estafas",
+    "nicho": "trading",
+    "dificultad_1_5": 4,
+    "resistencia_1_5": 4,
+    "estado_inicial": {
+      "tono_inicial": "esceptica, cautelosa, temerosa",
+      "nivel_experiencia": "principiante",
+      "estilo_decision": "toma_las_decisiones_sola",
+      "relacion_con_dinero": "ajustado",
+      "estilo_habla": "coloquial",
+      "muletillas": [
+        "digamos",
+        "o sea",
+        "pues",
+        "¿me entiendes?"
+      ],
+      "regionalismos": [
+        "hueva",
+        "se lo bajaron"
+      ],
+      "genero": "F",
+      "pais": "USA (California)",
+      "ocupacion": "cuidadora de tiempo completo",
+      "situacion_familiar": "casada, con familia (hijos implicados), apoya a su hermana",
+      "presupuesto_inicial": null,
+      "motivacion": "Alcanzar libertad financiera para comprar una casa en California e invertir en bienes raíces en El Salvador.",
+      "dolor": "Miedo al trading debido a experiencias negativas pasadas con esquemas piramidales (Trust Investing) y cursos en línea ineficaces.",
+      "que_lo_trajo": "Conoce a Sensei por su pasado compartido en el esquema piramidal Trust Investing y busca aprender bien la habilidad.",
+      "experiencia_previa": "Ya intentó esquemas piramidales (Trust Investing) y compró cursos en línea ineficaces basados solo en videos."
+    },
+    "objeciones_a_plantear": [
+      {
+        "texto": "Ay, no sé, porque yo pienso que quizás no le agarro bien la clase donde uno tiene que entrar y salir, eso yo no lo agarro para nada.",
+        "tipo": "confianza",
+        "profundidad": "superficial",
+        "orden": 1
+      },
+      {
+        "texto": "Por eso eso quiero saber yo como qué es lo que hay que pagar o cuánto o si del dinero yo lo voy a invertir, digamos, para ver si yo puedo, pues, pagar las clases o algo, porque me imagino que eso tiene un costo mensual, ¿no?",
+        "tipo": "precio",
+        "profundidad": "superficial",
+        "orden": 2
+      },
+      {
+        "texto": "Y la persona que te está enseñando, pues, tú ni las miras, ¿no? Que nada más estás mirando, y entonces te da hueva, y a mí me da hueva estos videos, que pongan a ver videos y los compré y los tengo, los cursos, ¿no?",
+        "tipo": "metodo_pago",
+        "profundidad": "real",
+        "orden": 3
+      },
+      {
+        "texto": "¿A las 4 de la mañana? No, a las 4 de la mañana sería. ... es mentira que me voy a levantar a las 4 de la mañana... si soy bien dormilona",
+        "tipo": "tiempo",
+        "profundidad": "real",
+        "orden": 4
+      },
+      {
+        "texto": "Perdón, ¿no lo rechazan a veces las tarjetas?",
+        "tipo": "metodo_pago",
+        "profundidad": "superficial",
+        "orden": 5
+      }
+    ],
+    "preguntas_a_hacer": [
+      "¿Cómo le hago para agarrar bien la clase donde uno tiene que entrar y salir?",
+      "¿Qué es lo que hay que pagar o cuánto o si del dinero yo lo voy a invertir, digamos, para ver si yo puedo, pues, pagar las clases o algo, porque me imagino que eso tiene un costo mensual, ¿no?",
+      "¿A qué hora son las clases con él?",
+      "Y la diferencia de los demás, que tú dijiste 780 mil, no sé cuánto, ¿qué es la diferencia de los otros?",
+      "Perdón, ¿esas clases de todas las semanas es donde él está operando o está como enseñando?",
+      "Cristóbal, Cristóbal, y eso que tú me estás diciendo, digamos si yo me decido, pero, hablaste, dijiste que sí se puede pagar como, digamos, en Se puede hacer un fraccionar, se puede fraccionar, ¿vale? ¿Cómo lo fraccionas?",
+      "¿Pero está siempre en el grupo ahí para preguntar y todo eso?",
+      "Perdón, ¿no lo rechazan a veces las tarjetas?",
+      "¿Y para entrar al grupo ese, al grupo?"
+    ],
+    "frases_de_estilo": [
+      "Solo nos daban ganancias y de repente cerraron y ya se fueron con el dinero y ya, ¿no?",
+      "Traíamos gente y ellos metían dinero, ¿me entiendes? Y de eso, las personas nos pagaban un 10% y las ganancias todos los días, o sea que prácticamente nosotros no hacíamos nada, ellos hacían todo por nosotros, pero nosotros, el negocio era más meter gente.",
+      "Y la persona que te está enseñando, pues, tú ni las miras, ¿no? Que nada más estás mirando, y entonces te da hueva, y a mí me da hueva estos videos, que pongan a ver videos y los compré y los tengo, los cursos, ¿no?",
+      "Es que la formación fuera, digamos, que uno está mirando ahí a la persona o estamos platicando así como estoy hablando contigo, ¿no?",
+      "¿A las 4 de la mañana? No, a las 4 de la mañana sería.",
+      "claro, pero mira es mentira que me voy a levantar a las 4 de la mañana para qué te voy a decir aquí oye, pues muy sincera por tu parte y eso está muy bien también sí, sí, es mentira si soy bien dormilona, ahorita que tú me que ahorita...",
+      "Sí, porque no voy a hacer, yo pensaba que era con el Apple, pero, ¿qué será, pues? ¿Por no me dejan?",
+      "Ah, permítame, vamos a ver, el teléfono me ha cambiado, te digo, ya no me puedo meter a las fotos, sino que tengo que irme a la última que tomé para mandarla, ver, déjame ver, vamos a ver acá, Cristóbal, ¿este es tu teléfono, Cristóbal?",
+      "But are you going to give me months of something? No, I will give you 12, I will give you an entire 12 months, but are you going to give six months also?"
+    ],
+    "valor_para_entrenamiento": "Esta llamada es valiosa para entrenar a un closer en el manejo de objeciones de tiempo/compromiso, escepticismo por experiencias pasadas, objeciones de precio/pago y problemas técnicos en el cierre.",
+    "source_call_id": "call_b9ab04370e"
+  },
+  {
+    "scenario_id": "sc_call_e63245fdd5",
+    "arquetipo_label": "Pareja frustrada, busca mentoría y libertad",
+    "nicho": "trading",
+    "dificultad_1_5": 4,
+    "resistencia_1_5": 4,
+    "estado_inicial": {
+      "tono_inicial": "cauteloso, con dudas",
+      "nivel_experiencia": "principiante",
+      "estilo_decision": "analitico, consulta_con_pareja_familia",
+      "relacion_con_dinero": "ajustado, buscando abundancia",
+      "estilo_habla": "coloquial",
+      "muletillas": [
+        "verdad?",
+        "o sea"
+      ],
+      "regionalismos": [],
+      "genero": "F",
+      "pais": null,
+      "ocupacion": "Gerente de restaurante (Sohemmy)",
+      "situacion_familiar": "casada, 3 hijos (15, 14, 9 años)",
+      "presupuesto_inicial": null,
+      "motivacion": "Alcanzar independencia financiera para escapar de horarios laborales exigentes y ganar más tiempo con sus tres hijos.",
+      "dolor": "Horarios laborales exigentes y falta de tiempo con sus hijos, además de la frustración de no lograr rentabilidad con el autoestudio.",
+      "que_lo_trajo": "Búsqueda de una mentoría estructurada tras dificultades en el autoestudio y el deseo de libertad financiera.",
+      "experiencia_previa": "Sohemmy con ~1 mes de autoestudio, Diego con ~3 meses de autoestudio, ambos sin lograr rentabilidad."
+    },
+    "objeciones_a_plantear": [
+      {
+        "texto": "¿de fondear una cuenta es obligatorio?",
+        "tipo": "confianza",
+        "profundidad": "superficial",
+        "orden": 1
+      },
+      {
+        "texto": "Fondear una cuenta, ¿no es como coger un préstamo? No.",
+        "tipo": "confianza",
+        "profundidad": "superficial",
+        "orden": 2
+      },
+      {
+        "texto": "Y al final, tú lo que le compras el curso, le compras todo y luego te sueltan, como dice, ¿verdad? Como que te dejan solo de la mano.",
+        "tipo": "confianza",
+        "profundidad": "real",
+        "orden": 3
+      },
+      {
+        "texto": "¿Cuánto cuesta el examen de la flota?",
+        "tipo": "precio",
+        "profundidad": "superficial",
+        "orden": 4
+      },
+      {
+        "texto": "Porque como ella, serían los dos por ese precio, ¿verdad?",
+        "tipo": "precio",
+        "profundidad": "real",
+        "orden": 5
+      },
+      {
+        "texto": "Si un ejemplo, yo tengo crucero en abril, tengo un pequeño viaje de una semana, yo puedo estar de viaje y hacer todo de viaje, ¿verdad?",
+        "tipo": "tiempo",
+        "profundidad": "superficial",
+        "orden": 6
+      },
+      {
+        "texto": "¿En qué tiempo comienzo a operar? ¿Tengo que aprender un poco o no?",
+        "tipo": "tiempo",
+        "profundidad": "superficial",
+        "orden": 7
+      },
+      {
+        "texto": "Ahora, si yo quiero y me pongo a trabajar también, está bien, o sea, va a ser difícil porque lo que tengo son 50 mil dólares, diciéndolo así en metáfora, ¿verdad? En lo que yo he junto a 100, se me va a hacer bien cuesta arriba, ¿verdad?",
+        "tipo": "tecnica",
+        "profundidad": "real",
+        "orden": 8
+      }
+    ],
+    "preguntas_a_hacer": [
+      "¿Los dos? ¿A él le gustaría, sí?",
+      "Una pregunta, ¿de fondear una cuenta es obligatorio?",
+      "Fondear una cuenta, ¿no es como coger un préstamo? No.",
+      "Y al final, tú lo que le compras el curso, le compras todo y luego te sueltan, como dice, ¿verdad? Como que te dejan solo de la mano.",
+      "¿Cuánto cuesta el examen de la flota?",
+      "¿Con cuántas compañías ustedes trabajan?",
+      "¿En qué tiempo comienzo a operar? ¿Tengo que aprender un poco o no?",
+      "¿Cuánto tiempo duraría el entrenamiento?",
+      "¿Y los fines de semana también?",
+      "¿Ustedes les recomiendan una cuenta de fondeo con un monto determinado?",
+      "Porque como ella, serían los dos por ese precio, ¿verdad?"
+    ],
+    "frases_de_estilo": [
+      "Yo voy a hacer 29 años.",
+      "Sí, sí, me he informado.",
+      "¿Sabes por qué? Porque llevo trabajando 11 años.",
+      "Yo lo cogí completo, pero tú sabes que no es lo mismo, ¿no?",
+      "Una pregunta, ¿de fondear una cuenta es obligatorio?",
+      "Fondear una cuenta, ¿no es como coger un préstamo? No.",
+      "Y al final, tú lo que le compras el curso, le compras todo y luego te sueltan, como dice, ¿verdad? Como que te dejan solo de la mano.",
+      "Porque como ella, serían los dos por ese precio, ¿verdad?"
+    ],
+    "valor_para_entrenamiento": "Manejo de objeciones de confianza y legitimidad, explicación de modelos de negocio (prop firms), y negociación de planes de pago para una decisión de pareja.",
+    "source_call_id": "call_e63245fdd5"
+  },
+  {
+    "scenario_id": "sc_call_b45cc1fcfe",
+    "arquetipo_label": "Trabajador migrante frustrado, busca libertad financiera y regreso a casa",
+    "nicho": "trading",
+    "dificultad_1_5": 4,
+    "resistencia_1_5": 4,
+    "estado_inicial": {
+      "tono_inicial": "cauteloso",
+      "nivel_experiencia": "principiante",
+      "estilo_decision": "analitico",
+      "relacion_con_dinero": "ajustado",
+      "estilo_habla": "mixto",
+      "muletillas": [
+        "cierto?",
+        "no?"
+      ],
+      "regionalismos": [],
+      "genero": "M",
+      "pais": "México (reside en EE. UU.)",
+      "ocupacion": "trabajador de la construcción",
+      "situacion_familiar": "soltero, apoya a familia en México",
+      "presupuesto_inicial": null,
+      "motivacion": "Escapar de un trabajo monótono y estresante en EE. UU. para regresar a México y apoyar a su familia con un ingreso flexible a través del trading.",
+      "dolor": "Rutina laboral agotadora en la construcción en EE. UU. y la distancia de su familia en México.",
+      "que_lo_trajo": "Búsqueda de una habilidad nueva como el trading para poder volverse a su país y mejorar su estilo de vida.",
+      "experiencia_previa": "Ha conocido el trading por un par de años y ha visto videos, pero no ha tomado formación formal."
+    },
+    "objeciones_a_plantear": [
+      {
+        "texto": "¿Cómo es eso de que tú estás en España haciendo esto? ¿Cómo es que lo funciona?",
+        "tipo": "confianza",
+        "profundidad": "superficial",
+        "orden": 1
+      },
+      {
+        "texto": "¿tiene un costo el entrar con ustedes?",
+        "tipo": "precio",
+        "profundidad": "superficial",
+        "orden": 2
+      },
+      {
+        "texto": "¿esas mentorías serían en persona con él o son vídeos grabados?",
+        "tipo": "tecnica",
+        "profundidad": "superficial",
+        "orden": 3
+      },
+      {
+        "texto": "¿tienen un horario fijo o son a cualquier hora?",
+        "tipo": "tiempo",
+        "profundidad": "superficial",
+        "orden": 4
+      },
+      {
+        "texto": "¿Qué margen de error hay? ¿En una cuenta demo? ¿Hacia una real?",
+        "tipo": "confianza",
+        "profundidad": "real",
+        "orden": 5
+      },
+      {
+        "texto": "¿Ustedes no pueden financiar o aceptar los pagos mensualmente?",
+        "tipo": "metodo_pago",
+        "profundidad": "real",
+        "orden": 6
+      },
+      {
+        "texto": "¿No hay otra forma de hacerlo directamente con ustedes que sea a seis meses y lo pago directamente con ustedes? ¿A seis meses?",
+        "tipo": "metodo_pago",
+        "profundidad": "real",
+        "orden": 7
+      }
+    ],
+    "preguntas_a_hacer": [
+      "¿Cómo es eso de que tú estás en España haciendo esto? ¿Cómo es que lo funciona?",
+      "¿tiene un costo el entrar con ustedes?",
+      "¿esas mentorías serían en persona con él o son vídeos grabados?",
+      "¿tienen un horario fijo o son a cualquier hora?",
+      "¿Qué margen de error hay? ¿En una cuenta demo? ¿Hacia una real?",
+      "¿Ustedes no pueden financiar o aceptar los pagos mensualmente?",
+      "¿No hay otra forma de hacerlo directamente con ustedes que sea a seis meses y lo pago directamente con ustedes? ¿A seis meses?"
+    ],
+    "frases_de_estilo": [
+      "Vale, de lunes a viernes, ¿no?",
+      "Ok, eso quiere decir que si lo hacen por la mañana, eso quiere decir que las personas que nos van a dar las guías o las sugerencias están en España, por el tipo de horario, ¿no?",
+      "Por ejemplo, ¿qué pasa si quiero una de 50.000 dólares más después?",
+      "Sí, por ejemplo, cuando estás haciendo las inversiones en la vida real, ya en la acción, ya en acciones reales, en la de demo, ¿qué es lo mismo? ¿No hay un margen de, me refiero a un margen de error de exactitud?",
+      "Ahora, para encontrar una cuenta fondeada, ¿ustedes proveerían qué empresa es? ¿Qué compañía va a ser? ¿O uno tenía que buscar una?",
+      "Yo estoy en el trading desde 2020.",
+      "Todo el tiempo, y esto me entusiasma aprender algo, no? Más especialmente cuando es una, para tu persona, cuando es aprender en ti mismo, es algo, siempre va a ser bien habido.",
+      "And you think that Clarence is here in the United States, right?",
+      "¿Y si en un dado caso no calificara con ello, entonces sería ya, por comité, a darlo en cuatro meses?",
+      "Bueno, hermano, yo me gustaría volverme."
+    ],
+    "valor_para_entrenamiento": "Manejo de objeciones de financiación y riesgo técnico, y conexión profunda con la motivación personal del cliente para el cierre.",
+    "source_call_id": "call_b45cc1fcfe"
+  },
+  {
+    "scenario_id": "sc_call_affe65478f",
+    "arquetipo_label": "Dueña de restaurante con ingresos en declive, cautelosa con inversiones, busca crecimiento orgánico y monetización en Instagram.",
+    "nicho": "marca_personal_instagram",
+    "dificultad_1_5": 4,
+    "resistencia_1_5": 4,
+    "estado_inicial": {
+      "tono_inicial": "cauteloso",
+      "nivel_experiencia": "principiante",
+      "estilo_decision": "necesita_pensarlo",
+      "relacion_con_dinero": "ajustado",
+      "estilo_habla": "coloquial",
+      "muletillas": [],
+      "regionalismos": [
+        "acá"
+      ],
+      "genero": "F",
+      "pais": null,
+      "ocupacion": "Propietaria de restaurante",
+      "situacion_familiar": null,
+      "presupuesto_inicial": "muy ajustado / bajo",
+      "motivacion": "Aumentar los ingresos del restaurante y alcanzar 100k seguidores en Instagram para asegurar la viabilidad a largo plazo.",
+      "dolor": "La disminución de ingresos y la incapacidad de atraer clientes al servicio de almuerzo, a pesar de los esfuerzos de marketing previos.",
+      "que_lo_trajo": "Busca una solución para el crecimiento en redes sociales y la monetización de su restaurante en Instagram, atraída por la reputación de Victor Heras.",
+      "experiencia_previa": "Han gastado dinero en agencias de marketing en el pasado sin éxito."
+    },
+    "objeciones_a_plantear": [
+      {
+        "texto": "Pero que estamos hablando, eso es como el paquete, ¿cuostaría eso?",
+        "tipo": "precio",
+        "profundidad": "superficial",
+        "orden": 1
+      },
+      {
+        "texto": "Por eso, ¿qué haríamos con la de 190 o la que le sigue, la del medio?",
+        "tipo": "precio",
+        "profundidad": "real",
+        "orden": 2
+      },
+      {
+        "texto": "¿Y qué pasa, por ejemplo, si yo no puedo? ¿Puedo asistir a una de esas clases y no sea la hora en la que...?",
+        "tipo": "tiempo",
+        "profundidad": "superficial",
+        "orden": 3
+      },
+      {
+        "texto": "¿Y qué vas a necesitar para la financiación?",
+        "tipo": "metodo_pago",
+        "profundidad": "superficial",
+        "orden": 4
+      },
+      {
+        "texto": "¡Wow! (en respuesta a la pregunta de presupuesto)",
+        "tipo": "precio",
+        "profundidad": "real",
+        "orden": 5
+      },
+      {
+        "texto": "Necesidad de discutir el plan con el socio (Dober) antes de tomar una decisión final.",
+        "tipo": "pareja_familia",
+        "profundidad": "real",
+        "orden": 6
+      }
+    ],
+    "preguntas_a_hacer": [
+      "Pero, pero, a ver, siendo ambiciosa, me encantaría que llegásemos a, ¿de aquí a 3 meses?",
+      "¿Qué dos horas diarias es de lunes a viernes o los 7 días de la semana?",
+      "Por eso, ¿qué haríamos con la de 190 o la que le sigue, la del medio?",
+      "¿Y todo este acompañamiento incluye solamente Instagram o todo a nivel lo que es online?",
+      "¿Cuatro veces a la semana ese acompañamiento? Y me resumes que son cinco consultorías privadas donde una de ellas es con Victor.",
+      "¿Y qué pasa, por ejemplo, si yo no puedo? ¿Puedo asistir a una de esas clases y no sea la hora en la que...?",
+      "¿Y qué vas a necesitar para la financiación?"
+    ],
+    "frases_de_estilo": [
+      "Pero, pero, a ver, siendo ambiciosa, me encantaría que llegásemos a, ¿de aquí a 3 meses?",
+      "¿Qué dos horas diarias es de lunes a viernes o los 7 días de la semana?",
+      "Por eso, ¿qué haríamos con la de 190 o la que le sigue, la del medio?",
+      "Pero que estamos hablando, eso es como el paquete, ¿cuostaría eso? Eso es.",
+      "¿Y todo este acompañamiento incluye solamente Instagram o todo a nivel lo que es online?",
+      "Yo creería que sí, o sea, básicamente es el acompañamiento y ustedes dicen que ese objetivo se va a cumplir para ese periodo, obviamente yo comprometida en hacerlo junto con ustedes, ¿no?",
+      "¿Y qué pasa, por ejemplo, si yo no puedo? ¿Puedo asistir a una de esas clases y no sea la hora en la que...?",
+      "¿Es hora de España, hora europea, no hora de acá?",
+      "¿Y qué vas a necesitar para la financiación?",
+      "¡Wow!"
+    ],
+    "valor_para_entrenamiento": "Manejo de objeciones de presupuesto y riesgo, presentación de opciones de financiamiento y garantía, y la necesidad de involucrar a múltiples tomadores de decisión.",
+    "source_call_id": "call_affe65478f"
+  },
+  {
+    "scenario_id": "sc_call_10ea22ada2",
+    "arquetipo_label": "Abogada visionaria y analítica, busca método eficiente para escalar negocio inmobiliario y financiar su misión.",
+    "nicho": "marca_personal_instagram",
+    "dificultad_1_5": 4,
+    "resistencia_1_5": 4,
+    "estado_inicial": {
+      "tono_inicial": "cautelosa",
       "nivel_experiencia": "novato",
-      "motivacion": "Alcanzar la libertad financiera para escapar del exigente horario de trabajo y dedicar tiempo a su familia y metas personales.",
-      "presupuesto": null
+      "estilo_decision": "analitico",
+      "relacion_con_dinero": "ajustado",
+      "estilo_habla": "mixto",
+      "muletillas": [
+        "sabes",
+        "en plan"
+      ],
+      "regionalismos": [
+        "San Chinarro",
+        "El Encinar"
+      ],
+      "genero": "F",
+      "pais": "España",
+      "ocupacion": "Abogada de protección de datos, ahora en inmobiliaria",
+      "situacion_familiar": null,
+      "presupuesto_inicial": "3.000 €",
+      "motivacion": "Generar liquidez con comisiones inmobiliarias para financiar su misión de construir viviendas sostenibles y prefabricadas en Madrid.",
+      "dolor": "Necesita una estrategia eficiente y escalable para captar propiedades de alto valor y alcanzar 25k €/mes en comisiones, sin depender de métodos agotadores o ineficaces.",
+      "que_lo_trajo": "Descubrió a Víctor Heras a través de Luis Romero, quien dio clase en el Master de Marta Marcilla.",
+      "experiencia_previa": "Vendió su propia casa con éxito, pero su método inicial de captación era agotador; dudaba de la efectividad de los anuncios pagados sin marca personal."
     },
-    "value_for_training": "Esta llamada es valiosa para entrenar a un closer en el manejo de objeciones de presupuesto severas, la adaptación de la oferta y la conexión con motivaciones profundas del cliente.",
-    "source_call_id": "call_55820b4e60"
+    "objeciones_a_plantear": [
+      {
+        "texto": "Dudaba que los públicos mayores y propietarios de inmuebles estén activos en Instagram.",
+        "tipo": "confianza",
+        "profundidad": "superficial",
+        "orden": 1
+      },
+      {
+        "texto": "Expresó reticencia a grabar videos.",
+        "tipo": "tiempo",
+        "profundidad": "superficial",
+        "orden": 2
+      },
+      {
+        "texto": "Necesita una estrategia de contenidos clara para evitar un enfoque de 'prueba y error'.",
+        "tipo": "confianza",
+        "profundidad": "real",
+        "orden": 3
+      },
+      {
+        "texto": "La liquidez de Paula estaba limitada a 3.000 € debido a una disputa legal pendiente.",
+        "tipo": "precio",
+        "profundidad": "real",
+        "orden": 4
+      },
+      {
+        "texto": "Las altas comisiones de la plataforma Secura (~12%) hacían demasiado caro financiar 2.500 €.",
+        "tipo": "metodo_pago",
+        "profundidad": "real",
+        "orden": 5
+      }
+    ],
+    "preguntas_a_hacer": [
+      "¿Pero a qué te refieres?",
+      "Vale, entonces, Enrique, ¿qué me propones hacer? O ¿tú qué propondrías para mi cuenta?",
+      "¿Qué hace este hombre? Este hombre vende el modelo de negocio de Herbalife.",
+      "Pero, si es más mayor, por ejemplo, mis padres sí que lo usan, ¿sabes? Y ellos tienen propiedades.",
+      "¿Pero entonces, claro, para captar, ¿cómo lo vas a hacer? Quiero decir, ¿haciendo lo mismo que hace el resto de personas o hacemos algo de diferencia?",
+      "Vale, pero tú a la hora de, por ejemplo, crear un reel y todo eso, ¿tienes algún tipo de estructura? ¿Sabes qué es lo que tienes que hacer? ¿O básicamente pretendes ir subiendo en base a lo que tú consideras que está bien?",
+      "¿No era realista o era realista? Me parece un montón."
+    ],
+    "frases_de_estilo": [
+      "lo que necesito es acortar plazos lo máximo posible.",
+      "Hombre, pero yo tengo que seguir moviéndome, tanto si esto sale como si no sale, ¿sabes?",
+      "La de protección de datos, pero considerando el impacto de Victor, es probable que estéis tratando datos a gran escala, porque tenéis más de 50 clientes, ¿verdad?",
+      "Que al principio sí que enseñaba la casa a todo el que me llamaba y luego ya no, empecé a hacer un filtro en plan, ¿en qué punto estás? ¿Tienes ya una hipoteca? Al principio sí que tenía un montón de visitas, que era muy agotador, que decía yo, ¿dónde...",
+      "Pero, si es más mayor, por ejemplo, mis padres sí que lo usan, ¿sabes? Y ellos tienen propiedades.",
+      "Hombre, y más cómo está a día de hoy la vivienda, ¿eh?",
+      "Y además es que han pasado de venderse casas a 400.000 a estar por 900.000, un millón a más humildes, ¿sabes?",
+      "No, no, me parece tangible.",
+      "Todo full a esa inversión, sí."
+    ],
+    "valor_para_entrenamiento": "Esta llamada es valiosa para entrenar a un closer en el manejo de objeciones de método y plataforma, objeciones de presupuesto complejas que requieren fraccionar el pago y negociar condiciones, y la alineación de la oferta con la visión a largo plazo del cliente.",
+    "source_call_id": "call_10ea22ada2"
   },
   {
-    "scenario_id": "sc_call_f45c41a46b",
-    "arquetipo_label": "Trader autodidacta estancado, padre motivado por la familia",
-    "nicho": "trading",
+    "scenario_id": "sc_call_1021a7877e",
+    "arquetipo_label": "Empresario nicaragüense cauteloso, busca estructura digital",
+    "nicho": "marca_personal_instagram",
     "dificultad_1_5": 4,
     "resistencia_1_5": 4,
     "estado_inicial": {
-      "tono": "cauteloso",
-      "nivel_experiencia": "intermedio",
-      "motivacion": "Libertad financiera y de tiempo para su familia, motivado por su hijo de 7 meses.",
-      "presupuesto": "Aproximadamente la mitad de $1800"
-    },
-    "value_for_training": "Esta llamada es valiosa para entrenar a un closer en el manejo de objeciones de presupuesto y la creación de planes de pago personalizados, manteniendo el enfoque en la motivación profunda del cliente.",
-    "source_call_id": "call_f45c41a46b"
-  },
-  {
-    "scenario_id": "sc_call_d96c84ccae",
-    "arquetipo_label": "Trader autodidacta frustrado, busca mentoría y libertad familiar",
-    "nicho": "trading",
-    "dificultad_1_5": 4,
-    "resistencia_1_5": 3,
-    "estado_inicial": {
-      "tono": "frustrado y cauteloso",
-      "nivel_experiencia": "intermedio",
-      "motivacion": "Lograr libertad financiera y de tiempo para pasar más tiempo de calidad con sus hijos.",
-      "presupuesto": "menos de $1800"
-    },
-    "value_for_training": "Esta llamada es valiosa para entrenar a un closer en el manejo de objeciones de presupuesto reales, la presentación de opciones escalonadas y planes de pago flexibles, y la construcción de una ruta de crecimiento a largo plazo para el cliente.",
-    "source_call_id": "call_d96c84ccae"
-  },
-  {
-    "scenario_id": "sc_call_791cc20af9",
-    "arquetipo_label": "Policía endeudado, busca libertad financiera familiar",
-    "nicho": "trading",
-    "dificultad_1_5": 4,
-    "resistencia_1_5": 3,
-    "estado_inicial": {
-      "tono": "frustrado",
+      "tono_inicial": "cauteloso",
       "nivel_experiencia": "principiante",
-      "motivacion": "Alcanzar la libertad financiera para estar libre de deudas y tener ingresos extra para experiencias familiares, ofreciendo un mejor futuro a sus dos hijos.",
-      "presupuesto": null
+      "estilo_decision": "analitico",
+      "relacion_con_dinero": "comodo_cauteloso",
+      "estilo_habla": "mixto",
+      "muletillas": [
+        "me entiendes",
+        "verdad",
+        "o sea"
+      ],
+      "regionalismos": [
+        "acá",
+        "vainas"
+      ],
+      "genero": "desconocido",
+      "pais": "Nicaragua",
+      "ocupacion": "dueño_negocio_fisico",
+      "situacion_familiar": null,
+      "presupuesto_inicial": "alrededor de $1,500",
+      "motivacion": "Acelerar la transformación digital de su negocio físico exitoso para construir autoridad, generar leads y desarrollar un nuevo producto digital.",
+      "dolor": "La inercia pasada y una experiencia negativa previa con un programa digital que les dejó poco preparados, impidiendo el progreso hacia su visión digital a largo plazo.",
+      "que_lo_trajo": "Buscaban una solución estructurada para su transformación digital, ya que la llamada era para 'finalizar la inscripción'.",
+      "experiencia_previa": "Ya tuvieron una experiencia negativa previa con un programa (Razzetti) que les causó gran dificultad y los dejó sintiéndose poco preparados."
     },
-    "value_for_training": "Esta llamada es valiosa para entrenar a un closer en el manejo de objeciones de proceso, duración de acceso, preocupaciones de la pareja y planes de pago, con un cliente altamente motivado por el dolor.",
-    "source_call_id": "call_791cc20af9"
+    "objeciones_a_plantear": [
+      {
+        "texto": "Una experiencia negativa previa con un programa (Razzetti) dejó al equipo sintiéndose poco preparado y causó una gran dificultad.",
+        "tipo": "confianza",
+        "profundidad": "real",
+        "orden": 1
+      },
+      {
+        "texto": "Confusión de producto: Incertidumbre sobre qué producto digital construir.",
+        "tipo": "tecnica",
+        "profundidad": "real",
+        "orden": 2
+      },
+      {
+        "texto": "Percepción de autoridad: Temor de que un negocio con sede en Nicaragua carezca de credibilidad ante una audiencia global.",
+        "tipo": "confianza",
+        "profundidad": "real",
+        "orden": 3
+      },
+      {
+        "texto": "Flujo de caja: Proteger la estabilidad financiera del negocio actual.",
+        "tipo": "precio",
+        "profundidad": "real",
+        "orden": 4
+      },
+      {
+        "texto": "¿Cuál sería la promesa como tal en este programa?",
+        "tipo": "confianza",
+        "profundidad": "superficial",
+        "orden": 5
+      },
+      {
+        "texto": "¿Cuál es la diferencia entre el de 1.500, 2.300 y el de 3.000?",
+        "tipo": "comparacion",
+        "profundidad": "superficial",
+        "orden": 6
+      },
+      {
+        "texto": "O sea, como a poner la energía para revisarlo, para volverlo a traer, ¿me entiendes? Y es como que me hace ruido que me pueda desbalancear el hoyo.",
+        "tipo": "tiempo",
+        "profundidad": "real",
+        "orden": 7
+      },
+      {
+        "texto": "¿Y si la gente de ahí cree, creen que los de fuera también puedan creer?",
+        "tipo": "confianza",
+        "profundidad": "real",
+        "orden": 8
+      },
+      {
+        "texto": "¿Y cómo es la forma de pago de este segundo, Erickson?",
+        "tipo": "metodo_pago",
+        "profundidad": "superficial",
+        "orden": 9
+      },
+      {
+        "texto": "Y si decidimos pagarlo de contado, ¿tenemos algún descuento adicional?",
+        "tipo": "precio",
+        "profundidad": "superficial",
+        "orden": 10
+      },
+      {
+        "texto": "¿Puedo pagar con tarjeta en esta plataforma?",
+        "tipo": "metodo_pago",
+        "profundidad": "superficial",
+        "orden": 11
+      }
+    ],
+    "preguntas_a_hacer": [
+      "¿Cuál sería la promesa como tal en este programa?",
+      "And that applies to any type of product or service? That is not different.",
+      "¿Cuál es la diferencia entre el de 1.500, 2.300 y el de 3.000?",
+      "¿Por qué te lo menciono? Porque en mi cabeza, mi mejor programa digital, yo ya lo tengo montado en mi cabeza, pero ¿cómo sé que realmente es?",
+      "O sea, como a poner la energía para revisarlo, para volverlo a traer, ¿me entiendes? Y es como que me hace ruido que me pueda desbalancear el hoyo.",
+      "¿Y si la gente de ahí cree, creen que los de fuera también puedan creer?",
+      "¿Y cómo es la forma de pago de este segundo, Erickson?",
+      "Y si decidimos pagarlo de contado, ¿tenemos algún descuento adicional?",
+      "¿Puedo pagar con tarjeta en esta plataforma?"
+    ],
+    "frases_de_estilo": [
+      "Yo también te lo digo, porque un mentor en Bluehacker justo nos dio a entender algo así, ¿me entiendes?",
+      "Sí, sí, sí, sí, y a mí me lo han repetido varias veces, aquí hay plata, lo que pasa es que está controlada, que es diferente, ¿verdad?",
+      "¿Lo tenemos claro? Sí, estoy seguro que estábamos por el primero, pero como mucho habló del acompañamiento y de esto, creo que ahora está confundida.",
+      "O sea, como a poner la energía para revisarlo, para volverlo a traer, ¿me entiendes? Y es como que me hace ruido que me pueda desbalancear el hoyo.",
+      "¿Y si la gente de ahí cree, creen que los de fuera también puedan creer?",
+      "Porque sinceramente nos va súper, súper acá, súper bien, y ahí vamos como avanzando a otros países, pero sí está, o sea, ahorita la realidad de nosotros está un poquito más alejado de cómo nos visualizamos, ¿verdad? Entonces, y siempre lo hemos enfocado a lo digital, pero por alguna razón...",
+      "Obviamente esto garantiza todos los bonos y vainas así, ¿verdad?",
+      "No, pero este del correo es simplemente para el pago.",
+      "¿Puedo pagar con tarjeta en esta plataforma?"
+    ],
+    "valor_para_entrenamiento": "Manejo de objeciones complejas relacionadas con experiencias pasadas, credibilidad, flujo de caja y gestión del tiempo, requiriendo un cambio de mentalidad y flexibilidad en el pago.",
+    "source_call_id": "call_1021a7877e"
   },
   {
-    "scenario_id": "sc_call_a0a7092068",
-    "arquetipo_label": "Madre autodidacta cautelosa, busca libertad financiera sin riesgo.",
-    "nicho": "trading",
-    "dificultad_1_5": 4,
-    "resistencia_1_5": 3,
-    "estado_inicial": {
-      "tono": "cauteloso, buscando conocimiento",
-      "nivel_experiencia": "principiante",
-      "motivacion": "Alcanzar independencia financiera y evitar volver a su trabajo de microbiología, permitiéndole quedarse en casa con su hijo.",
-      "presupuesto": "ajustado, cauteloso"
-    },
-    "value_for_training": "Esta llamada es valiosa para entrenar a un closer en el manejo de objeciones de confianza, miedo al riesgo de capital, y la gestión de decisiones que involucran a terceros (pareja), ofreciendo soluciones creativas de pago.",
-    "source_call_id": "call_a0a7092068"
-  },
-  {
-    "scenario_id": "sc_call_8fbcdadc14",
-    "arquetipo_label": "Ingeniero frustrado, trader autodidacta inconsistente, busca libertad financiera para su familia.",
-    "nicho": "trading",
-    "dificultad_1_5": 4,
-    "resistencia_1_5": 3,
-    "estado_inicial": {
-      "tono": "cauteloso",
-      "nivel_experiencia": "principiante",
-      "motivacion": "Reemplazar su trabajo exigente con el trading para lograr independencia financiera y jubilar a su madre.",
-      "presupuesto": null
-    },
-    "value_for_training": "Esta llamada es valiosa para entrenar a un closer en el manejo de objeciones de presupuesto y método de pago, la resolución de problemas técnicos en vivo, y la conexión con la motivación profunda del cliente para superar obstáculos.",
-    "source_call_id": "call_8fbcdadc14"
-  },
-  {
-    "scenario_id": "sc_call_22589d834f",
-    "arquetipo_label": "Soldador frustrado, padre de familia, busca mentoría real",
-    "nicho": "trading",
+    "scenario_id": "sc_call_8b199b2026",
+    "arquetipo_label": "desempleada con urgencia financiera, busca guía para emprender",
+    "nicho": "marca_personal_instagram",
     "dificultad_1_5": 4,
     "resistencia_1_5": 4,
     "estado_inicial": {
-      "tono": "frustrado y cauteloso",
-      "nivel_experiencia": "intermedio",
-      "motivacion": "Lograr independencia financiera a través del trading para mantener y dar una mejor vida a su familia, especialmente por la situación médica de su pareja.",
-      "presupuesto": "ajustado, alrededor de $1,200/mes de ingreso"
+      "tono_inicial": "cautelosa, preocupada",
+      "nivel_experiencia": "principiante",
+      "estilo_decision": "analitico",
+      "relacion_con_dinero": "ajustado",
+      "estilo_habla": "coloquial",
+      "muletillas": [
+        "Sabes lo que te quiero decir?",
+        "vale?"
+      ],
+      "regionalismos": [],
+      "genero": "F",
+      "pais": "España",
+      "ocupacion": "ex-visitadora médica, desempleada",
+      "situacion_familiar": null,
+      "presupuesto_inicial": "3.000 €",
+      "motivacion": "Generar ingresos suficientes para sustituir su salario anterior y lograr estabilidad financiera a través de una marca personal en Instagram.",
+      "dolor": "Déficit mensual de 600€, agotando ahorros, y un contenido de Instagram desenfocado que no genera engagement ni ingresos.",
+      "que_lo_trajo": "Vio un vídeo del closer y lo contactó inmediatamente, tras haber investigado otras opciones de publicidad.",
+      "experiencia_previa": "Ha investigado a otros referentes del nicho (ej. Maggi Pons) pero no ha encontrado una solución efectiva."
     },
-    "value_for_training": "Esta llamada es valiosa para entrenar a un closer en el manejo de objeciones de precio y método de pago, la construcción de confianza tras malas experiencias, y el apalancamiento de una fuerte motivación familiar.",
-    "source_call_id": "call_22589d834f"
+    "objeciones_a_plantear": [
+      {
+        "texto": "Me da miedo no estar a la altura, ¿sabes?",
+        "tipo": "confianza",
+        "profundidad": "superficial",
+        "orden": 1
+      },
+      {
+        "texto": "Es que, claro, 6 meses, no, en 6 meses yo creo que no me puedo hacer un referente, no puedo ser un referente, ¿no?",
+        "tipo": "tiempo",
+        "profundidad": "superficial",
+        "orden": 2
+      },
+      {
+        "texto": "si no tengo ninguna comunidad enfocada en eso, ¿cómo voy a hacer una prueba de mercado?",
+        "tipo": "tecnica",
+        "profundidad": "superficial",
+        "orden": 3
+      },
+      {
+        "texto": "¿Vale, tú necesitarías fraccionarlo realmente?",
+        "tipo": "precio",
+        "profundidad": "real",
+        "orden": 4
+      },
+      {
+        "texto": "Vale, y me has comentado de que si por lo que sea no se cogen los resultados, ¿se devuelve el dinero?",
+        "tipo": "confianza",
+        "profundidad": "real",
+        "orden": 5
+      },
+      {
+        "texto": "¿Estás implicada? ¿Habéis tenido que devolver el dinero con gente que de verdad estaba implicada?",
+        "tipo": "confianza",
+        "profundidad": "real",
+        "orden": 6
+      }
+    ],
+    "preguntas_a_hacer": [
+      "¿Me da miedo no estar a la altura, ¿sabes?",
+      "Es que, claro, 6 meses, no, en 6 meses yo creo que no me puedo hacer un referente, no puedo ser un referente, ¿no? ¿Tú crees que no? No lo sé.",
+      "¿Con crear el producto te refieres al curso o a la comunidad de Instagram?",
+      "si no tengo ninguna comunidad enfocada en eso, ¿cómo voy a hacer una prueba de mercado?",
+      "¿Vale, y me has comentado de que si por lo que sea no se cogen los resultados, ¿se devuelve el dinero?",
+      "¿Estás implicada? ¿Habéis tenido que devolver el dinero con gente que de verdad estaba implicada? ¿Con gente implicada?",
+      "¿Y Estado qué pongo? ¿España? ¿No te pone? No, no ¿Sabe in information?"
+    ],
+    "frases_de_estilo": [
+      "Me da miedo no estar a la altura, ¿sabes?",
+      "Es que, claro, 6 meses, no, en 6 meses yo creo que no me puedo hacer un referente, no puedo ser un referente, ¿no?",
+      "Es una situación complicada, pero si no apuesto yo por mí, nadie va a venir a casa a llamarme a la puerta.",
+      "La realidad es que según va pasando el tiempo y no te llaman para una entrevista de trabajo, llevo dos meses, a mí se me hace cuesta arriba, ¿eh? Y es un esfuerzo a mantenerme cognitiva.",
+      "Mi plan B son mis ahorros, no tengo un plan B.",
+      "No, primer vídeo que vi te llamé.",
+      "si no tengo ninguna comunidad enfocada en eso, ¿cómo voy a hacer una prueba de mercado?",
+      "Vale, y me has comentado de que si por lo que sea no se cogen los resultados, ¿se devuelve el dinero?",
+      "¿Estás implicada? ¿Habéis tenido que devolver el dinero con gente que de verdad estaba implicada? ¿Con gente implicada?",
+      "Si se me paga dos veces, se me devuelve una, ¿no? Obviamente, pero vamos, que no se te va a cobrar dos veces."
+    ],
+    "valor_para_entrenamiento": "Esta llamada es valiosa para entrenar a un closer en el manejo de objeciones de confianza y presupuesto bajo alta presión financiera, y la importancia de una garantía sólida.",
+    "source_call_id": "call_8b199b2026"
   },
   {
-    "scenario_id": "sc_call_79629f01f5",
-    "arquetipo_label": "Tester frustrado, busca libertad financiera tras estafa",
-    "nicho": "trading",
+    "scenario_id": "sc_call_0a7b4d6b51",
+    "arquetipo_label": "coach frustrada, busca sistema orgánico y confianza",
+    "nicho": "marca_personal_instagram",
     "dificultad_1_5": 4,
-    "resistencia_1_5": 3,
+    "resistencia_1_5": 4,
     "estado_inicial": {
-      "tono": "cauteloso y frustrado",
+      "tono_inicial": "cautelosa y esceptica",
       "nivel_experiencia": "principiante",
-      "motivacion": "Alcanzar libertad financiera y asegurar la tranquilidad de su familia.",
-      "presupuesto": "ajustado, menos de $780"
+      "estilo_decision": "analitico",
+      "relacion_con_dinero": "comodo",
+      "estilo_habla": "coloquial",
+      "muletillas": [
+        "sabes?",
+        "rollo"
+      ],
+      "regionalismos": [],
+      "genero": "F",
+      "pais": "España",
+      "ocupacion": "Coach de liderazgo",
+      "situacion_familiar": "madre",
+      "presupuesto_inicial": null,
+      "motivacion": "Monetizar Instagram de forma orgánica para construir un sistema sostenible de generación de leads.",
+      "dolor": "Su Instagram no genera leads, obligándola a depender de anuncios pagados y sin un sistema sostenible.",
+      "que_lo_trajo": "Busca una solución a su problema de monetización orgánica en Instagram tras malas experiencias previas.",
+      "experiencia_previa": "Tres colaboraciones fallidas con agencias generaron una gran desconfianza y la hicieron sentir como un número más."
     },
-    "value_for_training": "Manejo de objeciones de confianza por estafa previa, gestión de presupuesto limitado y necesidad de fraccionar el pago.",
-    "source_call_id": "call_79629f01f5"
+    "objeciones_a_plantear": [
+      {
+        "texto": "Pues porque realmente yo me he sentido como un número más y he visto que no han entregado a tiempo, luego había que revisar 50.000 cosas que estaban mal, o sea, como que no estaba enfocado realmente en mí, ¿sabes?",
+        "tipo": "confianza",
+        "profundidad": "real",
+        "orden": 1
+      },
+      {
+        "texto": "¿Y si yo no quiero trabajar, solo quiero trabajar Instagram?",
+        "tipo": "tecnica",
+        "profundidad": "superficial",
+        "orden": 2
+      },
+      {
+        "texto": "6.000 euros, ¿te refieres en esos 3 o 4 meses?",
+        "tipo": "precio",
+        "profundidad": "superficial",
+        "orden": 3
+      },
+      {
+        "texto": "Una cosilla, ¿el precio es final o IVA aparte?",
+        "tipo": "precio",
+        "profundidad": "superficial",
+        "orden": 4
+      },
+      {
+        "texto": "¿Y ya tienes citas con las demás opciones o...?",
+        "tipo": "comparacion",
+        "profundidad": "real",
+        "orden": 5
+      },
+      {
+        "texto": "Me has dicho que soy sincera, Asier, soy sincera, lo que no quiero decirte sí y luego decirte no, ¿sabes?",
+        "tipo": "tiempo",
+        "profundidad": "real",
+        "orden": 6
+      }
+    ],
+    "preguntas_a_hacer": [
+      "¿Tus leads también te dicen eso?",
+      "¿Vale, y esas agencias tenían resultado?",
+      "¿6.000 euros, ¿te refieres en esos 3 o 4 meses?",
+      "¿Y si yo no quiero trabajar, solo quiero trabajar Instagram?",
+      "¿Una cosilla, ¿el precio es final o IVA aparte?",
+      "¿Y ya tienes citas con las demás opciones o...?",
+      "¿O sea, ¿ellas mismas tenían resultados o casos de éxito?"
+    ],
+    "frases_de_estilo": [
+      "Me has dicho que soy sincera, Asier, soy sincera, lo que no quiero decirte sí y luego decirte no, ¿sabes?",
+      "Llegar a 300 personas, que es súper poco, pues sí, voy a llegar a 1.000, tirando muy por lo bajo, ¿sabes? Pues guay.",
+      "Pues porque realmente yo me he sentido como un número más y he visto que no han entregado a tiempo, luego había que revisar 50.000 cosas que estaban mal, o sea, como que no estaba enfocado realmente en mí, ¿sabes?",
+      "Pasado un tiempo, ¿sabes? Yo quiero un sistema que no dependa, o sea, no requiera 24 a 7 días a la semana de mi energía.",
+      "Una cosilla, ¿el precio es final o IVA aparte?",
+      "No lo sé, por eso estoy aquí.",
+      "El problema es la estrategia, ¿no?",
+      "Así que, ¿estamos 100% alineados o qué? Sí, estamos alineados."
+    ],
+    "valor_para_entrenamiento": "Esta llamada es valiosa para entrenar a un closer en cómo manejar objeciones de desconfianza profunda por malas experiencias previas y la necesidad de comparar opciones, utilizando garantías y personalización como diferenciadores.",
+    "source_call_id": "call_0a7b4d6b51"
+  },
+  {
+    "scenario_id": "sc_call_95c2b82389",
+    "arquetipo_label": "Experto inmobiliario frustrado, busca monetizar marca personal",
+    "nicho": "marca_personal_instagram",
+    "dificultad_1_5": 4,
+    "resistencia_1_5": 4,
+    "estado_inicial": {
+      "tono_inicial": "frustrado y cauteloso",
+      "nivel_experiencia": "intermedio",
+      "estilo_decision": "analitico",
+      "relacion_con_dinero": "ajustado",
+      "estilo_habla": "coloquial",
+      "muletillas": [
+        "me explico",
+        "sabes",
+        "no?"
+      ],
+      "regionalismos": [
+        "tío",
+        "coño"
+      ],
+      "genero": "M",
+      "pais": "España",
+      "ocupacion": "Experto inmobiliario",
+      "situacion_familiar": null,
+      "presupuesto_inicial": "ajustado a su flujo de caja irregular",
+      "motivacion": "Construir un negocio online escalable que le brinde independencia financiera y un estilo de vida de viajes sin depender de su negocio inmobiliario.",
+      "dolor": "Crecimiento estancado de su marca personal y dificultad para monetizar su experiencia, resultando en ingresos personales bajos e irregulares.",
+      "que_lo_trajo": "Vio un vídeo del closer hablando sobre reels genéricos y la necesidad de una estructura viral.",
+      "experiencia_previa": "Lleva dos años haciendo contenido sin el éxito esperado y ha intentado empaquetar su experiencia en ofertas de bajo ticket."
+    },
+    "objeciones_a_plantear": [
+      {
+        "texto": "¿qué es lo que me podéis aportar vosotros?",
+        "tipo": "confianza",
+        "profundidad": "real",
+        "orden": 1
+      },
+      {
+        "texto": "mi liana, mi atadura de pensar que llevo dos años haciendo contenido y que sé que no es fácil que se enrede",
+        "tipo": "confianza",
+        "profundidad": "real",
+        "orden": 2
+      },
+      {
+        "texto": "el problema es tener el tiempo para ver la formación y tú ver cómo hacerlo, ¿no?",
+        "tipo": "tiempo",
+        "profundidad": "real",
+        "orden": 3
+      },
+      {
+        "texto": "O sea, si yo estoy ganando 2.000 euros en un funcionamiento, ¿a qué más me da que tú tienes 1.000 o que tú tienes 1.800? Yo quiero que ganemos todos, ¿me explico? Que no es, te voy a pagar a ti 1.000 euros y estoy ganando 1.000 No, si yo...",
+        "tipo": "precio",
+        "profundidad": "real",
+        "orden": 4
+      },
+      {
+        "texto": "Ahora, lo importante es no serán 12 pagos de $3.300, ¿no?",
+        "tipo": "metodo_pago",
+        "profundidad": "real",
+        "orden": 5
+      },
+      {
+        "texto": "Lo que yo no sé entonces la gente como decía que hacía la estafa con Secura, ¿tí?",
+        "tipo": "confianza",
+        "profundidad": "real",
+        "orden": 6
+      }
+    ],
+    "preguntas_a_hacer": [
+      "¿Que tu me digas para no tener prisa?",
+      "¿qué es lo que me podéis aportar vosotros?",
+      "¿Puedo llegar a pensar yo un guión?",
+      "¿cómo sería el día 1 de que empiezo yo a trabajar con vosotros? ¿Cómo funciona?",
+      "Vale, tema edición y eso, tendría que yo contactar con mi editor para hacerlo, vosotros me mandáis los vídeos y tal, ¿cómo funciona todo?",
+      "Ahora, lo importante es no serán 12 pagos de $3.300, ¿no?",
+      "Lo que yo no sé entonces la gente como decía que hacía la estafa con Secura, ¿tí?"
+    ],
+    "frases_de_estilo": [
+      "Yo que fue, vi un vídeo de él hablando sobre esto, sobre los reel genéricos, tal, tal, pienso que es eso, pienso que realmente es figura, que a mí me ha faltado otro tiempo",
+      "Yo tengo la pregunta muy resuelta, o sea, si yo tuviese todo el dinero del mundo, ¿qué es lo que te dedicarías a vida? Yo jugaría al monopolio en la vida real, porque a mí los viviendas me encantan.",
+      "Y a lo mejor un mes muy bueno, ¿quién puedo ganar 12-13? Ya.",
+      "Es que es brutal, porque no va a faltar nunca el pan de nada y me haya podido vivir un de crack, ¿me explico?",
+      "Yo sé que vosotros tenéis el método y que se puede hacer, por supuesto, pero obviamente tengo todavía mi liana, mi atadura de pensar que llevo dos años haciendo contenido y que sé que no es fácil que se enrede",
+      "No comprar, pero no queremos ser vendidos, ¿no? Está claro, ¿no? Eso es real, ¿no?",
+      "No, coño, si vos estáis funcionando y yo estoy ganando Fathom, ¿por qué no os voy a pagar a vosotros? Vale, ok.",
+      "Y como para mí es muy fácil, no fácil, digo, ¿cómo voy a vender esto? ¿sabes lo que te digo? Complicado.",
+      "Y ya está, ¿sabes? Y que vamos a hacerlo."
+    ],
+    "valor_para_entrenamiento": "Esta llamada es valiosa para entrenar a un closer en el manejo de objeciones de confianza en la metodología, gestión de expectativas de tiempo y ROI, y la flexibilidad en planes de pago para clientes con flujo de caja irregular.",
+    "source_call_id": "call_95c2b82389"
+  },
+  {
+    "scenario_id": "sc_call_602095315c",
+    "arquetipo_label": "Profesional fitness perfeccionista, busca mentoría experta para lanzar marca.",
+    "nicho": "marca_personal_instagram",
+    "dificultad_1_5": 4,
+    "resistencia_1_5": 4,
+    "estado_inicial": {
+      "tono_inicial": "cauteloso",
+      "nivel_experiencia": "intermedio",
+      "estilo_decision": "analitico",
+      "relacion_con_dinero": "ajustado",
+      "estilo_habla": "mixto",
+      "muletillas": [
+        "sabes?",
+        "entiendes?"
+      ],
+      "regionalismos": [
+        "hostia",
+        "coño"
+      ],
+      "genero": "M",
+      "pais": "España",
+      "ocupacion": "profesional del fitness, empleado en app B2B",
+      "situacion_familiar": null,
+      "presupuesto_inicial": null,
+      "motivacion": "Generar €3k-€5k adicionales al mes con una marca personal B2C para mayor libertad financiera.",
+      "dolor": "El 'síndrome de perfeccionismo' le impide empezar a crear contenido sin una estrategia probada y validación experta.",
+      "que_lo_trajo": "Busca una estrategia probada para lanzar su marca personal en Instagram y monetizarla.",
+      "experiencia_previa": "Ha consumido mucho contenido sobre creación de oferta y storytelling, pero no ha logrado ejecutarlo."
+    },
+    "objeciones_a_plantear": [
+      {
+        "texto": "insuficiente el apoyo grupal",
+        "tipo": "confianza",
+        "profundidad": "real",
+        "orden": 1
+      },
+      {
+        "texto": "necesita un mentor 1 a 1 dedicado para feedback directo y personalizado",
+        "tipo": "tecnica",
+        "profundidad": "real",
+        "orden": 2
+      },
+      {
+        "texto": "el feedback del chat grupal es demasiado 'diluido'",
+        "tipo": "tecnica",
+        "profundidad": "real",
+        "orden": 3
+      },
+      {
+        "texto": "la parte de formación no me crea mucho valor",
+        "tipo": "confianza",
+        "profundidad": "superficial",
+        "orden": 4
+      },
+      {
+        "texto": "estas limitaciones que yo me pongo a la creación de todo lo que de alguna manera ya he creado, las voy a seguir teniendo",
+        "tipo": "confianza",
+        "profundidad": "real",
+        "orden": 5
+      }
+    ],
+    "preguntas_a_hacer": [
+      "¿A qué te refieres? Es decir, yo le envío a alguien, a una persona, los guiones y ella me lo revisa personalmente o es en un grupo o como es esto.",
+      "¿Cuál es la metodología de trabajo con ese mentor? Concesiones, ¿qué puedo esperar de él? Todo, ¿no?",
+      "¿Con qué recurrencia puedo acudir a él? ¿Qué nivel de implicación va a tener en el proyecto?",
+      "¿Las diferencias principales entre el de 5.000 y el 3.000, cuáles son?",
+      "¿Quién dice que tenga que ser un año, si siguiendo el plan, tardaría seis?",
+      "¿Dos horas al día durante un par de semanas?"
+    ],
+    "frases_de_estilo": [
+      "Yo la parte de formación no me crea mucho valor, quiero decir, no soy ningún experto ni mucho menos, pero sí soy un friki y me he visto, seguramente esté mucho más estructurado el paso a paso, pero ya me he visto tanto contenido, ¿sabes? Tanto de creación de oferta,...",
+      "De ponerme de nuevo el old hook, las partes del storytelling, todo, ¿sabes? Entonces, muy importante.",
+      "Si me dijese, perdone, Carlos, no, los 3.000 euros o los 5.000 euros, pues te voy a poner a una persona que es experta en todo esto, vas a trabajar con él, te va a corregir los guiones, te va a decir esto fuera, esto sí, esto no, graba estos...",
+      "Entonces, yo lo que veo es que me voy a meter en el programa y al final estas limitaciones que yo me pongo a la creación de todo lo que de alguna manera ya he creado, las voy a seguir teniendo y la única manera que tengo de salir de...",
+      "No, es que es cada tanto, hostia, esto no se me había dicho, ¿sabes? Ahí empieza una redacción de radio, coño, que yo lo que quiero es no parar, no quiero aquí molestar a nadie.",
+      "Que pues es 2.000, 2.500 euros, ¿no?",
+      "Y, por lo tanto, yo quiero dar el salto a no solo estar dentro del equipo de la aplicación, sino crear una audiencia del número que sea de gente e intentar monetizarla, ¿sí? Haciendo, pues, una figura un poco de autoridad en el sector y, partir de ahí, pues, intentar...",
+      "Muy bien, entonces, catalán de Tarragona hasta la médula, ¿no? No creas, porque soy nacido en Galicia."
+    ],
+    "valor_para_entrenamiento": "El cliente presenta una objeción de soporte muy específica y profunda, requiriendo una personalización de la oferta y un seguimiento para el cierre.",
+    "source_call_id": "call_602095315c"
+  },
+  {
+    "scenario_id": "sc_call_918761af94",
+    "arquetipo_label": "Psicóloga frustrada, busca libertad y escalabilidad online",
+    "nicho": "marca_personal_instagram",
+    "dificultad_1_5": 4,
+    "resistencia_1_5": 4,
+    "estado_inicial": {
+      "tono_inicial": "cautelosa, esceptica pero decidida",
+      "nivel_experiencia": "intermedio",
+      "estilo_decision": "analitico",
+      "relacion_con_dinero": "ajustado",
+      "estilo_habla": "mixto",
+      "muletillas": [
+        "ya",
+        "o sea"
+      ],
+      "regionalismos": [
+        "hostia"
+      ],
+      "genero": "F",
+      "pais": "España",
+      "ocupacion": "Psicóloga con consulta privada",
+      "situacion_familiar": "separada, con nueva pareja, hijos (implícito por disputa legal)",
+      "presupuesto_inicial": null,
+      "motivacion": "Pasar de sesiones 1 a 1 a programas online escalables para ganar libertad de tiempo y ubicación.",
+      "dolor": "Frustración por fracasos en marketing online y presión financiera por lanzamiento fallido y disputa legal.",
+      "que_lo_trajo": "Busca una solución de escalado online tras intentos fallidos y estafas previas.",
+      "experiencia_previa": "Un lanzamiento reciente fallido de €3.000 y una estafa previa con una agencia argentina que solo generó seguidores fantasma."
+    },
+    "objeciones_a_plantear": [
+      {
+        "texto": "Ya he invertido y perdido dinero en lanzamientos y agencias.",
+        "tipo": "confianza",
+        "profundidad": "real",
+        "orden": 1
+      },
+      {
+        "texto": "Los anuncios pagados no me funcionan.",
+        "tipo": "tecnica",
+        "profundidad": "superficial",
+        "orden": 2
+      },
+      {
+        "texto": "¿Y eso lo montáis vosotros?",
+        "tipo": "tiempo",
+        "profundidad": "superficial",
+        "orden": 3
+      },
+      {
+        "texto": "Tengo presión financiera y el programa es caro (€15k+).",
+        "tipo": "precio",
+        "profundidad": "real",
+        "orden": 4
+      },
+      {
+        "texto": "¿Qué vas a hacer tú? (duda sobre la efectividad del método propuesto)",
+        "tipo": "metodo_pago",
+        "profundidad": "real",
+        "orden": 5
+      }
+    ],
+    "preguntas_a_hacer": [
+      "¿Y eso lo montáis vosotros?",
+      "¿Qué vas a hacer tú?",
+      "¿Cómo me aseguro de que esto no sea otra estafa o pérdida de dinero?"
+    ],
+    "frases_de_estilo": [
+      "El 1 a 1 lo contemplo y más si me quiero mover en la vida, no solo estar en un sitio físico, ¿no? El online.",
+      "Pero mucha gente que hacemos esto, ¿eh? Buscamos, buscamos eso, buscamos al final para nosotros.",
+      "Al final tienes que tener tiempo emocionalmente, perdón, igual emocionalmente también parece que no, pero también a la hora de tomar acción en nuestras cosas, joder, está eso, ¿no?",
+      "Yo cometí un grave error hace años que hablaba todo el rato de querer ayudar a los demás, de querer, ¿sabes? De ir como siendo el mesías de algo que no hago esto.",
+      "Sí, en octubre, octubre, el 17 de octubre.",
+      "Ostras, qué fuerte, ¿no? O sea, yo creo que tiene, tiene, tiene, viene Tiene esa sensibilidad, tiene esa chispilla ahí, ¿no?",
+      "O sea, da igual saber eso, ¿no?",
+      "Pero, tío, es esa cosa que tenemos que controlar de guau, ¿no? ¿Me hables así?"
+    ],
+    "valor_para_entrenamiento": "Manejo de objeciones de confianza y presupuesto derivadas de experiencias negativas previas, y la necesidad de presentar una solución diferenciada y de bajo riesgo.",
+    "source_call_id": "call_918761af94"
+  },
+  {
+    "scenario_id": "sc_call_223f0de7f9",
+    "arquetipo_label": "Emprendedor frustrado, escéptico, busca validación y resultados",
+    "nicho": "marca_personal_instagram",
+    "dificultad_1_5": 4,
+    "resistencia_1_5": 4,
+    "estado_inicial": {
+      "tono_inicial": "frustrado, escéptico, cauteloso",
+      "nivel_experiencia": "principiante",
+      "estilo_decision": "analitico",
+      "relacion_con_dinero": "ajustado",
+      "estilo_habla": "coloquial",
+      "muletillas": [
+        "sabes?",
+        "a ver",
+        "tal cual"
+      ],
+      "regionalismos": [
+        "qué flipa"
+      ],
+      "genero": "M",
+      "pais": "España",
+      "ocupacion": "representante de atención al cliente en Kraken",
+      "situacion_familiar": "en pareja, esperando 1 hijo",
+      "presupuesto_inicial": null,
+      "motivacion": "Alcanzar €5k–€10k/mes de ingresos para igualar o superar sus ingresos actuales y cambiar el rumbo de su marca personal.",
+      "dolor": "Su marca de fitness está estancada con cero ventas tras 2,5 años, lo que le genera frustración y auto-duda por mentorías fallidas.",
+      "que_lo_trajo": "Busca una solución para su marca personal estancada después de múltiples intentos y mentorías fallidas.",
+      "experiencia_previa": "Ha tenido mentorías previas que se centraron en anuncios pagados o copiar contenido viral, sin generar resultados ni leads cualificados."
+    },
+    "objeciones_a_plantear": [
+      {
+        "texto": "¿no crees tú que también el fitness, a ver, esto es una creencia limitante, pero que hay, que ya está muy quemado, que hay mucha gente, que tal y cual? ¿Tú crees que igualmente se puede, o que puede seguir funcionando y tal?",
+        "tipo": "confianza",
+        "profundidad": "superficial",
+        "orden": 1
+      },
+      {
+        "texto": "en grupales, al final, sinceramente, yo estaba en otras llamadas grupales, por ejemplo, con el mentor antiguo tal, tampoco me servían de mucho, ¿sabes?",
+        "tipo": "confianza",
+        "profundidad": "real",
+        "orden": 2
+      },
+      {
+        "texto": "¿tú crees que es posible con el perfil mío, con la cuenta como la tengo, con los vídeos de mierda? Me cuesta creerlo, ¿sabes?",
+        "tipo": "confianza",
+        "profundidad": "real",
+        "orden": 3
+      },
+      {
+        "texto": "De aquí a año, en teoría debería recuperar la inversión, ¿no? Si todo va bien.",
+        "tipo": "precio",
+        "profundidad": "real",
+        "orden": 4
+      },
+      {
+        "texto": "sé que habrán días que, hombre, cuando nazca, pues, ¿sabes? No tengo mi familia alrededor y tengo que estar encargado de cosas",
+        "tipo": "tiempo",
+        "profundidad": "real",
+        "orden": 5
+      }
+    ],
+    "preguntas_a_hacer": [
+      "O ¿cuántos tickets hago y todo eso?",
+      "Pero ¿no crees tú que también el fitness, a ver, esto es una creencia limitante, pero que hay, que ya está muy quemado, que hay mucha gente, que tal y cual? ¿Tú crees que igualmente se puede, o que puede seguir funcionando y tal?",
+      "Vale, pero después cuando dices, por ejemplo, no, luego vas a tener seguimiento con Víctor y con Dale con cual, eso es en llamadas grupales, porque en grupales, al final, sinceramente, yo estaba en otras llamadas grupales, por ejemplo, con el mentor antiguo tal, tampoco me servían de mucho, ¿sabes?",
+      "tema de los paquetes de venta, ¿sabes qué voy a vender y todo eso? O ¿eso también se ve en el programa?",
+      "espera, ¿y el nicho y todo eso? ¿Eso qué? ¿Eso es mito o eso se ve en todo contenido y todo eso?",
+      "O ¿tú crees que es posible con el perfil mío, con la cuenta como la tengo, con los vídeos de mierda? sea...",
+      "De aquí a año, en teoría debería recuperar la inversión, ¿no? Si todo va bien."
+    ],
+    "frases_de_estilo": [
+      "Ahí un poquito de todo, ¿sabes?",
+      "llevaba una rachita un poco complicada, sobre todo con de la marca personal, entonces, pues, la verdad que estaría guay, estaría guay que cambie un poco el rumbo, ¿sabes?",
+      "una mala rachita y frustra, ¿sabes? Entonces, claro, llega un punto donde no te crees ni confías en nadie realmente",
+      "yo en fitness, por ejemplo, ahora sí estoy haciéndome un curso de nutrición y más por decir, pues mira, pues si me preguntan tengo algo, pero yo era el típico que decía, ah, no, yo no soy entrenador personal, no sé qué",
+      "no, no, o sea, te pido perdón por las preguntas tontas, ¿sabes? Yo es que estoy un poco frustrado, quemado y todo",
+      "Yo mi perfil lo veo, ¿eh? Pone Whatsapp.",
+      "Me cuesta creerlo, ¿sabes? bueno.",
+      "Tengo tiempo, ¿sabes? Algunos días más, algunos días menos, pero tengo tiempo.",
+      "Igual me tiro el pedo más grande que el culo, ¿no? Pero sí, sí.",
+      "O sea, me mareo un poco cuando hay varias formas, pues como yo no tengo ni puta idea, pues a mejor yo empiezo a hacer cualquier cosa, ¿sabes?"
+    ],
+    "valor_para_entrenamiento": "Manejo de objeciones de confianza profunda y experiencias negativas previas, necesidad de construir credibilidad y ofrecer soluciones de financiación.",
+    "source_call_id": "call_223f0de7f9"
+  },
+  {
+    "scenario_id": "sc_call_0ac3e1e3a9",
+    "arquetipo_label": "repartidor experto en finanzas, marca estancada, busca validación y libertad financiera",
+    "nicho": "marca_personal_instagram",
+    "dificultad_1_5": 4,
+    "resistencia_1_5": 4,
+    "estado_inicial": {
+      "tono_inicial": "cauteloso y frustrado",
+      "nivel_experiencia": "principiante",
+      "estilo_decision": "analitico",
+      "relacion_con_dinero": "ajustado",
+      "estilo_habla": "coloquial",
+      "muletillas": [
+        "joder",
+        "no?"
+      ],
+      "regionalismos": [
+        "Bizum",
+        "Eras"
+      ],
+      "genero": "M",
+      "pais": "España",
+      "ocupacion": "repartidor",
+      "situacion_familiar": null,
+      "presupuesto_inicial": null,
+      "motivacion": "Sustituir su trabajo de 1.500 €/mes construyendo una marca personal que genere ingresos estables y le permita dedicarse a su pasión a tiempo completo.",
+      "dolor": "Su marca personal está estancada con solo 166 seguidores en casi un año, debido a un contenido demasiado nicho que no logra viralidad.",
+      "que_lo_trajo": "Contactó con Víctor directamente después de que otros mentores (algunos formados por Eras) no le convencieran con sus propuestas.",
+      "experiencia_previa": "Ha contactado con varios otros mentores y programas que no le han convencido."
+    },
+    "objeciones_a_plantear": [
+      {
+        "texto": "no me ha terminado de convencer lo que me querían vender",
+        "tipo": "confianza",
+        "profundidad": "superficial",
+        "orden": 1
+      },
+      {
+        "texto": "mis vídeos son demasiado nicho, que aporto demasiado valor y la gente no lo entiende",
+        "tipo": "tecnica",
+        "profundidad": "real",
+        "orden": 2
+      },
+      {
+        "texto": "no tengo ese networking",
+        "tipo": "tecnica",
+        "profundidad": "superficial",
+        "orden": 3
+      },
+      {
+        "texto": "el tiempo, ¿no? El tiempo también, porque, bueno, como dependo de ese dinero necesito trabajar, ¿no?",
+        "tipo": "tiempo",
+        "profundidad": "real",
+        "orden": 4
+      },
+      {
+        "texto": "No sé si podré pagar ahora, pero…",
+        "tipo": "precio",
+        "profundidad": "real",
+        "orden": 5
+      },
+      {
+        "texto": "¿el tema de lo de los contratos y todo eso también está todo ahí?",
+        "tipo": "confianza",
+        "profundidad": "superficial",
+        "orden": 6
+      },
+      {
+        "texto": "¿tengo que entonces borrar todo o cómo? No sé.",
+        "tipo": "tecnica",
+        "profundidad": "superficial",
+        "orden": 7
+      }
+    ],
+    "preguntas_a_hacer": [
+      "¿Cuál? ¿Cómo se llama?",
+      "Tu mayor público está en España, ¿verdad?",
+      "¿No te da la opción de pagar?",
+      "Sí, sí, pongo la tarjeta, sí, ¿verdad?",
+      "Y después ya todos los meses serían los 280, ¿no?",
+      "Vale, ¿el tema de lo de los contratos y todo eso también está todo ahí?",
+      "Y una duda, ¿tengo que entonces borrar todo o cómo? No sé."
+    ],
+    "frases_de_estilo": [
+      "Sí que te quería decir una cosa antes de empezar porque, bueno, he contactado con varios otros e incluso algunos de ellos me han dicho que han sido mentores de Eras, ¿no?",
+      "Y lo que pasa es que no me ha terminado de convencer lo que me querían vender.",
+      "Pero a la parte mal, porque pensaba que podía crecer más al sentido de, joder, te lo estoy dando todo masticado, ¿no?",
+      "Esa es mi duda más importante, ¿no? Yo creo que es lo que te ha dicho, ¿no? Que a lo mejor mis vídeos son demasiado nicho, que aporto demasiado valor y la gente no lo entiende, ¿no?",
+      "Y el tiempo, ¿no? El tiempo también, porque, bueno, como dependo de ese dinero necesito trabajar, ¿no?",
+      "Me gustaría menos unos suscriptores, al menos, en mi comunidad, para validarme, ¿no? O yo sé que, sé lo que valgo, pero necesito que me validen también, de alguna manera.",
+      "No sé si podré pagar ahora, pero…",
+      "El dinero.",
+      "Joder, tomando acción para empezar a hacer las cosas bien, ¿ok?"
+    ],
+    "valor_para_entrenamiento": "Esta llamada es valiosa para entrenar a un closer en el manejo de objeciones de liquidez con soluciones creativas (préstamo), la confrontación del costo de la inacción y la construcción de confianza con un cliente escéptico pero con alto dolor.",
+    "source_call_id": "call_0ac3e1e3a9"
   }
 ]

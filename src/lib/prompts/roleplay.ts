@@ -393,18 +393,19 @@ CÓMO REACCIONAR:
 }
 
 export function buildScenarioPrompt(type: RoleplayType, scenario: ScenarioBrief): string {
-  const ei = scenario.estado_inicial
+  const ei = scenario.estado_inicial ?? {}
   const nichoProd = NICHO_PRODUCTO[scenario.nicho] ?? scenario.nicho
   const muletillas = ei.muletillas?.length ? ei.muletillas.join(', ') : 'las habituales de tu región'
   const regionalismos = ei.regionalismos?.length ? ei.regionalismos.join(', ') : ''
 
-  const objeciones = scenario.objeciones_a_plantear
+  const objeciones = (scenario.objeciones_a_plantear ?? [])
+    .slice()
     .sort((a, b) => (a.orden ?? 0) - (b.orden ?? 0))
     .filter(o => o.texto)
     .map((o, i) => `  ${i + 1}. "${o.texto}" [${o.tipo ?? 'otro'} · ${o.profundidad ?? 'real'}]`)
     .join('\n')
 
-  const frases = scenario.frases_de_estilo
+  const frases = (scenario.frases_de_estilo ?? [])
     .filter(Boolean)
     .slice(0, 6)
     .map(f => `  - "${f}"`)
