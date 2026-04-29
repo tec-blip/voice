@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { EVALUATION_PROMPT, type EvaluationResult } from '@/lib/prompts/evaluation'
+import { createClient } from '@/lib/supabase/server'
 
 // Models confirmed available for this API key (via ListModels)
 // All use v1beta which supports responseMimeType JSON mode
@@ -23,6 +24,13 @@ function extractJSON(text: string): string {
 }
 
 export async function POST(request: Request) {
+  // Auth check — solo usuarios autenticados pueden disparar evaluaciones (cuestan dinero)
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) {
+    return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+  }
+
   const apiKey = process.env.GEMINI_API_KEY
   if (!apiKey) {
     return NextResponse.json({ error: 'Gemini API key not configured' }, { status: 500 })
@@ -33,6 +41,12 @@ export async function POST(request: Request) {
 
     if (!transcript || typeof transcript !== 'string') {
       return NextResponse.json({ error: 'Invalid transcript' }, { status: 400 })
+    }
+
+    // Límite de tamaño: 40 KB máximo. Un transcript de roleplay real de 45 min
+    // tiene ~15-20 KB — 40 KB es margen generoso sin permitir abusos.
+    if (transcript.length > 40_000) {
+      return NextResponse.json({ error: 'Transcript demasiado largo' }, { status: 400 })
     }
 
     const body = JSON.stringify({

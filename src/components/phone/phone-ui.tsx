@@ -119,11 +119,23 @@ export function PhoneUI({ roleplayType, systemPromptOverride, voiceName, onCallE
     }, []),
   })
 
+  // Límites de duración por sesión
+  const MAX_CALL_SECONDS  = 45 * 60  // 2700 s — hard cap por sesión
+  const WARN_CALL_SECONDS = 40 * 60  // 2400 s — aviso "quedan 5 minutos"
+
   useEffect(() => {
     if (callState !== 'active') return
     const interval = setInterval(() => setDuration((d) => d + 1), 1000)
     return () => clearInterval(interval)
   }, [callState])
+
+  // Auto-hangup al alcanzar el límite máximo de la sesión
+  useEffect(() => {
+    if (callState !== 'active') return
+    if (duration >= MAX_CALL_SECONDS) {
+      finalizeCallRef.current({ endedBy: 'model', reason: 'timeout' })
+    }
+  }, [duration, callState, MAX_CALL_SECONDS])
 
   useEffect(() => {
     if (gemini.isConnected && callState === 'connecting') {
@@ -200,7 +212,11 @@ export function PhoneUI({ roleplayType, systemPromptOverride, voiceName, onCallE
           <p className="text-white font-semibold mt-3">
             {callState === 'idle' ? 'Prospecto IA' : callState === 'connecting' ? 'Conectando...' : callState === 'ended' ? 'Llamada finalizada' : gemini.isModelSpeaking ? 'Hablando...' : 'Escuchando...'}
           </p>
-          <p className="text-sm text-zinc-500 mt-0.5">
+          <p className={`text-sm mt-0.5 ${
+            callState === 'active' && duration >= WARN_CALL_SECONDS
+              ? 'text-orange-400 font-semibold'
+              : 'text-zinc-500'
+          }`}>
             {callState === 'active'
               ? formatDuration(duration)
               : callState === 'connecting'
@@ -211,6 +227,11 @@ export function PhoneUI({ roleplayType, systemPromptOverride, voiceName, onCallE
                     ? 'Listo para practicar'
                     : 'Selecciona un tipo de práctica'}
           </p>
+          {callState === 'active' && duration >= WARN_CALL_SECONDS && (
+            <p className="text-xs text-orange-400/80 mt-0.5 animate-pulse">
+              ⏱ Quedan {Math.ceil((MAX_CALL_SECONDS - duration) / 60)} min
+            </p>
+          )}
         </div>
 
         <div className="flex items-center justify-center h-36 px-6">

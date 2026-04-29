@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { GoogleAuth } from 'google-auth-library'
 import { getVercelOidcToken } from '@vercel/functions/oidc'
+import { createClient } from '@/lib/supabase/server'
 
 export const dynamic = 'force-dynamic'
 
@@ -59,7 +60,44 @@ async function getTokenViaWorkloadIdentity(oidcToken: string): Promise<string> {
   return json.accessToken
 }
 
+// Límites de uso por sesión y por día
+const DAILY_LIMIT_SECONDS = 60 * 60  // 1 hora/día por usuario
+
 export async function GET() {
+  // ── Auth check ─────────────────────────────────────────────────────────────
+  // Solo usuarios autenticados pueden obtener tokens de Vertex (generan costo).
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) {
+    return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+  }
+
+  // ── Cuota diaria: máximo 1 hora de práctica por usuario por día ────────────
+  const todayStart = new Date()
+  todayStart.setUTCHours(0, 0, 0, 0)
+
+  const { data: todaySessions } = await supabase
+    .from('sessions')
+    .select('duration')
+    .eq('user_id', user.id)
+    .gte('created_at', todayStart.toISOString())
+
+  const totalSecondsToday = (todaySessions ?? []).reduce(
+    (sum, s) => sum + (typeof s.duration === 'number' ? s.duration : 0),
+    0
+  )
+
+  if (totalSecondsToday >= DAILY_LIMIT_SECONDS) {
+    const usedMin = Math.round(totalSecondsToday / 60)
+    return NextResponse.json(
+      {
+        error: `Has alcanzado tu límite diario de práctica (${usedMin} min usados, máximo 60 min). ¡Vuelve mañana con energía! 💪`,
+        code: 'DAILY_LIMIT_REACHED',
+      },
+      { status: 429 }
+    )
+  }
+
   if (!PROJECT) {
     return NextResponse.json(
       { error: 'VERTEX_AI_PROJECT_ID no está configurado' },
@@ -128,8 +166,6 @@ export async function GET() {
   } catch (err) {
     console.error('[vertex/config] FAILED', {
       message: err instanceof Error ? err.message : String(err),
-      hasVercelOidcEnvVar: !!process.env.VERCEL_OIDC_TOKEN,
-      hasCredentialsJson: !!process.env.GOOGLE_CREDENTIALS_JSON,
       project: PROJECT,
       runtime: process.env.VERCEL ? 'vercel' : 'local',
     })

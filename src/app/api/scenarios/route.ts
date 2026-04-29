@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import scenariosData from '@/data/scenarios.json'
+import { createClient } from '@/lib/supabase/server'
 
 export interface ScenarioBrief {
   scenario_id: string
@@ -51,6 +52,13 @@ function getScenario(nicho?: string): ScenarioBrief | null {
 
 // GET /api/scenarios?nicho=trading|marca_personal_instagram|aleatorio
 export async function GET(req: NextRequest) {
+  // Requiere usuario autenticado — evita que scripts externos consuman el endpoint
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) {
+    return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+  }
+
   const nicho = req.nextUrl.searchParams.get('nicho') ?? 'aleatorio'
   const scenario = getScenario(nicho)
   if (!scenario) {
