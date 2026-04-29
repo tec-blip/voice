@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useAuth } from '@/lib/hooks/use-auth'
 import { useUserRole } from '@/lib/hooks/use-user-role'
+import { SalesVoiceLogo } from '@/components/ui/sales-voice-logo'
 
 const navItems = [
   {
@@ -76,9 +77,8 @@ export function Sidebar() {
 
   const nav = (
     <div className="flex flex-col h-full bg-zinc-900 border-r border-zinc-800">
-      <div className="px-5 py-5 flex items-center gap-3">
-        {/* Logo Sales Voice — diamante + S neón rojo */}
-        <img src="/icon.svg" alt="Sales Voice" className="h-9 w-9 shrink-0" />
+      <div className="px-5 py-4 flex items-center gap-3">
+        <SalesVoiceLogo size={36} animated={false} />
         <div>
           <h1 className="text-base font-bold text-white tracking-tight leading-none">Sales Voice</h1>
           <p className="text-xs text-zinc-500 mt-0.5">Roleplay de ventas IA</p>
