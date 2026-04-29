@@ -1,20 +1,19 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="-5 -5 110 120">
-  <!--
-    Sales Voice — S geométrica.
-    Dos arcos cúbicos con linecap="butt" crean los cortes diagonales
-    característicos del logo de Sales Hacking:
-      • Primer arco: desde top-right, barre a la IZQUIERDA rodeando el
-        loop superior, llega al centro.
-      • Segundo arco: desde el centro, barre a la DERECHA rodeando el
-        loop inferior, acaba en bottom-left.
-    Los extremos con butt cap producen los cortes angulares en diagonal.
-  -->
-  <rect x="-5" y="-5" width="110" height="120" fill="#0a0a0a"/>
-  <path
-    d="M 72,14 C 8,14 8,55 50,55 C 92,55 92,96 28,96"
-    fill="none"
-    stroke="#C8001A"
-    stroke-width="26"
-    stroke-linecap="butt"
-  />
+<svg version="1.0" xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 620 712">
+  <!-- Fondo oscuro para PWA / favicon -->
+  <rect width="620" height="712" fill="#0a0a0a"/>
+  <!-- Isotipo original Sales Hacking — dos paths exactos, fill rojo -->
+  <g transform="translate(0,712) scale(0.1,-0.1)" fill="#C8001A" stroke="none">
+    <path d="M1752 7109 c-430 -36 -840 -223 -1155 -528 -343 -332 -548 -775 -589
+-1269 -36 -450 115 -941 405 -1311 91 -117 1428 -1651 1447 -1661 30 -16 1525
+-9 1525 7 0 12 -417 496 -1434 1663 -570 654 -652 753 -702 852 -95 187 -99
+415 -12 623 84 200 264 365 478 437 l70 23 1538 3 c1290 2 1538 5 1535 16 -2
+11 -931 1088 -983 1139 -15 16 -96 17 -1018 16 -551 -1 -1048 -6 -1105 -10z"/>
+    <path d="M2810 4788 c0 -13 408 -486 1459 -1692 306 -351 578 -669 605 -705
+124 -168 178 -375 143 -556 -69 -366 -334 -617 -682 -646 -60 -5 -759 -9
+-1552 -9 -1201 0 -1443 -2 -1443 -13 0 -8 225 -272 499 -588 l499 -574 1038 0
+c1145 1 1127 0 1380 65 793 205 1365 899 1435 1739 31 372 -66 788 -260 1112
+-80 135 -131 202 -303 400 -78 90 -380 439 -671 774 -291 336 -549 631 -572
+658 l-42 47 -767 0 c-606 0 -766 -3 -766 -12z"/>
+  </g>
 </svg>
