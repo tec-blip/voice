@@ -15,10 +15,10 @@ export async function GET() {
 
     const { data, error } = await supabase
       .from('sessions')
-      .select('id, type, score, duration, transcript, feedback, created_at')
+      .select('id, type, scenario, score, duration, feedback, created_at')
       .eq('user_id', user.id)
       .order('created_at', { ascending: false })
-      .limit(50)
+      .limit(20)
 
     if (error) {
       console.error('[api/sessions/list] query failed', error)
