@@ -91,6 +91,11 @@ export function PhoneUI({ roleplayType, systemPromptOverride, voiceName, onCallE
   durationRef.current = duration
   const finalizeCallRef = useRef<(meta: { endedBy: 'user' | 'model'; reason?: CallEndReason; summary?: string }) => void>(() => {})
 
+  // Tiempo en que la llamada pasó a estado 'active'. Permite ignorar end_call
+  // falsos positivos que el modelo lanza en los primeros segundos (barge-in
+  // confusion: el modelo se equivoca y cree que debe colgar al ser interrumpido).
+  const callActiveSinceRef = useRef<number | null>(null)
+
   const gemini = useGeminiLive({
     systemPrompt,
     voiceName: voiceName ?? 'Kore',
@@ -103,6 +108,16 @@ export function PhoneUI({ roleplayType, systemPromptOverride, voiceName, onCallE
       setCallState('idle')
     }, []),
     onModelHangup: useCallback((info: { reason: CallEndReason; summary?: string }) => {
+      // Guardia de duración mínima: ignoramos end_call si la llamada lleva
+      // menos de 30 segundos activa. El modelo a veces confunde una interrupción
+      // (barge-in) con el fin de la conversación y llama end_call prematuramente.
+      // El prompt ya instruye "nunca uses end_call antes de 5 min" pero añadimos
+      // una red de seguridad en código para los casos en que falle.
+      const callAgeMs = callActiveSinceRef.current ? Date.now() - callActiveSinceRef.current : Infinity
+      if (callAgeMs < 30_000) {
+        console.warn('[phone-ui] ignoring early end_call (callAge=%ds) — likely barge-in confusion', Math.round(callAgeMs / 1000))
+        return
+      }
       console.log('[phone-ui] model requested hangup', info)
       finalizeCallRef.current({ endedBy: 'model', reason: info.reason, summary: info.summary })
     }, []),
@@ -139,6 +154,7 @@ export function PhoneUI({ roleplayType, systemPromptOverride, voiceName, onCallE
 
   useEffect(() => {
     if (gemini.isConnected && callState === 'connecting') {
+      callActiveSinceRef.current = Date.now()
       setCallState('active')
     }
   }, [gemini.isConnected, callState])

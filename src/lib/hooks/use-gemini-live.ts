@@ -179,7 +179,11 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
   }, [onModelSpeaking])
 
   const stopPlayback = useCallback(() => {
+    // Nullificamos onended ANTES de stop() para que no disparen el hangup
+    // de pendingHangupRef cuando el audio se corta abruptamente (por ejemplo
+    // cuando el usuario interrumpe al modelo o al desconectar).
     activeSourcesRef.current.forEach((s) => {
+      s.onended = null
       try { s.stop() } catch {}
     })
     activeSourcesRef.current = []
@@ -375,6 +379,20 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
 
       if (data.serverContent) {
         const sc = data.serverContent
+
+        // Interrupción por barge-in: el usuario habló mientras el modelo hablaba.
+        // Gemini para de enviar audio y manda este flag. Detenemos el playback
+        // inmediatamente para que el usuario no escuche el audio ya buffereado
+        // (puede quedar desincronizado con lo que el modelo va a decir ahora).
+        // Nota: NO limpiamos pendingHangupRef aquí — si el modelo ya decidió
+        // colgar (end_call fue llamado antes de la interrupción), el timer de
+        // fallback de 800ms sigue corriendo. La guardia de duración mínima en
+        // phone-ui evita que end_call prematuro termine la llamada.
+        if (sc.interrupted) {
+          stopPlayback()
+          return
+        }
+
         const { modelTurn, turnComplete } = sc
 
         if (modelTurn?.parts) {
