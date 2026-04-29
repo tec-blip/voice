@@ -113,6 +113,10 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
   // para evitar closures stales dentro del ws.onclose de openSocket.
   const doReconnectRef = useRef<() => void>(() => {})
 
+  // Listener de visibilitychange registrado durante la llamada.
+  // Lo guardamos en un ref para poder retirarlo en disconnect().
+  const visibilityListenerRef = useRef<(() => void) | null>(null)
+
   const playAudioChunk = useCallback((pcmBase64: string) => {
     if (!audioContextRef.current || audioContextRef.current.state === 'closed') {
       // ⚠️ NO forzar sampleRate aquí: iOS Safari lo rechaza o lo ignora.
@@ -526,6 +530,41 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
       modelPathRef.current = modelPath
 
       openSocket(wsUrl)
+
+      // ── Recuperación mobile: visibilitychange ──────────────────────────────
+      // En iOS/Android, al bloquear pantalla o ir a background:
+      //   1. El AudioContext se suspende automáticamente.
+      //   2. El WebSocket se corta después de ~30s.
+      // Cuando el usuario vuelve: resumimos el contexto y reconectamos el WS.
+      if (typeof document !== 'undefined') {
+        // Retirar listener anterior si existía (por si connect() se llamó dos veces)
+        if (visibilityListenerRef.current) {
+          document.removeEventListener('visibilitychange', visibilityListenerRef.current)
+        }
+
+        const handleVisibilityChange = () => {
+          if (document.visibilityState !== 'visible') return
+          if (isUserDisconnectingRef.current) return
+
+          // 1. Reanudar AudioContext suspendido
+          if (audioContextRef.current?.state === 'suspended') {
+            audioContextRef.current.resume().catch((e) =>
+              console.warn('[gemini-live] ctx resume on visibilitychange failed', e)
+            )
+          }
+
+          // 2. Reconectar si el WebSocket murió mientras estábamos en background
+          const wsState = wsRef.current?.readyState
+          if (wsState !== WebSocket.OPEN && wsState !== WebSocket.CONNECTING) {
+            console.log('[gemini-live] visibilitychange → ws dead, triggering reconnect')
+            reconnectAttemptsRef.current = 0 // resetear para tener 3 intentos frescos
+            doReconnectRef.current()
+          }
+        }
+
+        visibilityListenerRef.current = handleVisibilityChange
+        document.addEventListener('visibilitychange', handleVisibilityChange)
+      }
     } catch (err) {
       onError?.(err instanceof Error ? err.message : 'Error conectando con Gemini')
     }
@@ -537,6 +576,14 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
     reconnectAttemptsRef.current = 0
     wsUrlRef.current = null
     pendingHangupRef.current = null
+
+    // Retirar el listener de visibilitychange para no intentar reconectar
+    // después de que el usuario haya colgado intencionalmente.
+    if (visibilityListenerRef.current && typeof document !== 'undefined') {
+      document.removeEventListener('visibilitychange', visibilityListenerRef.current)
+      visibilityListenerRef.current = null
+    }
+
     stopPlayback()
     if (wsRef.current) {
       wsRef.current.close()

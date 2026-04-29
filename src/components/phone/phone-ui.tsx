@@ -33,6 +33,55 @@ export function PhoneUI({ roleplayType, systemPromptOverride, voiceName, onCallE
   const [lastText, setLastText] = useState('')
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
+  // ── Screen Wake Lock ───────────────────────────────────────────────────────
+  // Mantiene la pantalla encendida durante la llamada activa.
+  // Sin esto, iOS/Android apaga la pantalla, suspende el AudioContext y corta
+  // el WebSocket, terminando la llamada bruscamente.
+  const wakeLockRef = useRef<{ release: () => Promise<void> } | null>(null)
+  useEffect(() => {
+    if (callState !== 'active') {
+      wakeLockRef.current?.release().catch(() => {})
+      wakeLockRef.current = null
+      return
+    }
+    const nav = navigator as Navigator & {
+      wakeLock?: { request: (type: 'screen') => Promise<{ release: () => Promise<void>; addEventListener: (e: string, h: () => void) => void }> }
+    }
+    if (!nav.wakeLock) return // API no disponible (algunos Android WebView)
+
+    let released = false
+    const acquire = () => {
+      nav.wakeLock!.request('screen')
+        .then((lock) => {
+          if (released) { lock.release().catch(() => {}); return }
+          wakeLockRef.current = lock
+          // El OS puede liberar el lock al ir a background; lo re-adquirimos
+          // automáticamente al volver (visibilitychange → visible).
+          lock.addEventListener('release', () => {
+            if (!released) {
+              document.addEventListener(
+                'visibilitychange',
+                function reacquire() {
+                  if (document.visibilityState === 'visible' && !released) {
+                    document.removeEventListener('visibilitychange', reacquire)
+                    acquire()
+                  }
+                }
+              )
+            }
+          })
+        })
+        .catch(() => {}) // silently fail — el Wake Lock es un "nice to have"
+    }
+    acquire()
+
+    return () => {
+      released = true
+      wakeLockRef.current?.release().catch(() => {})
+      wakeLockRef.current = null
+    }
+  }, [callState])
+
   const systemPrompt = systemPromptOverride ?? (roleplayType ? getRoleplayPrompt(roleplayType) : '')
 
   // Refs volátiles para que el callback onModelHangup (que Gemini invoca desde

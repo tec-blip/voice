@@ -210,11 +210,49 @@ export function useMicrophone(options: UseMicrophoneOptions = {}): UseMicrophone
     return data
   }, [])
 
+  // Cleanup al desmontar
   useEffect(() => {
-    return () => {
-      stop()
-    }
+    return () => { stop() }
   }, [stop])
+
+  // ── Recuperación mobile: visibilitychange ────────────────────────────────
+  // En iOS, al volver de background, el AudioContext del micro puede estar
+  // suspendido. En algunos casos los tracks quedan en state='ended' (la pantalla
+  // se bloqueó). Detectamos ambas situaciones y actuamos.
+  const onErrorRef = useRef(onError)
+  onErrorRef.current = onError
+
+  useEffect(() => {
+    if (!isRecording) return
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState !== 'visible') return
+
+      // Comprobar si los tracks del micrófono siguen vivos
+      if (streamRef.current) {
+        const tracks = streamRef.current.getTracks()
+        const allEnded = tracks.length > 0 && tracks.every((t) => t.readyState === 'ended')
+        if (allEnded) {
+          console.warn('[mic] visibilitychange → tracks ended, mic interrumpido')
+          stop()
+          onErrorRef.current?.(
+            'El micrófono fue interrumpido (pantalla bloqueada). Por favor reinicia la llamada.'
+          )
+          return
+        }
+      }
+
+      // Reanudar AudioContext suspendido (iOS lo suspende al ir a background)
+      if (audioContextRef.current?.state === 'suspended') {
+        audioContextRef.current.resume().catch((e) =>
+          console.warn('[mic] resume on visibilitychange failed', e)
+        )
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
+  }, [isRecording, stop])
 
   return { isRecording, frequencyData, start, stop, getFrequencyData }
 }
