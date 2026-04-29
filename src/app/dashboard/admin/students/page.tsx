@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
@@ -22,7 +22,7 @@ interface Student {
 const ROLE_BADGE: Record<string, string> = {
   admin: 'bg-red-500/20 text-red-400',
   instructor: 'bg-purple-500/20 text-purple-400',
-  alumno: 'bg-blue-500/20 text-blue-400',
+  alumno: 'bg-red-500/20 text-red-400',
 }
 
 function formatDate(iso: string | null): string {
@@ -35,7 +35,7 @@ function formatDate(iso: string | null): string {
 function scoreColor(score: number): string {
   if (score === 0) return 'text-zinc-500'
   if (score >= 80) return 'text-green-400'
-  if (score >= 60) return 'text-blue-400'
+  if (score >= 60) return 'text-red-400'
   if (score >= 40) return 'text-yellow-400'
   return 'text-red-400'
 }
@@ -75,7 +75,7 @@ export default function AdminStudentsPage() {
   if (roleLoading || loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-zinc-700 border-t-blue-500" />
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-zinc-700 border-t-red-500" />
       </div>
     )
   }
@@ -129,7 +129,7 @@ export default function AdminStudentsPage() {
           placeholder="Buscar por nombre o email..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="flex-1 bg-zinc-900/50 border border-zinc-800 rounded-lg px-4 py-2 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500"
+          className="flex-1 bg-zinc-900/50 border border-zinc-800 rounded-lg px-4 py-2 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-red-500"
         />
         <div className="flex gap-2">
           {(['todos', 'alumno', 'instructor', 'admin'] as const).map((r) => (
@@ -138,7 +138,7 @@ export default function AdminStudentsPage() {
               onClick={() => setRoleFilter(r)}
               className={`px-3 py-2 rounded-lg text-xs font-medium capitalize transition-colors ${
                 roleFilter === r
-                  ? 'bg-blue-600 text-white'
+                  ? 'bg-red-600 text-white'
                   : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
               }`}
             >
@@ -197,7 +197,7 @@ export default function AdminStudentsPage() {
                     <td className="px-4 py-3 text-right">
                       <Link
                         href={`/dashboard/admin/students/${s.id}`}
-                        className="inline-flex items-center gap-1 text-xs font-medium text-blue-400 hover:text-blue-300"
+                        className="inline-flex items-center gap-1 text-xs font-medium text-red-400 hover:text-red-300"
                       >
                         Ver detalle
                         <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

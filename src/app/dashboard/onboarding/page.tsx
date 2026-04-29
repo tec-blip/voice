@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -41,7 +41,7 @@ export default function OnboardingPage() {
             <div
               key={i}
               className={`h-1.5 rounded-full transition-all ${
-                i === step ? 'w-8 bg-blue-500' : i < step ? 'w-8 bg-blue-500/40' : 'w-8 bg-zinc-700'
+                i === step ? 'w-8 bg-red-500' : i < step ? 'w-8 bg-red-500/40' : 'w-8 bg-zinc-700'
               }`}
             />
           ))}
@@ -70,7 +70,7 @@ export default function OnboardingPage() {
                 setStep(step + 1)
               }
             }}
-            className="px-8 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium transition-colors"
+            className="px-8 py-2.5 rounded-lg bg-red-600 hover:bg-red-700 text-white text-sm font-medium transition-colors"
           >
             {isLast ? '¡Empezar a practicar!' : 'Siguiente'}
           </button>

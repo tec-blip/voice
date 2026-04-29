@@ -13,7 +13,7 @@ export function AudioVisualizer({
   frequencyData,
   isActive,
   barCount = 32,
-  color = '#3b82f6',
+  color = '#ef4444',
 }: AudioVisualizerProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const animationRef = useRef<number | null>(null)

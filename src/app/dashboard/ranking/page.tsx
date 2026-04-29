@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/lib/hooks/use-auth'
@@ -19,7 +19,7 @@ const MEDAL_ICONS = ['🥇', '🥈', '🥉']
 
 function scoreColor(score: number): string {
   if (score >= 80) return 'text-green-400'
-  if (score >= 60) return 'text-blue-400'
+  if (score >= 60) return 'text-red-400'
   if (score >= 40) return 'text-yellow-400'
   return 'text-zinc-500'
 }
@@ -44,7 +44,7 @@ export default function RankingPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-zinc-700 border-t-blue-500" />
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-zinc-700 border-t-red-500" />
       </div>
     )
   }
@@ -72,7 +72,7 @@ export default function RankingPage() {
                 <div
                   key={entry.user_id}
                   className={`bg-gradient-to-b ${MEDAL_COLORS[i]} border rounded-xl p-5 text-center ${
-                    isCurrentUser ? 'ring-2 ring-blue-500/50' : ''
+                    isCurrentUser ? 'ring-2 ring-red-500/50' : ''
                   } ${i === 0 ? 'sm:order-2 sm:-mt-4' : i === 1 ? 'sm:order-1' : 'sm:order-3'}`}
                 >
                   <span className="text-3xl">{MEDAL_ICONS[i]}</span>
@@ -108,7 +108,7 @@ export default function RankingPage() {
                     key={entry.user_id}
                     className={`flex items-center justify-between p-4 rounded-xl transition-colors ${
                       isCurrentUser
-                        ? 'bg-blue-600/5 ring-1 ring-blue-500/30'
+                        ? 'bg-red-600/5 ring-1 ring-red-500/30'
                         : 'bg-zinc-900/50 border border-zinc-800 hover:bg-zinc-800/50'
                     }`}
                   >

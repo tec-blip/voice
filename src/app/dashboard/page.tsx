@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
@@ -70,7 +70,7 @@ export default function DashboardPage() {
   if (authLoading || loading) {
     return (
       <div className="flex items-center justify-center h-full">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-zinc-700 border-t-blue-500" />
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-zinc-700 border-t-red-500" />
       </div>
     )
   }
@@ -104,7 +104,7 @@ export default function DashboardPage() {
       <div className="flex justify-center">
         <Link
           href="/dashboard/practice"
-          className="inline-flex items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-700 px-8 py-4 text-lg font-semibold text-white transition-colors shadow-lg shadow-blue-600/20"
+          className="inline-flex items-center gap-2 rounded-xl bg-red-600 hover:bg-red-700 px-8 py-4 text-lg font-semibold text-white transition-colors shadow-lg shadow-red-600/20"
         >
           <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
@@ -117,7 +117,7 @@ export default function DashboardPage() {
         <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider">Últimas sesiones</h2>
-            <Link href="/dashboard/history" className="text-xs text-blue-400 hover:text-blue-300">Ver todas</Link>
+            <Link href="/dashboard/history" className="text-xs text-red-400 hover:text-red-300">Ver todas</Link>
           </div>
           <div className="space-y-3">
             {sessions.slice(0, 3).map((session) => (
@@ -128,7 +128,7 @@ export default function DashboardPage() {
                 </div>
                 <div className="flex items-center gap-3">
                   <span className={`text-lg font-bold ${
-                    (session.score ?? 0) >= 80 ? 'text-green-400' : (session.score ?? 0) >= 60 ? 'text-blue-400' : (session.score ?? 0) >= 40 ? 'text-yellow-400' : 'text-zinc-500'
+                    (session.score ?? 0) >= 80 ? 'text-green-400' : (session.score ?? 0) >= 60 ? 'text-red-400' : (session.score ?? 0) >= 40 ? 'text-yellow-400' : 'text-zinc-500'
                   }`}>
                     {session.score ?? '—'}
                   </span>

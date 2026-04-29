@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import Link from 'next/link'
@@ -76,9 +76,13 @@ export function Sidebar() {
 
   const nav = (
     <div className="flex flex-col h-full bg-zinc-900 border-r border-zinc-800">
-      <div className="p-6">
-        <h1 className="text-xl font-bold text-white tracking-tight">SalesVoice</h1>
-        <p className="text-xs text-zinc-500 mt-0.5">Roleplay de ventas IA</p>
+      <div className="px-5 py-5 flex items-center gap-3">
+        {/* Logo Sales Voice — diamante + S neón rojo */}
+        <img src="/icon.svg" alt="Sales Voice" className="h-9 w-9 shrink-0" />
+        <div>
+          <h1 className="text-base font-bold text-white tracking-tight leading-none">Sales Voice</h1>
+          <p className="text-xs text-zinc-500 mt-0.5">Roleplay de ventas IA</p>
+        </div>
       </div>
 
       <nav className="flex-1 px-3 space-y-1">
@@ -91,7 +95,7 @@ export function Sidebar() {
               onClick={() => setMobileOpen(false)}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                 isActive
-                  ? 'bg-blue-600/20 text-blue-400 border-l-2 border-blue-500'
+                  ? 'bg-red-600/20 text-red-400 border-l-2 border-red-500'
                   : 'text-zinc-400 hover:text-white hover:bg-zinc-800/50'
               }`}
             >

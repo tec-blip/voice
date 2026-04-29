@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 export default function Error({
   error,
@@ -21,7 +21,7 @@ export default function Error({
         </div>
         <button
           onClick={reset}
-          className="px-6 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium transition-colors"
+          className="px-6 py-2.5 rounded-lg bg-red-600 hover:bg-red-700 text-white text-sm font-medium transition-colors"
         >
           Intentar de nuevo
         </button>

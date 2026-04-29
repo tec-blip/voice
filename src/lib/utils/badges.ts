@@ -1,4 +1,4 @@
-export interface Badge {
+﻿export interface Badge {
   id: string
   name: string
   description: string
@@ -7,7 +7,7 @@ export interface Badge {
 }
 
 export const BADGES: Badge[] = [
-  { id: 'first_call', name: 'Primera Llamada', description: 'Completaste tu primera sesión de roleplay', icon: '📞', color: 'bg-blue-500/20 text-blue-400 border-blue-500/30' },
+  { id: 'first_call', name: 'Primera Llamada', description: 'Completaste tu primera sesión de roleplay', icon: '📞', color: 'bg-red-500/20 text-red-400 border-red-500/30' },
   { id: 'streak_3', name: 'Racha de 3', description: '3 días consecutivos de práctica', icon: '🔥', color: 'bg-orange-500/20 text-orange-400 border-orange-500/30' },
   { id: 'streak_7', name: 'Semana Imparable', description: '7 días consecutivos de práctica', icon: '⚡', color: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' },
   { id: 'score_80', name: 'Closer Pro', description: 'Obtuviste 80+ en una sesión', icon: '⭐', color: 'bg-green-500/20 text-green-400 border-green-500/30' },

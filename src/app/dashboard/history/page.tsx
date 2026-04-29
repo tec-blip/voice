@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useState } from 'react'
 
@@ -30,7 +30,7 @@ const TYPE_LABELS: Record<string, string> = {
 }
 
 const TYPE_COLORS: Record<string, string> = {
-  cierre: 'bg-blue-500/20 text-blue-400',
+  cierre: 'bg-red-500/20 text-red-400',
   llamada_fria: 'bg-green-500/20 text-green-400',
   framing: 'bg-purple-500/20 text-purple-400',
   objeciones: 'bg-yellow-500/20 text-yellow-400',
@@ -55,7 +55,7 @@ function formatDuration(seconds: number | null): string {
 function scoreColor(score: number | null): string {
   if (score === null) return 'text-zinc-500'
   if (score >= 80) return 'text-green-400'
-  if (score >= 60) return 'text-blue-400'
+  if (score >= 60) return 'text-red-400'
   if (score >= 40) return 'text-yellow-400'
   return 'text-red-400'
 }
@@ -79,7 +79,7 @@ export default function HistoryPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-zinc-700 border-t-blue-500" />
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-zinc-700 border-t-red-500" />
       </div>
     )
   }
@@ -98,7 +98,7 @@ export default function HistoryPage() {
             onClick={() => setFilter(f)}
             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
               filter === f
-                ? 'bg-blue-600 text-white'
+                ? 'bg-red-600 text-white'
                 : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
             }`}
           >
@@ -168,7 +168,7 @@ export default function HistoryPage() {
                           <div key={i} className={`flex ${entry.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                             <div className={`max-w-[80%] rounded-lg px-3 py-2 text-sm ${
                               entry.role === 'user'
-                                ? 'bg-blue-600/20 text-blue-100'
+                                ? 'bg-red-600/20 text-red-100'
                                 : 'bg-zinc-800 text-zinc-300'
                             }`}>
                               <span className="text-[10px] font-medium block mb-0.5 opacity-60 uppercase tracking-wide">

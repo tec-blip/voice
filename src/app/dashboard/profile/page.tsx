@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/lib/hooks/use-auth'
@@ -37,7 +37,7 @@ export default function ProfilePage() {
   if (authLoading || loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-zinc-700 border-t-blue-500" />
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-zinc-700 border-t-red-500" />
       </div>
     )
   }
@@ -57,7 +57,7 @@ export default function ProfilePage() {
         </div>
         <h1 className="text-xl font-bold text-white mt-4">{name}</h1>
         <p className="text-sm text-zinc-500">{email}</p>
-        <span className="inline-block mt-2 px-3 py-1 rounded-full text-xs font-medium bg-blue-500/20 text-blue-400">
+        <span className="inline-block mt-2 px-3 py-1 rounded-full text-xs font-medium bg-red-500/20 text-red-400">
           Alumno
         </span>
       </div>

@@ -1,9 +1,70 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="96" fill="#09090b"/>
-  <circle cx="256" cy="220" r="80" fill="none" stroke="#2563eb" stroke-width="24"/>
-  <rect x="232" y="300" width="48" height="60" rx="8" fill="#2563eb"/>
-  <path d="M180 380 h152 a24 24 0 0 1 24 24v8H156v-8a24 24 0 0 1 24-24z" fill="#2563eb"/>
-  <circle cx="370" cy="160" r="12" fill="#22c55e"/>
-  <circle cx="370" cy="160" r="24" fill="none" stroke="#22c55e" stroke-width="4" opacity="0.5"/>
-  <circle cx="370" cy="160" r="36" fill="none" stroke="#22c55e" stroke-width="3" opacity="0.25"/>
+  <defs>
+    <!-- Neon red glow — tres capas de blur para el efecto neón -->
+    <filter id="neon" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="6"  result="b1"/>
+      <feGaussianBlur in="SourceGraphic" stdDeviation="14" result="b2"/>
+      <feGaussianBlur in="SourceGraphic" stdDeviation="28" result="b3"/>
+      <feMerge>
+        <feMergeNode in="b3"/>
+        <feMergeNode in="b2"/>
+        <feMergeNode in="b1"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <!-- Fondo del diamante: gradiente oscuro rojo profundo -->
+    <linearGradient id="dg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#1e0606"/>
+      <stop offset="100%" stop-color="#090202"/>
+    </linearGradient>
+    <!-- Borde del diamante: ligero glow rojo -->
+    <filter id="dimglow" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="bg"/>
+      <feMerge><feMergeNode in="bg"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Fondo negro total -->
+  <rect width="512" height="512" fill="#080808"/>
+
+  <!-- Diamante — rect rotado 45° centrado en (256,256) -->
+  <!-- side=284 → diagonal tip-to-tip ≈ 402px → margen ≈ 55px cada lado -->
+  <rect x="114" y="114" width="284" height="284" rx="38" ry="38"
+    transform="rotate(45 256 256)"
+    fill="url(#dg)"
+    stroke="#4a1010" stroke-width="2"
+    filter="url(#dimglow)"/>
+
+  <!--
+    S shape — curva cúbica única de top-right a bottom-left.
+    Sigue el mismo lenguaje visual del logo de Sales Hacking:
+    dos loops que forman una S con strokes gruesos y redondeados.
+
+    Puntos clave:
+      Start  : (308, 158)  — lado derecho, parte superior
+      CP1    : (138, 148)  — tira fuerte a la izquierda/arriba (loop superior)
+      CP2    : (148, 268)  — tira izquierda/abajo hacia el cruce central
+      Mid    : (256, 258)  — cruce central de la S
+      [smooth cubic continúa con reflexión automática de CP2]
+      CP4    : (370, 372)  — tira derecha/abajo (loop inferior)
+      End    : (204, 368)  — lado izquierdo, parte inferior
+  -->
+  <path d="M 308,158
+           C 138,148 148,268 256,258
+           S 370,372 204,368"
+    fill="none"
+    stroke="#FF2020"
+    stroke-width="44"
+    stroke-linecap="round"
+    filter="url(#neon)"/>
+
+  <!--
+    Ondas de voz — 3 arcos concéntricos en la esquina superior-derecha del diamante.
+    Diferencian Sales VOICE de Sales Hacking. Tamaño pequeño para no saturar.
+  -->
+  <g filter="url(#neon)" opacity="0.85">
+    <path d="M 355,148 A 18,18 0 0,1 355,178" fill="none" stroke="#FF2020" stroke-width="10" stroke-linecap="round"/>
+    <path d="M 372,138 A 34,34 0 0,1 372,188" fill="none" stroke="#FF2020" stroke-width="8"  stroke-linecap="round" opacity="0.65"/>
+    <path d="M 390,128 A 52,52 0 0,1 390,198" fill="none" stroke="#FF2020" stroke-width="6"  stroke-linecap="round" opacity="0.35"/>
+  </g>
 </svg>

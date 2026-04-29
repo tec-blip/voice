@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useCallback } from 'react'
 import { PhoneUI } from '@/components/phone/phone-ui'
@@ -237,7 +237,7 @@ export default function PracticePage() {
 
   // ── Nichos config ────────────────────────────────────────────
   const nichos: { id: Nicho; gradient: string; border: string; activeBg: string }[] = [
-    { id: 'trading', gradient: 'from-blue-500 to-indigo-600', border: 'border-blue-500', activeBg: 'bg-blue-600/10' },
+    { id: 'trading', gradient: 'from-red-500 to-indigo-600', border: 'border-red-500', activeBg: 'bg-red-600/10' },
     { id: 'marca_personal_instagram', gradient: 'from-pink-500 to-orange-500', border: 'border-pink-500', activeBg: 'bg-pink-600/10' },
     { id: 'aleatorio', gradient: 'from-violet-500 to-cyan-500', border: 'border-violet-500', activeBg: 'bg-violet-600/10' },
   ]
@@ -248,7 +248,7 @@ export default function PracticePage() {
   if (pageState === 'evaluating') return (
     <div className="max-w-4xl mx-auto">
       <div className="flex flex-col items-center justify-center py-24 space-y-4">
-        <div className="h-16 w-16 rounded-full border-4 border-zinc-800 border-t-blue-500 animate-spin" />
+        <div className="h-16 w-16 rounded-full border-4 border-zinc-800 border-t-red-500 animate-spin" />
         <p className="text-zinc-400 text-sm">Analizando transcripción...</p>
         <p className="text-zinc-600 text-xs">Evaluando 6 categorías de desempeño</p>
       </div>
@@ -280,7 +280,7 @@ export default function PracticePage() {
             {lastTranscript.map((entry, i) => (
               <div key={i} className={`flex gap-3 ${entry.role === 'user' ? 'justify-end' : ''}`}>
                 <div className={`max-w-[80%] rounded-lg px-4 py-2 text-sm ${
-                  entry.role === 'user' ? 'bg-blue-600/20 text-blue-100' : 'bg-zinc-800 text-zinc-300'
+                  entry.role === 'user' ? 'bg-red-600/20 text-red-100' : 'bg-zinc-800 text-zinc-300'
                 }`}>
                   <span className="text-xs font-medium block mb-1 opacity-60">
                     {entry.role === 'user' ? 'Tú' : 'Prospecto'}
@@ -294,7 +294,7 @@ export default function PracticePage() {
       )}
       <div className="flex justify-center">
         <button onClick={handleNewPractice}
-          className="inline-flex items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-700 px-8 py-3 text-sm font-semibold text-white transition-colors">
+          className="inline-flex items-center gap-2 rounded-xl bg-red-600 hover:bg-red-700 px-8 py-3 text-sm font-semibold text-white transition-colors">
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182" />
           </svg>
@@ -373,7 +373,7 @@ export default function PracticePage() {
                     onClick={() => setSelectedType(id === selectedType ? null : id)}
                     className={`flex flex-col items-center gap-2 p-4 rounded-xl border transition-colors text-center ${
                       selectedType === id
-                        ? 'border-blue-500 bg-blue-600/10 text-blue-400'
+                        ? 'border-red-500 bg-red-600/10 text-red-400'
                         : 'border-zinc-800 bg-zinc-900/50 text-zinc-400 hover:border-zinc-700 hover:text-zinc-300'
                     }`}
                   >
@@ -400,7 +400,7 @@ export default function PracticePage() {
 
           {selectedNicho && selectedType && loadingScenario && (
             <div className="flex justify-center py-4">
-              <div className="w-6 h-6 rounded-full border-2 border-zinc-600 border-t-blue-400 animate-spin" />
+              <div className="w-6 h-6 rounded-full border-2 border-zinc-600 border-t-red-400 animate-spin" />
             </div>
           )}
 

@@ -20,8 +20,8 @@ export function ProgressChart({ data }: ProgressChartProps) {
       <AreaChart data={data}>
         <defs>
           <linearGradient id="scoreGradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
-            <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+            <stop offset="5%" stopColor="#ef4444" stopOpacity={0.3} />
+            <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
           </linearGradient>
         </defs>
         <CartesianGrid strokeDasharray="3 3" stroke="#27272a" />
@@ -40,10 +40,10 @@ export function ProgressChart({ data }: ProgressChartProps) {
         <Area
           type="monotone"
           dataKey="score"
-          stroke="#3b82f6"
+          stroke="#ef4444"
           strokeWidth={2}
           fill="url(#scoreGradient)"
-          dot={{ fill: '#3b82f6', strokeWidth: 0, r: 4 }}
+          dot={{ fill: '#ef4444', strokeWidth: 0, r: 4 }}
           activeDot={{ r: 6, fill: '#60a5fa' }}
         />
       </AreaChart>

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useMicrophone } from '@/lib/hooks/use-microphone'
@@ -219,9 +219,9 @@ export function PhoneUI({ roleplayType, systemPromptOverride, voiceName, onCallE
       <div className="bg-zinc-900 border border-zinc-800 rounded-3xl shadow-2xl shadow-black/40 overflow-hidden">
         <div className="px-6 pt-8 pb-4 text-center">
           <div className={`h-12 w-12 rounded-full mx-auto flex items-center justify-center ${
-            gemini.isModelSpeaking ? 'bg-blue-600/20 ring-2 ring-blue-500/40' : 'bg-zinc-700'
+            gemini.isModelSpeaking ? 'bg-red-600/20 ring-2 ring-red-500/40' : 'bg-zinc-700'
           } transition-all`}>
-            <svg className={`w-6 h-6 ${gemini.isModelSpeaking ? 'text-blue-400' : 'text-zinc-400'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <svg className={`w-6 h-6 ${gemini.isModelSpeaking ? 'text-red-400' : 'text-zinc-400'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
             </svg>
           </div>
@@ -255,12 +255,12 @@ export function PhoneUI({ roleplayType, systemPromptOverride, voiceName, onCallE
             <AudioVisualizer
               frequencyData={microphone.frequencyData}
               isActive={microphone.isRecording}
-              color={gemini.isModelSpeaking ? '#8b5cf6' : '#3b82f6'}
+              color={gemini.isModelSpeaking ? '#dc2626' : '#ef4444'}
             />
           ) : callState === 'connecting' ? (
-            <div className="h-24 w-24 rounded-full bg-blue-600/20 border-2 border-blue-500/40 flex items-center justify-center animate-pulse">
-              <div className="h-16 w-16 rounded-full bg-blue-600/30 flex items-center justify-center animate-pulse">
-                <svg className="w-8 h-8 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <div className="h-24 w-24 rounded-full bg-red-600/20 border-2 border-red-500/40 flex items-center justify-center animate-pulse">
+              <div className="h-16 w-16 rounded-full bg-red-600/30 flex items-center justify-center animate-pulse">
+                <svg className="w-8 h-8 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
                 </svg>
               </div>

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import type { EvaluationResult } from '@/lib/prompts/evaluation'
 
@@ -17,14 +17,14 @@ const CATEGORY_LABELS: Record<string, string> = {
 
 function getScoreColor(score: number): string {
   if (score >= 80) return 'text-green-400'
-  if (score >= 60) return 'text-blue-400'
+  if (score >= 60) return 'text-red-400'
   if (score >= 40) return 'text-yellow-400'
   return 'text-red-400'
 }
 
 function getBarColor(score: number): string {
   if (score >= 80) return 'bg-green-500'
-  if (score >= 60) return 'bg-blue-500'
+  if (score >= 60) return 'bg-red-500'
   if (score >= 40) return 'bg-yellow-500'
   return 'bg-red-500'
 }
@@ -107,10 +107,10 @@ export function FeedbackCard({ evaluation }: FeedbackCardProps) {
 
       <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-5">
         <div className="flex items-center gap-2 mb-3">
-          <svg className="w-5 h-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <svg className="w-5 h-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M15.042 21.672L13.684 16.6m0 0l-2.51 2.225.569-9.47 5.227 7.917-3.286-.672zM12 2.25V4.5m5.834.166l-1.591 1.591M20.25 10.5H18M7.757 14.743l-1.59 1.59M6 10.5H3.75m4.007-4.243l-1.59-1.59" />
           </svg>
-          <h3 className="text-sm font-semibold text-blue-400">Momento clave</h3>
+          <h3 className="text-sm font-semibold text-red-400">Momento clave</h3>
         </div>
         <p className="text-sm text-zinc-300 leading-relaxed italic">
           &ldquo;{evaluation.momento_critico}&rdquo;
