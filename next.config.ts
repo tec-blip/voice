@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { withSentryConfig } from "@sentry/nextjs";
 
 const nextConfig: NextConfig = {
   headers: async () => [
@@ -18,4 +19,9 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
 };
 
-export default nextConfig;
+export default withSentryConfig(nextConfig, {
+  silent: true,
+  disableLogger: true,
+  // Source maps solo se suben si el usuario configura SENTRY_AUTH_TOKEN
+  sourcemaps: { disable: !process.env.SENTRY_AUTH_TOKEN },
+});
