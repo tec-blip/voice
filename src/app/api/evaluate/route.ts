@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { EVALUATION_PROMPT, type EvaluationResult } from '@/lib/prompts/evaluation'
 import { createClient } from '@/lib/supabase/server'
+import { enforceRateLimit } from '@/lib/rate-limit'
 
 // Models confirmed available for this API key (via ListModels)
 // All use v1beta which supports responseMimeType JSON mode
@@ -30,6 +31,14 @@ export async function POST(request: Request) {
   if (!user) {
     return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
   }
+
+  // Rate limit: máximo 10 evaluaciones por hora por usuario.
+  // Una sesión real produce 1 evaluación; este límite ataja bucles y abusos.
+  const limited = enforceRateLimit(`evaluate:${user.id}`, {
+    capacity: 10,
+    windowMs: 60 * 60 * 1000,
+  })
+  if (limited) return limited
 
   const apiKey = process.env.GEMINI_API_KEY
   if (!apiKey) {

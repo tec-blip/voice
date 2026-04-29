@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { GoogleAuth } from 'google-auth-library'
 import { getVercelOidcToken } from '@vercel/functions/oidc'
 import { createClient } from '@/lib/supabase/server'
+import { enforceRateLimit } from '@/lib/rate-limit'
 
 export const dynamic = 'force-dynamic'
 
@@ -71,6 +72,15 @@ export async function GET() {
   if (!user) {
     return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
   }
+
+  // ── Rate limit por ráfaga: 6 inicios de llamada por minuto por usuario ────
+  // Una sesión normal pide config 1 vez. Este límite ataja click-spam en el
+  // botón de iniciar y reconexiones agresivas tras un error.
+  const limited = enforceRateLimit(`vertex-config:${user.id}`, {
+    capacity: 6,
+    windowMs: 60 * 1000,
+  })
+  if (limited) return limited
 
   // ── Cuota diaria: máximo 1 hora de práctica por usuario por día ────────────
   const todayStart = new Date()
