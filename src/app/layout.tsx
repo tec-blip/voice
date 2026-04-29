@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import "@/lib/env" // Valida env vars al arrancar el servidor
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 

@@ -15,7 +15,7 @@ export async function GET() {
 
     const { data, error } = await supabase
       .from('sessions')
-      .select('id, type, scenario, score, duration, feedback, created_at')
+      .select('id, type, scenario, score, duration, transcript, feedback, created_at')
       .eq('user_id', user.id)
       .order('created_at', { ascending: false })
       .limit(20)
