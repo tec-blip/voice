@@ -206,6 +206,15 @@ export default function PracticePage() {
       const result: EvaluationResult = await res.json()
       setEvaluation(result)
       setPageState('results')
+      // Normalize transcript to TranscriptEntry shape before persisting:
+      // use-gemini-live produces { role: 'user'|'model', text: string }
+      // but the API expects { role: 'user'|'assistant', content: string, timestamp: string }
+      const callEndedAt = new Date().toISOString()
+      const normalizedTranscript = transcript.map((entry) => ({
+        role: entry.role === 'model' ? 'assistant' : 'user',
+        content: entry.text,
+        timestamp: callEndedAt,
+      }))
       await fetch('/api/sessions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -213,7 +222,7 @@ export default function PracticePage() {
           type: selectedType,
           score: result.puntuacion_general,
           duration: durationSeconds,
-          transcript,
+          transcript: normalizedTranscript,
           feedback: result,
         }),
       }).catch(() => {})
