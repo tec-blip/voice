@@ -1,16 +1,14 @@
-﻿'use client'
+'use client'
 
 import { useState, useTransition } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
-export function LoginForm() {
+export function ForgotPasswordForm() {
   const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const [sent, setSent] = useState(false)
   const [isPending, startTransition] = useTransition()
-  const router = useRouter()
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -18,18 +16,36 @@ export function LoginForm() {
 
     startTransition(async () => {
       const supabase = createClient()
-      const { error } = await supabase.auth.signInWithPassword({ email, password })
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: 'https://shia.closersdigitales.com/auth/callback?next=/reset-password',
+      })
 
       if (error) {
-        setError(error.message === 'Invalid login credentials'
-          ? 'Email o contraseña incorrectos'
-          : error.message)
+        setError('No se pudo enviar el correo. Intenta de nuevo.')
         return
       }
 
-      router.push('/dashboard')
-      router.refresh()
+      setSent(true)
     })
+  }
+
+  if (sent) {
+    return (
+      <div className="text-center space-y-4">
+        <div className="w-12 h-12 rounded-full bg-green-500/10 border border-green-500/20 flex items-center justify-center mx-auto">
+          <svg className="w-6 h-6 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        <p className="text-sm text-zinc-300">
+          Enviamos un enlace a <span className="text-white font-medium">{email}</span>.<br />
+          Revisa tu bandeja de entrada y sigue las instrucciones.
+        </p>
+        <Link href="/login" className="block text-sm text-red-400 hover:text-red-300 font-medium">
+          Volver al inicio de sesión
+        </Link>
+      </div>
+    )
   }
 
   return (
@@ -46,26 +62,6 @@ export function LoginForm() {
           required
           className="w-full rounded-lg bg-zinc-900 border border-zinc-700 px-4 py-2.5 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
           placeholder="tu@email.com"
-        />
-      </div>
-
-      <div>
-        <div className="flex items-center justify-between mb-1.5">
-          <label htmlFor="password" className="block text-sm font-medium text-zinc-300">
-            Contraseña
-          </label>
-          <Link href="/forgot-password" className="text-xs text-red-400 hover:text-red-300 transition-colors">
-            ¿Olvidaste tu contraseña?
-          </Link>
-        </div>
-        <input
-          id="password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          className="w-full rounded-lg bg-zinc-900 border border-zinc-700 px-4 py-2.5 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
-          placeholder="••••••••"
         />
       </div>
 
@@ -86,12 +82,19 @@ export function LoginForm() {
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
             </svg>
-            Entrando...
+            Enviando...
           </>
         ) : (
-          'Entrar'
+          'Enviar enlace de recuperación'
         )}
       </button>
+
+      <Link
+        href="/login"
+        className="block text-center text-sm text-zinc-400 hover:text-zinc-300 transition-colors"
+      >
+        Volver al inicio de sesión
+      </Link>
     </form>
   )
 }

@@ -1,13 +1,12 @@
-﻿'use client'
+'use client'
 
 import { useState, useTransition } from 'react'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
-export function LoginForm() {
-  const [email, setEmail] = useState('')
+export function ResetPasswordForm() {
   const [password, setPassword] = useState('')
+  const [confirm, setConfirm] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
   const router = useRouter()
@@ -16,14 +15,22 @@ export function LoginForm() {
     e.preventDefault()
     setError(null)
 
+    if (password.length < 6) {
+      setError('La contraseña debe tener al menos 6 caracteres.')
+      return
+    }
+
+    if (password !== confirm) {
+      setError('Las contraseñas no coinciden.')
+      return
+    }
+
     startTransition(async () => {
       const supabase = createClient()
-      const { error } = await supabase.auth.signInWithPassword({ email, password })
+      const { error } = await supabase.auth.updateUser({ password })
 
       if (error) {
-        setError(error.message === 'Invalid login credentials'
-          ? 'Email o contraseña incorrectos'
-          : error.message)
+        setError('No se pudo actualizar la contraseña. El enlace puede haber expirado.')
         return
       }
 
@@ -35,34 +42,29 @@ export function LoginForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label htmlFor="email" className="block text-sm font-medium text-zinc-300 mb-1.5">
-          Email
+        <label htmlFor="password" className="block text-sm font-medium text-zinc-300 mb-1.5">
+          Nueva contraseña
         </label>
-        <input
-          id="email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          className="w-full rounded-lg bg-zinc-900 border border-zinc-700 px-4 py-2.5 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
-          placeholder="tu@email.com"
-        />
-      </div>
-
-      <div>
-        <div className="flex items-center justify-between mb-1.5">
-          <label htmlFor="password" className="block text-sm font-medium text-zinc-300">
-            Contraseña
-          </label>
-          <Link href="/forgot-password" className="text-xs text-red-400 hover:text-red-300 transition-colors">
-            ¿Olvidaste tu contraseña?
-          </Link>
-        </div>
         <input
           id="password"
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          required
+          className="w-full rounded-lg bg-zinc-900 border border-zinc-700 px-4 py-2.5 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
+          placeholder="Mínimo 6 caracteres"
+        />
+      </div>
+
+      <div>
+        <label htmlFor="confirm" className="block text-sm font-medium text-zinc-300 mb-1.5">
+          Confirmar contraseña
+        </label>
+        <input
+          id="confirm"
+          type="password"
+          value={confirm}
+          onChange={(e) => setConfirm(e.target.value)}
           required
           className="w-full rounded-lg bg-zinc-900 border border-zinc-700 px-4 py-2.5 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
           placeholder="••••••••"
@@ -86,10 +88,10 @@ export function LoginForm() {
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
             </svg>
-            Entrando...
+            Guardando...
           </>
         ) : (
-          'Entrar'
+          'Guardar nueva contraseña'
         )}
       </button>
     </form>
