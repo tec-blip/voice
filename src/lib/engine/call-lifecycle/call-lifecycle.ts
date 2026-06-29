@@ -22,23 +22,6 @@ const VALID_REASONS: readonly CallEndReason[] = [
   'manual',
 ]
 
-/**
- * Reasons que el MODELO puede usar para autocolgar, por tipo de práctica.
- *
- * Decisión de producto (híbrido): en modos de arco completo el USUARIO controla
- * el fin (cuelga cuando termina), y el modelo solo cierra en el caso clarísimo de
- * un cierre real. Los finales negativos (sin interés, objeciones sin resolver) los
- * decide el usuario colgando — así el modelo no corta la reunión a media práctica.
- * En 'objeciones' (drill) el modelo sí cierra solo al terminar la batería.
- */
-const MODEL_END_REASONS_BY_TYPE: Record<CallType, readonly CallEndReason[]> = {
-  objeciones: ['cierre_exitoso', 'objeciones_no_resueltas', 'sin_interes', 'timeout'],
-  llamada_fria: ['cierre_exitoso', 'sin_interes', 'objeciones_no_resueltas'],
-  framing: ['cierre_exitoso'],
-  cierre: ['cierre_exitoso'],
-  general: ['cierre_exitoso'],
-}
-
 /** Piso mínimo (segundos) para aceptar un end_call del modelo, según el tipo. */
 export function minEndCallSeconds(type?: CallType): number {
   if (!type) return MIN_CALL_SECONDS
@@ -46,22 +29,17 @@ export function minEndCallSeconds(type?: CallType): number {
 }
 
 /**
- * ¿Se permite que el modelo cuelgue ahora?
- *  - Debe haber pasado el piso mínimo de duración del tipo (anti-corte temprano).
- *  - El `reason` debe estar permitido para ese tipo (en arco completo solo
- *    cierre_exitoso; el resto los decide el usuario colgando).
- * Sin `type`, cae al guard global de 30s (compatibilidad).
+ * ¿Se permite que el modelo cuelgue ahora? Único criterio: que haya pasado el
+ * piso mínimo de duración del tipo (backstop anti-corte-temprano).
+ *
+ * NO filtramos por `reason`: bloquear un end_call legítimo (p.ej. al cierre)
+ * dejaba al modelo congelado en silencio en vez de continuar. Si el cierre es
+ * inapropiado, lo evita el PROMPT; el código solo frena lo absurdamente temprano.
+ * Cuando este guard bloquea, el hook RE-ENGANCHA al modelo (clientContent) para
+ * que nunca se quede mudo.
  */
-export function canModelEndCall(
-  callAgeMs: number,
-  opts?: { type?: CallType; reason?: CallEndReason },
-): boolean {
-  if (callAgeMs < minEndCallSeconds(opts?.type) * 1000) return false
-  if (opts?.type && opts?.reason) {
-    const allowed = MODEL_END_REASONS_BY_TYPE[opts.type]
-    if (allowed && !allowed.includes(opts.reason)) return false
-  }
-  return true
+export function canModelEndCall(callAgeMs: number, type?: CallType): boolean {
+  return callAgeMs >= minEndCallSeconds(type) * 1000
 }
 
 /** ¿Alcanzó el cap duro de sesión? → auto-hangup. */

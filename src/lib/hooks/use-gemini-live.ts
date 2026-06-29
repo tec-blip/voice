@@ -5,10 +5,15 @@ import { canModelEndCall, type CallEndReason, type CallType } from '@/lib/engine
 // (engine/types) para que no dependa de React.
 export type { CallEndReason }
 
-// Mensaje que se devuelve al modelo cuando rechazamos un end_call prematuro:
-// lo reconduce a seguir en personaje en vez de dejar la llamada en dead-air.
+// Respuesta a la función end_call cuando lo bloqueamos (corte demasiado temprano).
 const STEER_CONTINUE_MSG =
-  'Todavía no es momento de colgar. La conversación debe continuar: sigue en tu personaje y deja que el vendedor dirija la llamada. No vuelvas a usar end_call salvo que se haya llegado a un cierre real o el vendedor lleve mucho rato totalmente estancado.'
+  'Todavía no es momento de colgar. La conversación debe continuar: sigue en tu personaje y deja que el vendedor dirija la llamada.'
+
+// Turno de cliente que INYECTAMOS tras bloquear un end_call para forzar que el
+// modelo vuelva a hablar (si solo respondiéramos a la función, a veces se queda
+// mudo esperando colgar). Esto garantiza que nunca quede la llamada en silencio.
+const REENGAGE_PROMPT =
+  '(El vendedor sigue en la llamada y espera tu respuesta. Continúa la conversación con naturalidad: haz un comentario o una pregunta, en español. NO cuelgues ni te despidas todavía.)'
 
 interface TranscriptEntry {
   role: 'user' | 'model'
@@ -357,6 +362,7 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
       // programamos el hangup para cuando termine de hablar.
       if (data.toolCall?.functionCalls) {
         const functionResponses: Array<{ id?: string; name: string; response: Record<string, unknown> }> = []
+        let reengageAfterBlock = false
         for (const fc of data.toolCall.functionCalls) {
           if (fc.name === 'end_call') {
             const args = fc.args || {}
@@ -370,13 +376,14 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
             // un toolResponse que reconduce al modelo a seguir en personaje, así
             // no queda dead-air tras una despedida que ignoramos.
             const callAgeMs = connectedAtRef.current ? Date.now() - connectedAtRef.current : Infinity
-            if (!canModelEndCall(callAgeMs, { type: roleplayType, reason })) {
-              console.warn('[gemini-live] end_call RECHAZADO', { reason, type: roleplayType, callAgeS: Math.round(callAgeMs / 1000) })
+            if (!canModelEndCall(callAgeMs, roleplayType)) {
+              console.warn('[gemini-live] end_call BLOQUEADO (demasiado temprano) — re-enganchando', { reason, type: roleplayType, callAgeS: Math.round(callAgeMs / 1000) })
               functionResponses.push({
                 id: fc.id,
                 name: 'end_call',
                 response: { ok: false, continue: true, message: STEER_CONTINUE_MSG },
               })
+              reengageAfterBlock = true
               continue
             }
 
@@ -410,6 +417,17 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
         }
         if (functionResponses.length > 0 && ws.readyState === WebSocket.OPEN) {
           ws.send(JSON.stringify({ toolResponse: { functionResponses } }))
+        }
+        // Tras bloquear un end_call, inyectamos un turno de cliente para forzar
+        // que el modelo vuelva a hablar (si solo respondemos a la función, a veces
+        // se queda mudo esperando colgar → la llamada quedaba en silencio).
+        if (reengageAfterBlock && ws.readyState === WebSocket.OPEN) {
+          ws.send(JSON.stringify({
+            clientContent: {
+              turns: [{ role: 'user', parts: [{ text: REENGAGE_PROMPT }] }],
+              turnComplete: true,
+            },
+          }))
         }
       }
 

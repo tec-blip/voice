@@ -16,38 +16,27 @@ describe('canModelEndCall', () => {
     expect(canModelEndCall(Infinity)).toBe(true)
   })
 
-  it('aplica el piso mínimo por tipo', () => {
-    // general: 210s
-    expect(canModelEndCall(200_000, { type: 'general', reason: 'cierre_exitoso' })).toBe(false)
-    expect(canModelEndCall(210_000, { type: 'general', reason: 'cierre_exitoso' })).toBe(true)
-    // objeciones: 45s
-    expect(canModelEndCall(44_000, { type: 'objeciones', reason: 'cierre_exitoso' })).toBe(false)
-    expect(canModelEndCall(45_000, { type: 'objeciones', reason: 'cierre_exitoso' })).toBe(true)
+  it('aplica el piso mínimo por tipo (backstop anti-corte-temprano)', () => {
+    // general: 90s
+    expect(canModelEndCall(89_000, 'general')).toBe(false)
+    expect(canModelEndCall(90_000, 'general')).toBe(true)
+    // objeciones: 30s
+    expect(canModelEndCall(29_000, 'objeciones')).toBe(false)
+    expect(canModelEndCall(30_000, 'objeciones')).toBe(true)
   })
 
-  it('en arco completo solo permite cierre_exitoso (otros reasons los decide el usuario)', () => {
-    // pasado el piso, pero reason no permitido en general
-    expect(canModelEndCall(300_000, { type: 'general', reason: 'sin_interes' })).toBe(false)
-    expect(canModelEndCall(300_000, { type: 'general', reason: 'timeout' })).toBe(false)
-    expect(canModelEndCall(300_000, { type: 'general', reason: 'cierre_exitoso' })).toBe(true)
-  })
-
-  it('objeciones permite todos los reasons una vez pasado el piso', () => {
-    expect(canModelEndCall(60_000, { type: 'objeciones', reason: 'objeciones_no_resueltas' })).toBe(true)
-    expect(canModelEndCall(60_000, { type: 'objeciones', reason: 'sin_interes' })).toBe(true)
-  })
-
-  it('llamada_fria permite el rechazo realista (sin_interes)', () => {
-    expect(canModelEndCall(80_000, { type: 'llamada_fria', reason: 'sin_interes' })).toBe(true)
-    expect(canModelEndCall(80_000, { type: 'llamada_fria', reason: 'timeout' })).toBe(false)
+  it('pasado el piso, NO filtra por reason (no congela: el prompt decide)', () => {
+    // a 5 min cualquier cierre es válido para el guard (el modelo decide vía prompt)
+    expect(canModelEndCall(300_000, 'general')).toBe(true)
+    expect(canModelEndCall(300_000, 'cierre')).toBe(true)
   })
 })
 
 describe('minEndCallSeconds', () => {
   it('devuelve el piso por tipo y 30 por defecto', () => {
     expect(minEndCallSeconds()).toBe(30)
-    expect(minEndCallSeconds('general')).toBe(210)
-    expect(minEndCallSeconds('objeciones')).toBe(45)
+    expect(minEndCallSeconds('general')).toBe(90)
+    expect(minEndCallSeconds('objeciones')).toBe(30)
   })
 })
 

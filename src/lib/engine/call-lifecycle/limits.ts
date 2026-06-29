@@ -18,17 +18,19 @@ export type CallType = 'cierre' | 'llamada_fria' | 'framing' | 'objeciones' | 'g
 /**
  * Piso mínimo (segundos) antes de aceptar un end_call del modelo, por tipo.
  *
- * Motivado por datos reales: las llamadas buenas duran 6-9 min; las que los
- * usuarios reportaron como "se cortó al principio" morían a los 30-90s — justo
- * pasado el guard global de 30s. Cada modo necesita un arco mínimo distinto:
- * un drill de objeciones puede cerrar rápido; una llamada de arco completo no.
+ * SOLO sirve de backstop para cortes absurdamente tempranos (los reportados al
+ * principio: cuelgues a los 30s en pleno saludo). El control real de "no colgar
+ * antes de tiempo" lo hace el PROMPT (engine no puede saber si la conversación
+ * tuvo sentido). Pisos BAJOS a propósito: un piso alto bloqueaba end_calls
+ * legítimos al cierre y congelaba al modelo (caso real de un tester). Pasado el
+ * piso, se acepta cualquier cierre y el prompt decide si fue apropiado.
  */
 export const MIN_END_CALL_SECONDS_BY_TYPE: Record<CallType, number> = {
-  objeciones: 45,    // drill: puede cerrar al terminar la batería
-  llamada_fria: 75,  // una fría puede morir pronto, pero no en 30s
-  framing: 150,
-  cierre: 180,
-  general: 210,      // arco completo (marco→dolor→visión→VSO→pitch→cierre)
+  objeciones: 30,
+  llamada_fria: 45,
+  framing: 60,
+  cierre: 75,
+  general: 90,
 }
 
 /** Cap duro de la sesión: a este punto se cuelga automáticamente. */
