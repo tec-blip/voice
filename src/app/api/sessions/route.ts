@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { evaluateBadges } from '@/lib/utils/badge-logic'
+import { normalizeCategoryScores } from '@/lib/engine'
 import type { RoleplayType, TranscriptEntry, FeedbackScores } from '@/lib/types/database'
 
 const ALLOWED_TYPES: RoleplayType[] = [
@@ -25,17 +26,15 @@ function isValidTranscriptEntry(e: unknown): e is TranscriptEntry {
 function sanitizeFeedback(f: unknown): FeedbackScores | null {
   if (!f || typeof f !== 'object') return null
   const x = f as Record<string, unknown>
-  const numFields = ['apertura', 'descubrimiento', 'presentacion', 'objeciones', 'cierre', 'tono'] as const
-  const out: Record<string, unknown> = {}
-  for (const k of numFields) {
-    const v = x[k]
-    if (typeof v !== 'number' || !Number.isFinite(v)) return null
-    out[k] = Math.max(0, Math.min(100, Math.round(v)))
+  // Mismo saneo de las 6 categorías que /api/evaluate (motor determinista).
+  const scores = normalizeCategoryScores(x)
+  return {
+    ...scores,
+    feedback_positivo: typeof x.feedback_positivo === 'string' ? x.feedback_positivo.slice(0, 2000) : '',
+    feedback_mejora:   typeof x.feedback_mejora   === 'string' ? x.feedback_mejora.slice(0, 2000)   : '',
+    momento_critico:   typeof x.momento_critico   === 'string' ? x.momento_critico.slice(0, 2000)   : null,
+    feedback_source:   x.feedback_source === 'heuristic' ? 'heuristic' : 'llm',
   }
-  out.feedback_positivo = typeof x.feedback_positivo === 'string' ? x.feedback_positivo.slice(0, 2000) : ''
-  out.feedback_mejora   = typeof x.feedback_mejora   === 'string' ? x.feedback_mejora.slice(0, 2000)   : ''
-  out.momento_critico   = typeof x.momento_critico   === 'string' ? x.momento_critico.slice(0, 2000)   : null
-  return out as unknown as FeedbackScores
 }
 
 export async function POST(request: Request) {

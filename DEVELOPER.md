@@ -2,6 +2,30 @@
 
 > Documento de onboarding para cualquier desarrollador que se integre al proyecto.
 > Cubre arquitectura, decisiones técnicas, gotchas y cómo operar la app.
+> **Contexto rápido y actualizado:** [CLAUDE.md](./CLAUDE.md) es ahora el documento central.
+
+---
+
+## ⚠️ Actualización 2026-06-26 — reestructura "motor determinista" + control de costo
+
+Cambios estructurales recientes (ver detalle en [CLAUDE.md](./CLAUDE.md)):
+
+- **Capa-motor determinista** en `src/lib/engine/` (código puro, sin LLM/red/React, testeable
+  con Vitest: `npm test`). Toda la lógica que no necesita IA vive ahí.
+- **La puntuación general la calcula el código**, no el LLM (`computeOverallScore`). El prompt
+  de evaluación ya NO la pide.
+- **Scorer heurístico de respaldo** (`engine/scoring/heuristic.ts`): si la IA de evaluación
+  falla, igual hay score (marcado `feedback_source:'heuristic'`) y la sesión SIEMPRE se guarda.
+- **Límites de llamada** (cap 45min, guardia 30s) centralizados en `engine/call-lifecycle`;
+  se quitaron los umbrales de tiempo del prompt de roleplay.
+- **Control de costo (migración 003):** `/api/sessions/start|heartbeat|end` + tablas
+  `active_sessions`/`daily_quota` + RPCs → cuota atómica + concurrencia (1 llamada/usuario).
+  `/api/vertex/config` ya NO hace cuota (solo emite tokens).
+- **Rate limit distribuido** en Postgres (`consume_token`) con fallback en memoria;
+  `enforceRateLimit` es **async**. Requiere `SUPABASE_SERVICE_ROLE_KEY` (si falta → fallback).
+- **`get_user_names`** creado (fix del leaderboard, migración 002, aplicada).
+
+Las secciones de abajo describen el diseño base; donde difieran de lo anterior, manda esta nota.
 
 ---
 
@@ -415,6 +439,9 @@ transcript[] (raw del hook)
 | `tono` | Liderazgo, autoridad, energía, sin needy energy |
 
 `puntuacion_general` = promedio ponderado (descubrimiento ×2, cierre ×2, objeciones ×1.5, resto ×1).
+**Lo calcula el código** (`computeOverallScore` en `src/lib/engine/scoring`), NO el LLM: el modelo
+solo devuelve las 6 categorías y los 3 textos; cualquier `puntuacion_general` que devuelva se ignora.
+Si la evaluación con IA falla, se usa el scorer heurístico determinista (`engine/scoring/heuristic.ts`).
 
 ### Escala de puntuación
 
@@ -499,7 +526,10 @@ enforceRateLimit(`clave:${user.id}`, { capacity: N, windowMs: ms })
 | `/api/vertex/config` | 6 requests / minuto / usuario |
 | Cuota diaria de práctica | 60 min / día / usuario (en `/api/vertex/config`) |
 
-**Limitación conocida:** Es in-memory por instancia Lambda. Si Vercel escala a múltiples instancias, cada una tiene su propio bucket. Funciona para parar click-spam y bucles, pero no es una garantía estricta distribuida. Si se necesita eso, migrar a **Upstash Redis** manteniendo la misma interfaz `enforceRateLimit(key, opts)`.
+**Actualizado (2026-06-26):** `enforceRateLimit` ahora es **async** y usa un backend
+**distribuido en Postgres** (RPC `consume_token`) cuando hay `SUPABASE_SERVICE_ROLE_KEY`,
+con **fallback** al token bucket en memoria si no. Así el límite es consistente entre
+instancias Lambda. La matemática pura del bucket vive en `engine/quota`.
 
 ---
 

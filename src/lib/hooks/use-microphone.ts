@@ -64,6 +64,7 @@ export function useMicrophone(options: UseMicrophoneOptions = {}): UseMicrophone
   const sourceRef = useRef<MediaStreamAudioSourceNode | null>(null)
   const streamRef = useRef<MediaStream | null>(null)
   const processorRef = useRef<ScriptProcessorNode | null>(null)
+  const workletRef = useRef<AudioWorkletNode | null>(null)
   const animationRef = useRef<number | null>(null)
 
   const updateFrequencyData = useCallback(() => {
@@ -88,10 +89,6 @@ export function useMicrophone(options: UseMicrophoneOptions = {}): UseMicrophone
         return null
       }
 
-      // ⚠️ IMPORTANTE: NO forzar sampleRate en getUserMedia ni en AudioContext.
-      // iOS Safari ignora la constraint y suele crashear si forzamos sampleRate
-      // en AudioContext. Capturamos al sample rate nativo y resampleamos a 16k
-      // manualmente antes de enviar a Gemini.
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: {
           echoCancellation: true,
@@ -101,7 +98,17 @@ export function useMicrophone(options: UseMicrophoneOptions = {}): UseMicrophone
         },
       })
 
-      const audioContext = new AudioContextClass()
+      // Intentamos crear el contexto directamente a 16 kHz: en Chrome/Android/
+      // desktop el navegador resamplea el mic con su resampler nativo (alta
+      // calidad) y el worklet solo hace passthrough. iOS Safari ignora o rechaza
+      // el sampleRate forzado → caemos al rate nativo y el worklet resamplea por
+      // software (interpolación lineal). El worklet lee el rate real del contexto.
+      let audioContext: AudioContext
+      try {
+        audioContext = new AudioContextClass({ sampleRate: TARGET_SAMPLE_RATE })
+      } catch {
+        audioContext = new AudioContextClass()
+      }
 
       // iOS suspende el AudioContext hasta que hay un user gesture.
       // start() se llama desde el handler del botón "Llamar", así que
@@ -121,26 +128,47 @@ export function useMicrophone(options: UseMicrophoneOptions = {}): UseMicrophone
       const analyser = audioContext.createAnalyser()
       analyser.fftSize = fftSize
       analyser.smoothingTimeConstant = 0.8
-
       source.connect(analyser)
 
       if (onAudioData) {
-        // Buffer size adaptado: en sample rates altos (48k) usar 4096 da ~85ms.
-        // En 16k da ~256ms que es demasiado. Escalamos para mantener ~85ms.
-        const bufferSize = inputSampleRate >= 32000 ? 4096 : 2048
-        const processor = audioContext.createScriptProcessor(bufferSize, 1, 1)
-        analyser.connect(processor)
-        processor.connect(audioContext.destination)
-        processor.onaudioprocess = (e) => {
-          const inputData = e.inputBuffer.getChannelData(0)
-          // Resamplear a 16kHz (Gemini lo espera fijo según mimeType audio/pcm;rate=16000).
-          const resampled =
-            inputSampleRate === TARGET_SAMPLE_RATE
-              ? new Float32Array(inputData)
-              : downsampleBuffer(inputData, inputSampleRate, TARGET_SAMPLE_RATE)
-          onAudioData(resampled)
+        // Preferimos AudioWorklet (corre en el hilo de audio → no pierde frames
+        // aunque el main thread esté ocupado con React). Fallback a ScriptProcessor
+        // si el navegador no lo soporta o falla la carga del módulo.
+        let useWorklet = false
+        if (audioContext.audioWorklet) {
+          try {
+            await audioContext.audioWorklet.addModule('/mic-worklet.js')
+            const worklet = new AudioWorkletNode(audioContext, 'mic-capture')
+            worklet.port.onmessage = (e) => onAudioData(e.data as Float32Array)
+            source.connect(worklet)
+            // Conectar a destination hace que el grafo "tire" del worklet; su
+            // salida es silencio (no escribe outputs) → no produce eco.
+            worklet.connect(audioContext.destination)
+            workletRef.current = worklet
+            useWorklet = true
+            console.log('[mic] captura vía AudioWorklet')
+          } catch (workletErr) {
+            console.warn('[mic] AudioWorklet falló, fallback a ScriptProcessor', workletErr)
+          }
         }
-        processorRef.current = processor
+
+        if (!useWorklet) {
+          // Fallback legacy (navegadores sin AudioWorklet). ScriptProcessor corre
+          // en el main thread y puede perder frames; es la mejor opción disponible.
+          const bufferSize = inputSampleRate >= 32000 ? 4096 : 2048
+          const processor = audioContext.createScriptProcessor(bufferSize, 1, 1)
+          source.connect(processor)
+          processor.connect(audioContext.destination)
+          processor.onaudioprocess = (e) => {
+            const inputData = e.inputBuffer.getChannelData(0)
+            const resampled =
+              inputSampleRate === TARGET_SAMPLE_RATE
+                ? new Float32Array(inputData)
+                : downsampleBuffer(inputData, inputSampleRate, TARGET_SAMPLE_RATE)
+            onAudioData(resampled)
+          }
+          processorRef.current = processor
+        }
       }
 
       audioContextRef.current = audioContext
@@ -185,6 +213,11 @@ export function useMicrophone(options: UseMicrophoneOptions = {}): UseMicrophone
       animationRef.current = null
     }
 
+    if (workletRef.current) {
+      workletRef.current.port.onmessage = null
+      workletRef.current.disconnect()
+      workletRef.current = null
+    }
     processorRef.current?.disconnect()
     sourceRef.current?.disconnect()
     analyserRef.current?.disconnect()

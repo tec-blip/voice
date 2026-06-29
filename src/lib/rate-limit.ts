@@ -1,19 +1,18 @@
 /**
- * Rate limiter en memoria — token bucket por (key) con refill suave.
+ * Rate limiter con dos backends:
+ *  - DISTRIBUIDO (Postgres RPC consume_token) cuando hay service-role — sobrevive
+ *    a múltiples instancias Lambda.
+ *  - EN MEMORIA (token bucket por proceso) como fallback si no hay service-role
+ *    o si el RPC falla. Suficiente para parar click-spam y bucles.
  *
- * IMPORTANTE: vive en la memoria del proceso (lambda warm). No es estrictamente
- * distribuido — si Vercel escala a varias instancias, cada una tiene su propio
- * bucket. Esto es suficiente para parar click-spam y bucles accidentales.
- *
- * Para una garantía dura entre instancias, migrar a Upstash Redis con la misma
- * interfaz `enforceRateLimit(key, opts)`.
+ * La interfaz `enforceRateLimit(key, opts)` es la misma; ahora es async.
  */
 
 import { NextResponse } from 'next/server'
+import { evaluateQuota, type BucketState } from '@/lib/engine'
+import { adminRpc, hasServiceRole } from '@/lib/supabase/admin'
 
-type Bucket = { tokens: number; lastRefill: number }
-
-const buckets = new Map<string, Bucket>()
+const buckets = new Map<string, BucketState>()
 
 // Limpieza periódica para evitar fuga de memoria con muchos usuarios distintos.
 // Solo aplica si el módulo lleva vivo > 10 min (Lambda warm puede durar horas).
@@ -46,43 +45,51 @@ export function checkRateLimit(key: string, opts: RateLimitOptions): RateLimitRe
   const now = Date.now()
   maybeCleanup(now)
 
-  const refillRate = opts.capacity / opts.windowMs // tokens/ms
-  let b = buckets.get(key)
-  if (!b) {
-    b = { tokens: opts.capacity, lastRefill: now }
-    buckets.set(key, b)
-  } else {
-    const elapsed = now - b.lastRefill
-    b.tokens = Math.min(opts.capacity, b.tokens + elapsed * refillRate)
-    b.lastRefill = now
-  }
+  // La matemática del token bucket vive en la capa-motor (engine/quota), pura y
+  // testeable. Aquí solo persistimos el estado en el Map en memoria.
+  const decision = evaluateQuota(buckets.get(key), { capacity: opts.capacity, windowMs: opts.windowMs }, now)
+  buckets.set(key, decision.nextState)
 
-  if (b.tokens < 1) {
-    const retryAfterMs = Math.ceil((1 - b.tokens) / refillRate)
-    return {
-      ok: false,
-      retryAfterSec: Math.max(1, Math.ceil(retryAfterMs / 1000)),
-      remaining: 0,
-    }
-  }
-
-  b.tokens -= 1
   return {
-    ok: true,
-    retryAfterSec: 0,
-    remaining: Math.floor(b.tokens),
+    ok: decision.ok,
+    retryAfterSec: decision.retryAfterSec,
+    remaining: decision.remaining,
+  }
+}
+
+/**
+ * Backend distribuido (Postgres). Devuelve null si no está disponible
+ * (sin service-role o error del RPC) → el llamador cae al bucket en memoria.
+ */
+async function checkRateLimitDistributed(key: string, opts: RateLimitOptions): Promise<RateLimitResult | null> {
+  if (!hasServiceRole()) return null
+  try {
+    const { data, error } = await adminRpc<Array<{ ok: boolean; retry_after_sec: number; remaining: number }>>(
+      'consume_token',
+      { p_key: key, p_capacity: opts.capacity, p_window_ms: opts.windowMs },
+    )
+    const row = Array.isArray(data) ? data[0] : data
+    if (error || !row) return null
+    return {
+      ok: Boolean(row.ok),
+      retryAfterSec: Number(row.retry_after_sec ?? 0),
+      remaining: Number(row.remaining ?? 0),
+    }
+  } catch {
+    return null
   }
 }
 
 /**
  * Helper que devuelve un NextResponse 429 si la clave excede el límite,
- * o null si puede continuar. Uso típico:
+ * o null si puede continuar. Async: intenta el backend distribuido y, si no está
+ * disponible, usa el token bucket en memoria. Uso típico:
  *
- *   const limited = enforceRateLimit(`evaluate:${user.id}`, { capacity: 10, windowMs: 3600_000 })
+ *   const limited = await enforceRateLimit(`evaluate:${user.id}`, { capacity: 10, windowMs: 3600_000 })
  *   if (limited) return limited
  */
-export function enforceRateLimit(key: string, opts: RateLimitOptions) {
-  const result = checkRateLimit(key, opts)
+export async function enforceRateLimit(key: string, opts: RateLimitOptions) {
+  const result = (await checkRateLimitDistributed(key, opts)) ?? checkRateLimit(key, opts)
   if (result.ok) return null
   return NextResponse.json(
     {

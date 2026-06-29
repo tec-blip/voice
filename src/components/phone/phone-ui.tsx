@@ -6,6 +6,11 @@ import { useGeminiLive, type CallEndReason } from '@/lib/hooks/use-gemini-live'
 import { AudioVisualizer } from './audio-visualizer'
 import type { RoleplayType } from '@/lib/prompts/roleplay'
 import { getRoleplayPrompt } from '@/lib/prompts/roleplay'
+import {
+  isHardCapReached,
+  isWarningWindow,
+  minutesRemaining,
+} from '@/lib/engine'
 
 type CallState = 'idle' | 'connecting' | 'active' | 'ended'
 
@@ -91,14 +96,13 @@ export function PhoneUI({ roleplayType, systemPromptOverride, voiceName, onCallE
   durationRef.current = duration
   const finalizeCallRef = useRef<(meta: { endedBy: 'user' | 'model'; reason?: CallEndReason; summary?: string }) => void>(() => {})
 
-  // Tiempo en que la llamada pasó a estado 'active'. Permite ignorar end_call
-  // falsos positivos que el modelo lanza en los primeros segundos (barge-in
-  // confusion: el modelo se equivoca y cree que debe colgar al ser interrumpido).
-  const callActiveSinceRef = useRef<number | null>(null)
+  // Id de la sesión reservada en /api/sessions/start (control de costo/concurrencia).
+  const sessionIdRef = useRef<string | null>(null)
 
   const gemini = useGeminiLive({
     systemPrompt,
     voiceName: voiceName ?? 'Kore',
+    roleplayType: roleplayType ?? undefined,
     onTranscript: useCallback((entry: { role: 'user' | 'model'; text: string }) => {
       setLastText(entry.text)
     }, []),
@@ -108,16 +112,8 @@ export function PhoneUI({ roleplayType, systemPromptOverride, voiceName, onCallE
       setCallState('idle')
     }, []),
     onModelHangup: useCallback((info: { reason: CallEndReason; summary?: string }) => {
-      // Guardia de duración mínima: ignoramos end_call si la llamada lleva
-      // menos de 30 segundos activa. El modelo a veces confunde una interrupción
-      // (barge-in) con el fin de la conversación y llama end_call prematuramente.
-      // El prompt ya instruye "nunca uses end_call antes de 5 min" pero añadimos
-      // una red de seguridad en código para los casos en que falle.
-      const callAgeMs = callActiveSinceRef.current ? Date.now() - callActiveSinceRef.current : Infinity
-      if (callAgeMs < 30_000) {
-        console.warn('[phone-ui] ignoring early end_call (callAge=%ds) — likely barge-in confusion', Math.round(callAgeMs / 1000))
-        return
-      }
+      // El gating del end_call (piso mínimo por tipo + reason permitido por modo)
+      // ya ocurrió en el hook (engine/call-lifecycle). Aquí solo cerramos la UI.
       console.log('[phone-ui] model requested hangup', info)
       finalizeCallRef.current({ endedBy: 'model', reason: info.reason, summary: info.summary })
     }, []),
@@ -125,8 +121,14 @@ export function PhoneUI({ roleplayType, systemPromptOverride, voiceName, onCallE
 
   const microphone = useMicrophone({
     onAudioData: useCallback((data: Float32Array) => {
+      // Half-duplex: NO enviar audio del micrófono mientras el modelo habla.
+      // El AEC del navegador no cancela el audio que reproducimos por Web Audio,
+      // así que en altavoz el mic captaba la voz del modelo y la reenviaba como
+      // falso barge-in (desincronizaba turnos y disparaba "Adiós" prematuros).
+      // También respeta el botón mute (que antes era solo cosmético).
+      if (isMuted || gemini.isModelSpeaking) return
       gemini.sendAudio(data)
-    }, [gemini]),
+    }, [gemini, isMuted]),
     onError: useCallback((error: string) => {
       console.error('Microphone error:', error)
       setErrorMessage(error)
@@ -134,9 +136,8 @@ export function PhoneUI({ roleplayType, systemPromptOverride, voiceName, onCallE
     }, []),
   })
 
-  // Límites de duración por sesión
-  const MAX_CALL_SECONDS  = 45 * 60  // 2700 s — hard cap por sesión
-  const WARN_CALL_SECONDS = 40 * 60  // 2400 s — aviso "quedan 5 minutos"
+  // Límites de duración por sesión: única fuente de verdad en engine/call-lifecycle
+  // (MAX_CALL_SECONDS / WARN_CALL_SECONDS importados arriba).
 
   useEffect(() => {
     if (callState !== 'active') return
@@ -144,17 +145,32 @@ export function PhoneUI({ roleplayType, systemPromptOverride, voiceName, onCallE
     return () => clearInterval(interval)
   }, [callState])
 
-  // Auto-hangup al alcanzar el límite máximo de la sesión
+  // Auto-hangup al alcanzar el cap duro de la sesión (determinista, sin LLM)
   useEffect(() => {
     if (callState !== 'active') return
-    if (duration >= MAX_CALL_SECONDS) {
+    if (isHardCapReached(duration)) {
       finalizeCallRef.current({ endedBy: 'model', reason: 'timeout' })
     }
-  }, [duration, callState, MAX_CALL_SECONDS])
+  }, [duration, callState])
+
+  // Heartbeat para mantener viva la reserva de sesión durante la llamada
+  // (el reaper del servidor cierra sesiones sin heartbeat reciente).
+  useEffect(() => {
+    if (callState !== 'active') return
+    const id = setInterval(() => {
+      const sid = sessionIdRef.current
+      if (!sid) return
+      fetch('/api/sessions/heartbeat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId: sid }),
+      }).catch(() => {})
+    }, 30_000)
+    return () => clearInterval(id)
+  }, [callState])
 
   useEffect(() => {
     if (gemini.isConnected && callState === 'connecting') {
-      callActiveSinceRef.current = Date.now()
       setCallState('active')
     }
   }, [gemini.isConnected, callState])
@@ -168,6 +184,22 @@ export function PhoneUI({ roleplayType, systemPromptOverride, voiceName, onCallE
     setLastText('')
     setErrorMessage(null)
     setCallState('connecting')
+
+    // Reserva de sesión (control de costo + concurrencia) ANTES de conectar.
+    // Si el backend no está configurado, responde { sessionId: null } y no bloquea.
+    try {
+      const startRes = await fetch('/api/sessions/start', { method: 'POST' })
+      if (!startRes.ok) {
+        const info = await startRes.json().catch(() => ({}))
+        setErrorMessage(info.error || 'No se pudo iniciar la llamada.')
+        setCallState('idle')
+        return
+      }
+      const info = await startRes.json().catch(() => ({}))
+      sessionIdRef.current = typeof info.sessionId === 'string' ? info.sessionId : null
+    } catch {
+      sessionIdRef.current = null // fallo de red: no bloqueamos la práctica
+    }
 
     try {
       await gemini.connect()
@@ -196,6 +228,16 @@ export function PhoneUI({ roleplayType, systemPromptOverride, voiceName, onCallE
         const finalDuration = durationRef.current
         microphone.stop()
         gemini.disconnect()
+        // Cerrar la reserva de sesión y conciliar la cuota (best-effort).
+        const sid = sessionIdRef.current
+        if (sid) {
+          fetch('/api/sessions/end', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sessionId: sid, actualSeconds: finalDuration }),
+          }).catch(() => {})
+          sessionIdRef.current = null
+        }
         setTimeout(() => onCallEnd?.(finalTranscript, finalDuration, meta), 0)
         return 'ended'
       })
@@ -229,7 +271,7 @@ export function PhoneUI({ roleplayType, systemPromptOverride, voiceName, onCallE
             {callState === 'idle' ? 'Prospecto IA' : callState === 'connecting' ? 'Conectando...' : callState === 'ended' ? 'Llamada finalizada' : gemini.isModelSpeaking ? 'Hablando...' : 'Escuchando...'}
           </p>
           <p className={`text-sm mt-0.5 ${
-            callState === 'active' && duration >= WARN_CALL_SECONDS
+            callState === 'active' && isWarningWindow(duration)
               ? 'text-orange-400 font-semibold'
               : 'text-zinc-500'
           }`}>
@@ -243,9 +285,9 @@ export function PhoneUI({ roleplayType, systemPromptOverride, voiceName, onCallE
                     ? 'Listo para practicar'
                     : 'Selecciona un tipo de práctica'}
           </p>
-          {callState === 'active' && duration >= WARN_CALL_SECONDS && (
+          {callState === 'active' && isWarningWindow(duration) && (
             <p className="text-xs text-orange-400/80 mt-0.5 animate-pulse">
-              ⏱ Quedan {Math.ceil((MAX_CALL_SECONDS - duration) / 60)} min
+              ⏱ Quedan {minutesRemaining(duration)} min
             </p>
           )}
         </div>

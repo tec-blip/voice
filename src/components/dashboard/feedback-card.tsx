@@ -1,6 +1,7 @@
 ﻿'use client'
 
 import type { EvaluationResult } from '@/lib/prompts/evaluation'
+import { getGradeLabel } from '@/lib/engine'
 
 interface FeedbackCardProps {
   evaluation: EvaluationResult
@@ -29,21 +30,23 @@ function getBarColor(score: number): string {
   return 'bg-red-500'
 }
 
-function getGradeLabel(score: number): string {
-  if (score >= 90) return 'Excepcional'
-  if (score >= 80) return 'Excelente'
-  if (score >= 70) return 'Muy bien'
-  if (score >= 60) return 'Bien'
-  if (score >= 50) return 'Regular'
-  if (score >= 40) return 'Necesita trabajo'
-  return 'Debe mejorar'
-}
-
 export function FeedbackCard({ evaluation }: FeedbackCardProps) {
   const categories = ['apertura', 'descubrimiento', 'presentacion', 'objeciones', 'cierre', 'tono'] as const
 
   return (
     <div className="space-y-6">
+      {evaluation.feedback_source === 'heuristic' && (
+        <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl px-4 py-3 flex items-start gap-2">
+          <svg className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+          </svg>
+          <p className="text-xs text-amber-300/90 leading-relaxed">
+            Evaluación provisional generada sin IA. La puntuación es una estimación
+            determinista basada en tu transcripción; la evaluación detallada con IA no
+            estuvo disponible.
+          </p>
+        </div>
+      )}
       <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-6 text-center">
         <p className="text-sm text-zinc-500 uppercase tracking-wider">Puntuación general</p>
         <p className={`text-6xl font-bold mt-2 ${getScoreColor(evaluation.puntuacion_general)}`}>

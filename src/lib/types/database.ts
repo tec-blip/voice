@@ -20,6 +20,9 @@ export interface FeedbackScores {
   feedback_positivo: string
   feedback_mejora: string
   momento_critico: string | null
+  // Origen de la evaluación: 'llm' (Gemini) o 'heuristic' (fallback determinista).
+  // Opcional para retro-compatibilidad con sesiones guardadas antes del cambio.
+  feedback_source?: 'llm' | 'heuristic'
 }
 
 export interface Database {

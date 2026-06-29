@@ -126,8 +126,9 @@ Señales positivas:
 ADEMÁS proporciona:
 ════════════════════════════════════════════
 
-- **puntuacion_general**: Promedio ponderado con estos pesos:
-  descubrimiento ×2, cierre ×2, objeciones ×1.5, presentacion ×1, apertura ×1, tono ×1
+(NO calcules ninguna puntuación general ni promedio: el sistema lo calcula de
+forma determinista a partir de tus 6 categorías. Tú solo entregas las 6 categorías
+y los textos cualitativos.)
 
 - **feedback_positivo**: 2-3 cosas específicas que hizo BIEN, citando las palabras exactas del transcript y la fase de la metodología que ejecutó correctamente.
 
@@ -143,7 +144,6 @@ RESPONDE EXCLUSIVAMENTE en JSON válido con esta estructura exacta:
   "objeciones": <number 0-100>,
   "cierre": <number 0-100>,
   "tono": <number 0-100>,
-  "puntuacion_general": <number 0-100>,
   "feedback_positivo": "<string con 2-3 puntos específicos>",
   "feedback_mejora": "<string con 2-3 puntos con cita + corrección>",
   "momento_critico": "<string citando el momento exacto con palabras textuales>"
@@ -159,6 +159,14 @@ ESCALA DE PUNTUACIÓN (sé exigente):
 No regales puntos. Un closer que no calificó VSO no puede superar 65 en cierre.
 Un closer que hizo discovery superficial no puede superar 60 en descubrimiento.`
 
+/** Origen de la evaluación: IA (Gemini) o fallback heurístico determinista. */
+export type FeedbackSource = 'llm' | 'heuristic'
+
+/**
+ * Resultado de evaluación que consume la UI. `puntuacion_general` lo calcula el
+ * MOTOR (no el LLM). `feedback_source` indica si las 6 categorías vienen de la IA
+ * o del scorer heurístico determinista (cuando la IA no está disponible).
+ */
 export interface EvaluationResult {
   apertura: number
   descubrimiento: number
@@ -170,12 +178,8 @@ export interface EvaluationResult {
   feedback_positivo: string
   feedback_mejora: string
   momento_critico: string
+  feedback_source: FeedbackSource
 }
 
-export function formatTranscriptForEvaluation(
-  transcript: { role: 'user' | 'model'; text: string }[]
-): string {
-  return transcript
-    .map((entry) => `${entry.role === 'user' ? 'VENDEDOR' : 'PROSPECTO'}: ${entry.text}`)
-    .join('\n\n')
-}
+// `formatTranscriptForEvaluation` se movió a la capa-motor:
+// import { formatForEvaluation } from '@/lib/engine'

@@ -12,7 +12,8 @@ import {
   type Nicho,
   type ScenarioBrief,
 } from '@/lib/prompts/roleplay'
-import { formatTranscriptForEvaluation, type EvaluationResult } from '@/lib/prompts/evaluation'
+import { type EvaluationResult } from '@/lib/prompts/evaluation'
+import { formatForEvaluation, normalizeForStorage, estimateScoresHeuristic } from '@/lib/engine'
 
 type PageState = 'select' | 'calling' | 'evaluating' | 'results'
 
@@ -188,33 +189,45 @@ export default function PracticePage() {
   const handleCallEnd = useCallback(async (
     transcript: { role: 'user' | 'model'; text: string }[],
     durationSeconds: number,
-    meta?: { endedBy: 'user' | 'model'; reason?: string; summary?: string }
   ) => {
     setLastTranscript(transcript)
     setCallDuration(durationSeconds)
     if (transcript.length < 1) { setPageState('select'); return }
     setPageState('evaluating')
     setEvalError(null)
+
+    // 1. Evaluación: IA (Gemini) si está disponible; si falla, fallback heurístico
+    //    determinista (motor) — así SIEMPRE hay un resultado, aunque no haya LLM.
+    let result: EvaluationResult
     try {
-      const formatted = formatTranscriptForEvaluation(transcript)
       const res = await fetch('/api/evaluate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ transcript: formatted }),
+        body: JSON.stringify({ transcript: formatForEvaluation(transcript) }),
       })
-      if (!res.ok) throw new Error('Error al evaluar la llamada')
-      const result: EvaluationResult = await res.json()
-      setEvaluation(result)
-      setPageState('results')
-      // Normalize transcript to TranscriptEntry shape before persisting:
-      // use-gemini-live produces { role: 'user'|'model', text: string }
-      // but the API expects { role: 'user'|'assistant', content: string, timestamp: string }
+      if (!res.ok) throw new Error(`evaluate ${res.status}`)
+      result = await res.json()
+    } catch (err) {
+      console.warn('[practice] evaluación IA no disponible, usando heurístico', err)
+      const h = estimateScoresHeuristic(transcript)
+      result = {
+        ...h.scores,
+        puntuacion_general: h.puntuacion_general,
+        feedback_positivo: h.feedback_positivo,
+        feedback_mejora: h.feedback_mejora,
+        momento_critico: h.momento_critico,
+        feedback_source: 'heuristic',
+      }
+    }
+
+    setEvaluation(result)
+    setPageState('results')
+
+    // 2. Persistir la sesión SIEMPRE (aunque la IA hubiera fallado): no perdemos
+    //    la práctica del usuario. El heurístico garantiza un score válido.
+    try {
       const callEndedAt = new Date().toISOString()
-      const normalizedTranscript = transcript.map((entry) => ({
-        role: entry.role === 'model' ? 'assistant' : 'user',
-        content: entry.text,
-        timestamp: callEndedAt,
-      }))
+      const normalizedTranscript = normalizeForStorage(transcript, callEndedAt)
       await fetch('/api/sessions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -225,11 +238,9 @@ export default function PracticePage() {
           transcript: normalizedTranscript,
           feedback: result,
         }),
-      }).catch(() => {})
-    } catch (err) {
-      console.error('[practice] evaluation failed', err)
-      setEvalError('No se pudo evaluar la llamada. Intenta de nuevo.')
-      setPageState('results')
+      })
+    } catch (saveErr) {
+      console.error('[practice] no se pudo guardar la sesión', saveErr)
     }
   }, [selectedType])
 

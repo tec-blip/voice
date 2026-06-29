@@ -1,20 +1,26 @@
 import { useRef, useState, useCallback } from 'react'
+import { canModelEndCall, type CallEndReason, type CallType } from '@/lib/engine'
+
+// Re-exportado para compatibilidad: el tipo canónico vive en la capa-motor
+// (engine/types) para que no dependa de React.
+export type { CallEndReason }
+
+// Mensaje que se devuelve al modelo cuando rechazamos un end_call prematuro:
+// lo reconduce a seguir en personaje en vez de dejar la llamada en dead-air.
+const STEER_CONTINUE_MSG =
+  'Todavía no es momento de colgar. La conversación debe continuar: sigue en tu personaje y deja que el vendedor dirija la llamada. No vuelvas a usar end_call salvo que se haya llegado a un cierre real o el vendedor lleve mucho rato totalmente estancado.'
 
 interface TranscriptEntry {
   role: 'user' | 'model'
   text: string
 }
 
-export type CallEndReason =
-  | 'cierre_exitoso'
-  | 'objeciones_no_resueltas'
-  | 'sin_interes'
-  | 'timeout'
-  | 'manual'
-
 interface UseGeminiLiveOptions {
   systemPrompt: string
   voiceName?: string
+  // Tipo de práctica — gobierna el piso mínimo de duración y qué reasons puede
+  // usar el modelo para autocolgar (ver engine/call-lifecycle).
+  roleplayType?: CallType
   onTranscript?: (entry: TranscriptEntry) => void
   onModelSpeaking?: (speaking: boolean) => void
   onError?: (error: string) => void
@@ -81,7 +87,7 @@ function getAudioContextClass(): typeof AudioContext | null {
 const GEMINI_OUTPUT_SAMPLE_RATE = 24000
 
 export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveReturn {
-  const { systemPrompt, voiceName = 'Kore', onTranscript, onModelSpeaking, onError, onModelHangup } = options
+  const { systemPrompt, voiceName = 'Kore', roleplayType, onTranscript, onModelSpeaking, onError, onModelHangup } = options
 
   const [isConnected, setIsConnected] = useState(false)
   const [isModelSpeaking, setIsModelSpeaking] = useState(false)
@@ -100,7 +106,10 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
   const isUserDisconnectingRef = useRef(false)
   const reconnectAttemptsRef = useRef(0)
   const wsUrlRef = useRef<string | null>(null)
-  const modelPathRef = useRef<string>('models/gemini-3.1-flash-live-preview')
+  // Default alineado con el modelo real que sirve /api/vertex/config. En el flujo
+  // normal modelPath llega del endpoint y sobrescribe esto; el default solo aplica
+  // si una reconexión no logró leer modelPath — debe ser el mismo modelo, no otro.
+  const modelPathRef = useRef<string>('models/gemini-live-2.5-flash-native-audio')
 
   // Estado para hangup iniciado por el modelo vía function call `end_call`.
   // Al recibir el toolCall, no cortamos inmediatamente: esperamos a que termine
@@ -108,6 +117,12 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
   const pendingHangupRef = useRef<{ reason: CallEndReason; summary?: string } | null>(null)
   const onModelHangupRef = useRef(onModelHangup)
   onModelHangupRef.current = onModelHangup
+
+  // Momento de conexión (ref): el handler de end_call (en ws.onmessage) lo lee
+  // para gatear un end_call prematuro contra el piso mínimo por tipo (engine).
+  // roleplayType se captura por closure en openSocket (es constante durante la
+  // llamada), evitando un ref mutado en render.
+  const connectedAtRef = useRef<number | null>(null)
 
   // Ref para la función de reconexión con token fresco. Se actualiza en cada render
   // para evitar closures stales dentro del ws.onclose de openSocket.
@@ -219,14 +234,14 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
           systemInstruction: {
             parts: [{ text: systemPrompt }],
           },
-          // Tuning del VAD del servidor: reducir silenceDurationMs hace que
-          // Gemini detecte fin de habla más rápido (default ~700-800ms).
-          // 400ms es un buen balance: no corta al usuario que hace pausas
-          // cortas pero responde rápido cuando de verdad terminó.
+          // Tuning del VAD del servidor. 400ms resultó DEMASIADO agresivo para
+          // español LATAM conversacional (pausas naturales de 500-700ms entre
+          // cláusulas: "pues...", "o sea..."): cortaba al usuario a media frase y
+          // el modelo "saltaba" de turno. 700ms es el balance correcto.
           realtimeInputConfig: {
             automaticActivityDetection: {
-              silenceDurationMs: 400,
-              prefixPaddingMs: 100,
+              silenceDurationMs: 700,
+              prefixPaddingMs: 250,
             },
           },
           inputAudioTranscription: {},
@@ -304,6 +319,9 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
         console.log('[gemini-live] setupComplete — connected')
         setIsConnected(true)
         reconnectAttemptsRef.current = 0
+        // Marca el inicio de la llamada (solo la primera vez; una reconexión por
+        // session-resumption NO reinicia el reloj del piso mínimo de duración).
+        if (!connectedAtRef.current) connectedAtRef.current = Date.now()
         return
       }
 
@@ -344,6 +362,24 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
             const args = fc.args || {}
             const reason = (args.reason as CallEndReason) || 'timeout'
             const summary = typeof args.summary === 'string' ? args.summary : undefined
+
+            // Gating determinista (engine/call-lifecycle): rechaza end_call
+            // prematuro (piso mínimo por tipo) o con un reason no permitido en
+            // este modo (en arco completo solo cierre_exitoso; el resto los
+            // decide el usuario colgando). Si se rechaza, NO colgamos: devolvemos
+            // un toolResponse que reconduce al modelo a seguir en personaje, así
+            // no queda dead-air tras una despedida que ignoramos.
+            const callAgeMs = connectedAtRef.current ? Date.now() - connectedAtRef.current : Infinity
+            if (!canModelEndCall(callAgeMs, { type: roleplayType, reason })) {
+              console.warn('[gemini-live] end_call RECHAZADO', { reason, type: roleplayType, callAgeS: Math.round(callAgeMs / 1000) })
+              functionResponses.push({
+                id: fc.id,
+                name: 'end_call',
+                response: { ok: false, continue: true, message: STEER_CONTINUE_MSG },
+              })
+              continue
+            }
+
             console.log('[gemini-live] end_call received', { reason, summary })
             pendingHangupRef.current = { reason, summary }
             functionResponses.push({
@@ -486,7 +522,7 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
     }
 
     wsRef.current = ws
-  }, [voiceName, systemPrompt, onTranscript, onModelSpeaking, onError, playAudioChunk, stopPlayback, isModelSpeaking])
+  }, [voiceName, systemPrompt, roleplayType, onTranscript, onModelSpeaking, onError, playAudioChunk, stopPlayback, isModelSpeaking])
 
   // Obtiene un token fresco de /api/vertex/config y abre un nuevo socket preservando
   // el sessionHandle para que Gemini retome la conversación desde donde se cortó.
@@ -521,6 +557,7 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
       sessionHandleRef.current = null
       reconnectAttemptsRef.current = 0
       pendingHangupRef.current = null
+      connectedAtRef.current = null
 
       if (!audioContextRef.current || audioContextRef.current.state === 'closed') {
         // NO forzar sampleRate (iOS Safari lo rechaza). Usamos el rate nativo

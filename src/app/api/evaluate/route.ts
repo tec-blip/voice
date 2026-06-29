@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server'
 import { EVALUATION_PROMPT, type EvaluationResult } from '@/lib/prompts/evaluation'
 import { createClient } from '@/lib/supabase/server'
 import { enforceRateLimit } from '@/lib/rate-limit'
+import { normalizeCategoryScores, computeOverallScore } from '@/lib/engine'
+import { log, estimateEvalCostUsd } from '@/lib/log'
 
 // Models confirmed available for this API key (via ListModels)
 // All use v1beta which supports responseMimeType JSON mode
@@ -34,7 +36,7 @@ export async function POST(request: Request) {
 
   // Rate limit: máximo 10 evaluaciones por hora por usuario.
   // Una sesión real produce 1 evaluación; este límite ataja bucles y abusos.
-  const limited = enforceRateLimit(`evaluate:${user.id}`, {
+  const limited = await enforceRateLimit(`evaluate:${user.id}`, {
     capacity: 10,
     windowMs: 60 * 60 * 1000,
   })
@@ -148,17 +150,42 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Empty response from Gemini' }, { status: 500 })
     }
 
-    const evaluation: EvaluationResult = JSON.parse(extractJSON(raw))
+    const parsed = JSON.parse(extractJSON(raw)) as Record<string, unknown>
 
-    const categories: (keyof EvaluationResult)[] = [
-      'apertura', 'descubrimiento', 'presentacion', 'objeciones', 'cierre', 'tono',
-    ]
-    for (const cat of categories) {
-      const val = evaluation[cat]
-      if (typeof val !== 'number' || val < 0 || val > 100) {
-        (evaluation as unknown as Record<string, unknown>)[cat] = 50
-      }
+    // Las 6 categorías cualitativas las decide el modelo (requiere IA); el promedio
+    // ponderado lo calcula el MOTOR de forma determinista. Cualquier
+    // `puntuacion_general` que devuelva el LLM se ignora a propósito.
+    const categories = normalizeCategoryScores(parsed)
+    const puntuacion_general = computeOverallScore(categories)
+
+    // Telemetría temporal: comparar el general del modelo vs el recalculado.
+    if (typeof parsed.puntuacion_general === 'number' && Math.round(parsed.puntuacion_general) !== puntuacion_general) {
+      console.log(
+        '[evaluate] puntuacion_general modelo=%d recalculado=%d',
+        Math.round(parsed.puntuacion_general),
+        puntuacion_general,
+      )
     }
+
+    const evaluation: EvaluationResult = {
+      ...categories,
+      puntuacion_general,
+      feedback_positivo: typeof parsed.feedback_positivo === 'string' ? parsed.feedback_positivo : '',
+      feedback_mejora: typeof parsed.feedback_mejora === 'string' ? parsed.feedback_mejora : '',
+      momento_critico: typeof parsed.momento_critico === 'string' ? parsed.momento_critico : '',
+      feedback_source: 'llm',
+    }
+
+    // Metering de costo de la evaluación (usageMetadata de Gemini).
+    const usage = data.usageMetadata ?? {}
+    const inTok = Number(usage.promptTokenCount ?? 0)
+    const outTok = Number(usage.candidatesTokenCount ?? 0)
+    log.cost('evaluate', {
+      userId: user.id,
+      evalInputTokens: inTok,
+      evalOutputTokens: outTok,
+      estEvalCostUsd: Number(estimateEvalCostUsd(inTok, outTok).toFixed(5)),
+    })
 
     return NextResponse.json(evaluation)
   } catch (err) {
