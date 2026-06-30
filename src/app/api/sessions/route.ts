@@ -51,7 +51,7 @@ export async function POST(request: Request) {
     if (!body || typeof body !== 'object') {
       return NextResponse.json({ error: 'Invalid body' }, { status: 400 })
     }
-    const { type, scenario, score, duration, transcript, feedback } = body as Record<string, unknown>
+    const { type, scenario, score, duration, transcript, feedback, events } = body as Record<string, unknown>
 
     // ── type ────────────────────────────────────────────────────────────────
     if (typeof type !== 'string' || !ALLOWED_TYPES.includes(type as RoleplayType)) {
@@ -109,6 +109,12 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Feedback con formato inválido' }, { status: 400 })
     }
 
+    // ── events (diagnóstico de ciclo de vida; opcional, best-effort) ──────────
+    let safeEvents: unknown[] | null = null
+    if (Array.isArray(events) && events.length > 0) {
+      safeEvents = events.slice(0, 500) // cap defensivo
+    }
+
     const insertPayload = {
       user_id: user.id,
       type: type as RoleplayType,
@@ -117,6 +123,7 @@ export async function POST(request: Request) {
       duration: safeDuration,
       transcript: safeTranscript,
       feedback: safeFeedback,
+      events: safeEvents,
     }
 
     const { data, error } = await supabase

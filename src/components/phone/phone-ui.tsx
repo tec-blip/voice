@@ -12,7 +12,7 @@ import {
   minutesRemaining,
 } from '@/lib/engine'
 
-type CallState = 'idle' | 'connecting' | 'active' | 'ended'
+type CallState = 'idle' | 'connecting' | 'active' | 'dropped' | 'ended'
 
 interface PhoneUIProps {
   roleplayType: RoleplayType | null
@@ -21,7 +21,7 @@ interface PhoneUIProps {
   onCallEnd?: (
     transcript: { role: 'user' | 'model'; text: string }[],
     durationSeconds: number,
-    meta?: { endedBy: 'user' | 'model'; reason?: CallEndReason; summary?: string }
+    meta?: { endedBy: 'user' | 'model'; reason?: CallEndReason; summary?: string; events?: unknown[] }
   ) => void
 }
 
@@ -116,6 +116,12 @@ export function PhoneUI({ roleplayType, systemPromptOverride, voiceName, onCallE
       // ya ocurrió en el hook (engine/call-lifecycle). Aquí solo cerramos la UI.
       console.log('[phone-ui] model requested hangup', info)
       finalizeCallRef.current({ endedBy: 'model', reason: info.reason, summary: info.summary })
+    }, []),
+    onConnectionLost: useCallback(() => {
+      // La reconexión automática se agotó pero la sesión es reanudable.
+      // Pasamos a 'dropped' para ofrecer "Reanudar" sin perder la llamada.
+      console.warn('[phone-ui] connection lost — offering resume')
+      setCallState('dropped')
     }, []),
   })
 
@@ -226,6 +232,11 @@ export function PhoneUI({ roleplayType, systemPromptOverride, voiceName, onCallE
         if (prev === 'ended') return prev
         const finalTranscript = gemini.transcript
         const finalDuration = durationRef.current
+        // Eventos de ciclo de vida + marca de cierre, para diagnóstico.
+        const events = [
+          ...gemini.getEvents(),
+          { t: Date.now(), type: 'ended', detail: { endedBy: meta.endedBy, reason: meta.reason } },
+        ]
         microphone.stop()
         gemini.disconnect()
         // Cerrar la reserva de sesión y conciliar la cuota (best-effort).
@@ -238,13 +249,21 @@ export function PhoneUI({ roleplayType, systemPromptOverride, voiceName, onCallE
           }).catch(() => {})
           sessionIdRef.current = null
         }
-        setTimeout(() => onCallEnd?.(finalTranscript, finalDuration, meta), 0)
+        setTimeout(() => onCallEnd?.(finalTranscript, finalDuration, { ...meta, events }), 0)
         return 'ended'
       })
     },
     [microphone, gemini, onCallEnd]
   )
   finalizeCallRef.current = finalizeCall
+
+  // Reanudar una llamada caída: vuelve a 'connecting'; el efecto de isConnected
+  // la promueve a 'active' al reconectar (preservando transcript y duración).
+  const handleResume = useCallback(() => {
+    setErrorMessage(null)
+    setCallState('connecting')
+    gemini.resume()
+  }, [gemini])
 
   const handleHangup = useCallback(() => {
     finalizeCall({ endedBy: 'user', reason: 'manual' })
@@ -268,7 +287,11 @@ export function PhoneUI({ roleplayType, systemPromptOverride, voiceName, onCallE
             </svg>
           </div>
           <p className="text-white font-semibold mt-3">
-            {callState === 'idle' ? 'Prospecto IA' : callState === 'connecting' ? 'Conectando...' : callState === 'ended' ? 'Llamada finalizada' : gemini.isModelSpeaking ? 'Hablando...' : 'Escuchando...'}
+            {callState === 'idle' ? 'Prospecto IA'
+              : callState === 'connecting' ? 'Conectando...'
+              : callState === 'dropped' ? 'Conexión perdida'
+              : callState === 'ended' ? 'Llamada finalizada'
+              : gemini.isModelSpeaking ? 'Hablando...' : 'Escuchando...'}
           </p>
           <p className={`text-sm mt-0.5 ${
             callState === 'active' && isWarningWindow(duration)
@@ -279,11 +302,13 @@ export function PhoneUI({ roleplayType, systemPromptOverride, voiceName, onCallE
               ? formatDuration(duration)
               : callState === 'connecting'
                 ? 'Estableciendo conexión...'
-                : callState === 'ended'
-                  ? formatDuration(duration)
-                  : canCall
-                    ? 'Listo para practicar'
-                    : 'Selecciona un tipo de práctica'}
+                : callState === 'dropped'
+                  ? `Se cortó en ${formatDuration(duration)}`
+                  : callState === 'ended'
+                    ? formatDuration(duration)
+                    : canCall
+                      ? 'Listo para practicar'
+                      : 'Selecciona un tipo de práctica'}
           </p>
           {callState === 'active' && isWarningWindow(duration) && (
             <p className="text-xs text-orange-400/80 mt-0.5 animate-pulse">
@@ -306,6 +331,12 @@ export function PhoneUI({ roleplayType, systemPromptOverride, voiceName, onCallE
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
                 </svg>
               </div>
+            </div>
+          ) : callState === 'dropped' ? (
+            <div className="h-24 w-24 rounded-full bg-orange-600/20 border-2 border-orange-500/40 flex items-center justify-center">
+              <svg className="w-10 h-10 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+              </svg>
             </div>
           ) : callState === 'ended' ? (
             <div className="h-24 w-24 rounded-full bg-green-600/20 border-2 border-green-500/40 flex items-center justify-center">
@@ -343,6 +374,32 @@ export function PhoneUI({ roleplayType, systemPromptOverride, voiceName, onCallE
           </div>
         )}
 
+        {callState === 'dropped' && (
+          <div className="px-6 pb-2">
+            <div className="bg-orange-950/40 border border-orange-800/50 rounded-lg px-4 py-3">
+              <p className="text-xs text-orange-200 leading-relaxed">
+                Se cortó la conexión. Puedes <span className="font-semibold">reanudar</span> desde donde quedó, o terminar y ver tu evaluación.
+              </p>
+            </div>
+          </div>
+        )}
+
+        {callState === 'dropped' ? (
+          <div className="flex items-center justify-center gap-4 pb-10 pt-4">
+            <button
+              onClick={handleResume}
+              className="rounded-xl bg-green-600 hover:bg-green-700 px-7 py-3 text-sm font-semibold text-white transition-colors shadow-lg shadow-green-600/30"
+            >
+              Reanudar
+            </button>
+            <button
+              onClick={handleHangup}
+              className="rounded-xl bg-zinc-800 hover:bg-zinc-700 px-7 py-3 text-sm font-semibold text-zinc-200 transition-colors"
+            >
+              Terminar
+            </button>
+          </div>
+        ) : (
         <div className="flex items-center justify-center gap-8 pb-10 pt-4">
           <button
             onClick={toggleMute}
@@ -392,6 +449,7 @@ export function PhoneUI({ roleplayType, systemPromptOverride, voiceName, onCallE
             </svg>
           </button>
         </div>
+        )}
       </div>
     </div>
   )

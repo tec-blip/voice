@@ -189,6 +189,7 @@ export default function PracticePage() {
   const handleCallEnd = useCallback(async (
     transcript: { role: 'user' | 'model'; text: string }[],
     durationSeconds: number,
+    meta?: { endedBy?: string; reason?: string; summary?: string; events?: unknown[] },
   ) => {
     setLastTranscript(transcript)
     setCallDuration(durationSeconds)
@@ -237,6 +238,7 @@ export default function PracticePage() {
           duration: durationSeconds,
           transcript: normalizedTranscript,
           feedback: result,
+          events: meta?.events,
         }),
       })
     } catch (saveErr) {

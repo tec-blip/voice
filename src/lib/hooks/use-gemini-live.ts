@@ -20,6 +20,14 @@ interface TranscriptEntry {
   text: string
 }
 
+// Evento de ciclo de vida de la llamada — para diagnóstico (se persiste en la
+// sesión). Permite ver QUÉ pasó (caídas, reconexiones, end_call) en vez de deducir.
+export interface CallEvent {
+  t: number
+  type: string
+  detail?: Record<string, unknown>
+}
+
 interface UseGeminiLiveOptions {
   systemPrompt: string
   voiceName?: string
@@ -32,6 +40,9 @@ interface UseGeminiLiveOptions {
   // Se dispara cuando el modelo decide colgar la llamada (llamando la function
   // end_call). El PhoneUI debe reaccionar cerrando la llamada en la UI.
   onModelHangup?: (info: { reason: CallEndReason; summary?: string }) => void
+  // Se dispara cuando la conexión se cayó y la reconexión automática se agotó,
+  // PERO hay un sessionHandle → la llamada se puede REANUDAR (resume()).
+  onConnectionLost?: () => void
 }
 
 interface UseGeminiLiveReturn {
@@ -40,7 +51,9 @@ interface UseGeminiLiveReturn {
   transcript: TranscriptEntry[]
   connect: () => Promise<void>
   disconnect: () => void
+  resume: () => void
   sendAudio: (audioData: Float32Array) => void
+  getEvents: () => CallEvent[]
 }
 
 function floatTo16BitPCM(float32: Float32Array): Int16Array {
@@ -92,7 +105,7 @@ function getAudioContextClass(): typeof AudioContext | null {
 const GEMINI_OUTPUT_SAMPLE_RATE = 24000
 
 export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveReturn {
-  const { systemPrompt, voiceName = 'Kore', roleplayType, onTranscript, onModelSpeaking, onError, onModelHangup } = options
+  const { systemPrompt, voiceName = 'Kore', roleplayType, onTranscript, onModelSpeaking, onError, onModelHangup, onConnectionLost } = options
 
   const [isConnected, setIsConnected] = useState(false)
   const [isModelSpeaking, setIsModelSpeaking] = useState(false)
@@ -136,6 +149,14 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
   // Listener de visibilitychange registrado durante la llamada.
   // Lo guardamos en un ref para poder retirarlo en disconnect().
   const visibilityListenerRef = useRef<(() => void) | null>(null)
+
+  // Registro de eventos de ciclo de vida (diagnóstico). Se escribe SOLO desde
+  // handlers/efectos (nunca en render), así que no viola las reglas de refs.
+  const eventsRef = useRef<CallEvent[]>([])
+  const logEvent = useCallback((type: string, detail?: Record<string, unknown>) => {
+    eventsRef.current.push({ t: Date.now(), type, ...(detail ? { detail } : {}) })
+    console.log(`[gemini-live][evt] ${type}`, detail ?? '')
+  }, [])
 
   const playAudioChunk = useCallback((pcmBase64: string) => {
     if (!audioContextRef.current || audioContextRef.current.state === 'closed') {
@@ -211,6 +232,20 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
     setIsModelSpeaking(false)
     onModelSpeaking?.(false)
   }, [onModelSpeaking])
+
+  // Se agotó la reconexión automática. Si HAY sessionHandle, la conversación se
+  // puede reanudar → avisamos al UI (onConnectionLost) para ofrecer "Reanudar".
+  // Si no hay handle, es un cierre real → error.
+  const giveUp = useCallback(() => {
+    stopPlayback()
+    if (sessionHandleRef.current) {
+      logEvent('connection_lost', { resumable: true })
+      onConnectionLost?.()
+    } else {
+      logEvent('closed_no_handle')
+      onError?.('La conexión con Gemini se cerró')
+    }
+  }, [stopPlayback, onError, onConnectionLost, logEvent])
 
   // openSocket abre un WebSocket nuevo con el setup. Si sessionHandleRef está poblado,
   // envía `sessionResumption: { handle }` para continuar la sesión anterior sin perder
@@ -322,6 +357,7 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
 
       if (data.setupComplete !== undefined) {
         console.log('[gemini-live] setupComplete — connected')
+        logEvent('setup_complete', { resuming: isResuming })
         setIsConnected(true)
         reconnectAttemptsRef.current = 0
         // Marca el inicio de la llamada (solo la primera vez; una reconexión por
@@ -345,6 +381,7 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
       // cuando onclose dispare tengamos la URL lista y la reconexión sea instantánea.
       if (data.goAway) {
         console.warn('[gemini-live] goAway received — pre-fetching fresh token', data.goAway)
+        logEvent('go_away', { timeLeft: data.goAway?.timeLeft })
         fetch('/api/vertex/config')
           .then((r) => (r.ok ? r.json() : Promise.reject('goAway pre-fetch HTTP error')))
           .then(({ wsUrl, modelPath }: { wsUrl: string; modelPath: string }) => {
@@ -378,6 +415,7 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
             const callAgeMs = connectedAtRef.current ? Date.now() - connectedAtRef.current : Infinity
             if (!canModelEndCall(callAgeMs, roleplayType)) {
               console.warn('[gemini-live] end_call BLOQUEADO (demasiado temprano) — re-enganchando', { reason, type: roleplayType, callAgeS: Math.round(callAgeMs / 1000) })
+              logEvent('end_call_blocked', { reason, ageS: Math.round(callAgeMs / 1000) })
               functionResponses.push({
                 id: fc.id,
                 name: 'end_call',
@@ -388,6 +426,7 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
             }
 
             console.log('[gemini-live] end_call received', { reason, summary })
+            logEvent('end_call', { reason, ageS: Math.round(callAgeMs / 1000) })
             pendingHangupRef.current = { reason, summary }
             functionResponses.push({
               id: fc.id,
@@ -443,6 +482,7 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
         // fallback de 800ms sigue corriendo. La guardia de duración mínima en
         // phone-ui evita que end_call prematuro termine la llamada.
         if (sc.interrupted) {
+          logEvent('interrupted')
           stopPlayback()
           return
         }
@@ -505,6 +545,7 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
       console.warn(
         `[gemini-live] ws.onclose code=${ev.code} wasClean=${ev.wasClean} reason="${ev.reason || '(empty)'}"`
       )
+      logEvent('ws_close', { code: ev.code, wasClean: ev.wasClean, reason: ev.reason || undefined })
       setIsConnected(false)
 
       // Si fue cierre intencional del usuario, no reconectar.
@@ -521,6 +562,7 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
         console.log(
           `[gemini-live] attempting resume #${reconnectAttemptsRef.current} with fresh token in ${delayMs}ms`
         )
+        logEvent('reconnect_attempt', { n: reconnectAttemptsRef.current })
         // Siempre pedimos un token fresco — el token anterior puede haber expirado
         // (el OIDC token de Vercel tiene ~2 min de vida, lo que limita el access token de GCP).
         setTimeout(() => {
@@ -529,18 +571,13 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
           }
         }, delayMs)
       } else {
-        // Sin handle o agotados los intentos: cerramos realmente.
-        stopPlayback()
-        if (!sessionHandleRef.current) {
-          onError?.('La conexión con Gemini se cerró')
-        } else {
-          onError?.('No se pudo reconectar con Gemini')
-        }
+        // Sin handle o agotados los intentos → ofrecer reanudar (si hay handle).
+        giveUp()
       }
     }
 
     wsRef.current = ws
-  }, [voiceName, systemPrompt, roleplayType, onTranscript, onModelSpeaking, onError, playAudioChunk, stopPlayback, isModelSpeaking])
+  }, [voiceName, systemPrompt, roleplayType, onTranscript, onModelSpeaking, playAudioChunk, stopPlayback, isModelSpeaking, logEvent, giveUp])
 
   // Obtiene un token fresco de /api/vertex/config y abre un nuevo socket preservando
   // el sessionHandle para que Gemini retome la conversación desde donde se cortó.
@@ -562,10 +599,10 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
       })
       .catch((err: unknown) => {
         console.error('[gemini-live] token refresh failed on reconnect', err)
-        stopPlayback()
-        onError?.('No se pudo reconectar con Gemini. Intenta iniciar una nueva llamada.')
+        logEvent('reconnect_failed', { err: String(err) })
+        giveUp()
       })
-  }, [openSocket, stopPlayback, onError])
+  }, [openSocket, giveUp, logEvent])
   doReconnectRef.current = doReconnect
 
   const connect = useCallback(async () => {
@@ -576,6 +613,8 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
       reconnectAttemptsRef.current = 0
       pendingHangupRef.current = null
       connectedAtRef.current = null
+      eventsRef.current = []
+      logEvent('connect')
 
       if (!audioContextRef.current || audioContextRef.current.state === 'closed') {
         // NO forzar sampleRate (iOS Safari lo rechaza). Usamos el rate nativo
@@ -639,9 +678,10 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
         document.addEventListener('visibilitychange', handleVisibilityChange)
       }
     } catch (err) {
+      logEvent('connect_error', { msg: err instanceof Error ? err.message : String(err) })
       onError?.(err instanceof Error ? err.message : 'Error conectando con Gemini')
     }
-  }, [openSocket, onError])
+  }, [openSocket, onError, logEvent])
 
   const disconnect = useCallback(() => {
     isUserDisconnectingRef.current = true
@@ -670,6 +710,23 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
     currentUserTextRef.current = ''
   }, [stopPlayback])
 
+  // Reanuda una llamada caída: la reconexión automática se agotó PERO hay
+  // sessionHandle, así que reabrimos el socket preservando el contexto de la
+  // conversación (Gemini retoma desde donde se cortó). No reinicia el transcript
+  // ni el reloj de duración (eso vive en phone-ui).
+  const resume = useCallback(() => {
+    if (!sessionHandleRef.current) return
+    logEvent('resume_requested')
+    isUserDisconnectingRef.current = false
+    reconnectAttemptsRef.current = 0
+    if (audioContextRef.current?.state === 'suspended') {
+      audioContextRef.current.resume().catch(() => {})
+    }
+    doReconnectRef.current()
+  }, [logEvent])
+
+  const getEvents = useCallback(() => eventsRef.current, [])
+
   const sendAudio = useCallback((audioData: Float32Array) => {
     if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return
 
@@ -686,5 +743,5 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
     }))
   }, [])
 
-  return { isConnected, isModelSpeaking, transcript, connect, disconnect, sendAudio }
+  return { isConnected, isModelSpeaking, transcript, connect, disconnect, resume, sendAudio, getEvents }
 }
