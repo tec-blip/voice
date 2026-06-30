@@ -7,8 +7,11 @@ import { useAuth } from '@/lib/hooks/use-auth'
 import { useUserRole, type UserRole } from '@/lib/hooks/use-user-role'
 
 interface TranscriptEntry {
-  role: 'user' | 'model'
-  text: string
+  // El prospecto se guarda como 'assistant' (nuevo) o 'model' (sesiones antiguas).
+  // El texto vive en `content` (nuevo) o `text` (antiguo).
+  role: 'user' | 'assistant' | 'model'
+  content?: string
+  text?: string
 }
 
 interface SessionRow {
@@ -333,7 +336,7 @@ export default function AdminStudentDetailPage() {
                                 <span className="text-[10px] font-medium block mb-0.5 opacity-60 uppercase tracking-wide">
                                   {entry.role === 'user' ? 'Alumno' : 'Prospecto'}
                                 </span>
-                                {entry.text}
+                                {entry.content ?? entry.text}
                               </div>
                             </div>
                           ))}

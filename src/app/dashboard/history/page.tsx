@@ -3,8 +3,11 @@
 import { useEffect, useState } from 'react'
 
 interface TranscriptEntry {
-  role: 'user' | 'model'
-  text: string
+  // El prospecto se guarda como 'assistant' (formato nuevo) o 'model' (sesiones
+  // antiguas). El texto vive en `content` (nuevo) o `text` (antiguo).
+  role: 'user' | 'assistant' | 'model'
+  content?: string
+  text?: string
 }
 
 interface Session {
@@ -174,7 +177,7 @@ export default function HistoryPage() {
                               <span className="text-[10px] font-medium block mb-0.5 opacity-60 uppercase tracking-wide">
                                 {entry.role === 'user' ? 'Tú' : 'Prospecto'}
                               </span>
-                              {entry.text}
+                              {entry.content ?? entry.text}
                             </div>
                           </div>
                         ))}
