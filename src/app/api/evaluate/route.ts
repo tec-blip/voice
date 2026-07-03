@@ -14,6 +14,23 @@ const MODELS = [
 ]
 const API_VERSION = 'v1beta'
 
+// Contexto por tipo para que la evaluación sea justa según el formato.
+const TYPE_LABEL: Record<string, string> = {
+  cierre: 'Cierre de ventas',
+  llamada_fria: 'Llamada en frío',
+  framing: 'Framing / reencuadre',
+  objeciones: 'Manejo de objeciones (drill)',
+  general: 'Llamada general',
+}
+const TYPE_EVAL_CONTEXT: Record<string, string> = {
+  objeciones:
+    'Es un DRILL de manejo de objeciones: el vendedor NO hace apertura ni discovery completos (el formato arranca ya en las objeciones). NO penalices "apertura" ni "descubrimiento" por no aparecer; evalúa sobre todo objeciones, presentación y cierre, y para las fases que el formato no incluye asigna un puntaje neutral (~60) en vez de castigar.',
+  llamada_fria:
+    'Es una llamada EN FRÍO: es legítimo que sea corta si el prospecto no engancha. Prioriza apertura, generación de interés y manejo de la resistencia inicial.',
+  framing:
+    'Es una práctica de FRAMING/reencuadre: prioriza cómo el vendedor reencuadra la percepción de valor frente a alternativas más baratas.',
+}
+
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
 
 // Extract JSON from model response even if it wraps in ```json ... ```
@@ -48,7 +65,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const { transcript } = await request.json()
+    const { transcript, type, durationSeconds } = await request.json()
 
     if (!transcript || typeof transcript !== 'string') {
       return NextResponse.json({ error: 'Invalid transcript' }, { status: 400 })
@@ -60,13 +77,22 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Transcript demasiado largo' }, { status: 400 })
     }
 
+    // Contexto de la llamada para una evaluación justa según el tipo y la duración.
+    const typeStr = typeof type === 'string' ? type : ''
+    const mins = typeof durationSeconds === 'number' && durationSeconds > 0
+      ? Math.max(1, Math.round(durationSeconds / 60)) : null
+    const ctx: string[] = [`Tipo de práctica: ${TYPE_LABEL[typeStr] ?? 'Llamada general'}.`]
+    if (mins) ctx.push(`Duración aproximada: ${mins} min. Ajusta las expectativas: una llamada corta no puede cubrir todas las fases del proceso.`)
+    if (TYPE_EVAL_CONTEXT[typeStr]) ctx.push(TYPE_EVAL_CONTEXT[typeStr])
+    const contextBlock = `CONTEXTO DE ESTA LLAMADA (tenlo MUY en cuenta al puntuar):\n${ctx.join('\n')}`
+
     const body = JSON.stringify({
       contents: [
         {
           role: 'user',
           parts: [
             {
-              text: `${EVALUATION_PROMPT}\n\n---\n\nTRANSCRIPCIÓN DE LA LLAMADA:\n\n${transcript}`,
+              text: `${EVALUATION_PROMPT}\n\n${contextBlock}\n\n---\n\nTRANSCRIPCIÓN DE LA LLAMADA:\n\n${transcript}`,
             },
           ],
         },

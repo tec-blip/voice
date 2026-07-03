@@ -128,7 +128,7 @@ export default function DashboardPage() {
                 </div>
                 <div className="flex items-center gap-3">
                   <span className={`text-lg font-bold ${
-                    (session.score ?? 0) >= 80 ? 'text-green-400' : (session.score ?? 0) >= 60 ? 'text-red-400' : (session.score ?? 0) >= 40 ? 'text-yellow-400' : 'text-zinc-500'
+                    (session.score ?? 0) >= 80 ? 'text-green-400' : (session.score ?? 0) >= 60 ? 'text-yellow-400' : (session.score ?? 0) >= 40 ? 'text-orange-400' : 'text-zinc-500'
                   }`}>
                     {session.score ?? '—'}
                   </span>

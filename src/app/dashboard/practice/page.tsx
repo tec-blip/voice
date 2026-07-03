@@ -154,6 +154,8 @@ export default function PracticePage() {
   const [evaluation, setEvaluation] = useState<EvaluationResult | null>(null)
   const [callDuration, setCallDuration] = useState(0)
   const [evalError, setEvalError] = useState<string | null>(null)
+  // Aviso en la pantalla de selección (p.ej. llamada demasiado corta).
+  const [callNotice, setCallNotice] = useState<string | null>(null)
 
   const fetchScenario = useCallback(async (nicho: Nicho) => {
     setLoadingScenario(true)
@@ -193,7 +195,15 @@ export default function PracticePage() {
   ) => {
     setLastTranscript(transcript)
     setCallDuration(durationSeconds)
-    if (transcript.length < 1) { setPageState('select'); return }
+    // Umbral mínimo: sin al menos 2 turnos del vendedor no hay qué evaluar.
+    // No guardamos llamadas basura (contaminan el ranking y el promedio).
+    const vendorTurns = transcript.filter((t) => t.role === 'user').length
+    if (vendorTurns < 2) {
+      setCallNotice('La llamada fue muy corta para evaluarla. Habla al menos un par de turnos con el prospecto e inténtalo de nuevo.')
+      setPageState('select')
+      return
+    }
+    setCallNotice(null)
     setPageState('evaluating')
     setEvalError(null)
 
@@ -204,7 +214,11 @@ export default function PracticePage() {
       const res = await fetch('/api/evaluate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ transcript: formatForEvaluation(transcript) }),
+        body: JSON.stringify({
+          transcript: formatForEvaluation(transcript),
+          type: selectedType,
+          durationSeconds,
+        }),
       })
       if (!res.ok) throw new Error(`evaluate ${res.status}`)
       result = await res.json()
@@ -229,20 +243,21 @@ export default function PracticePage() {
     try {
       const callEndedAt = new Date().toISOString()
       const normalizedTranscript = normalizeForStorage(transcript, callEndedAt)
-      await fetch('/api/sessions', {
+      const saveRes = await fetch('/api/sessions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           type: selectedType,
-          score: result.puntuacion_general,
           duration: durationSeconds,
           transcript: normalizedTranscript,
           feedback: result,
           events: meta?.events,
         }),
       })
+      if (!saveRes.ok) throw new Error(`sessions ${saveRes.status}`)
     } catch (saveErr) {
       console.error('[practice] no se pudo guardar la sesión', saveErr)
+      setEvalError('Tu evaluación se muestra aquí abajo, pero no pudimos guardarla en tu historial. Revisa tu conexión.')
     }
   }, [selectedType])
 
@@ -251,6 +266,7 @@ export default function PracticePage() {
     setEvaluation(null)
     setLastTranscript([])
     setEvalError(null)
+    setCallNotice(null)
     setCallDuration(0)
     setScenario(null)
     setSelectedNicho(null)
@@ -338,6 +354,12 @@ export default function PracticePage() {
             : 'Elige nicho, tipo de práctica y habla con un cliente real'}
         </p>
       </div>
+
+      {callNotice && (
+        <div className="max-w-sm mx-auto bg-orange-950/40 border border-orange-800/50 rounded-xl px-4 py-3">
+          <p className="text-sm text-orange-200 text-center">{callNotice}</p>
+        </div>
+      )}
 
       {/* Phone */}
       <PhoneUI

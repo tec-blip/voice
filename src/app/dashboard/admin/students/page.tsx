@@ -35,8 +35,8 @@ function formatDate(iso: string | null): string {
 function scoreColor(score: number): string {
   if (score === 0) return 'text-zinc-500'
   if (score >= 80) return 'text-green-400'
-  if (score >= 60) return 'text-red-400'
-  if (score >= 40) return 'text-yellow-400'
+  if (score >= 60) return 'text-yellow-400'
+  if (score >= 40) return 'text-orange-400'
   return 'text-red-400'
 }
 
