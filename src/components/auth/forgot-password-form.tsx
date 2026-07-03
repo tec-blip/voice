@@ -16,9 +16,10 @@ export function ForgotPasswordForm() {
 
     startTransition(async () => {
       const supabase = createClient()
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: 'https://shia.closersdigitales.com/auth/callback?next=/reset-password',
-      })
+      // Usa el origen actual (funciona en prod, preview y local) en vez de un
+      // dominio hardcodeado que rompía el reset fuera de producción.
+      const redirectTo = `${window.location.origin}/auth/callback?next=/reset-password`
+      const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo })
 
       if (error) {
         setError('No se pudo enviar el correo. Intenta de nuevo.')

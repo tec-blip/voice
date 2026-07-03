@@ -20,9 +20,12 @@ interface Session {
     puntuacion_general: number
     feedback_positivo: string
     feedback_mejora: string
+    feedback_source?: 'llm' | 'heuristic'
   } | null
   created_at: string
 }
+
+const PAGE_SIZE = 20
 
 const TYPE_LABELS: Record<string, string> = {
   cierre: 'Cierre',
@@ -66,16 +69,35 @@ function scoreColor(score: number | null): string {
 export default function HistoryPage() {
   const [sessions, setSessions] = useState<Session[]>([])
   const [loading, setLoading] = useState(true)
+  const [loadingMore, setLoadingMore] = useState(false)
+  const [hasMore, setHasMore] = useState(false)
   const [filter, setFilter] = useState<string>('todos')
   const [expanded, setExpanded] = useState<string | null>(null)
 
   useEffect(() => {
-    fetch('/api/sessions/list')
+    fetch(`/api/sessions/list?limit=${PAGE_SIZE}&offset=0`)
       .then((res) => (res.ok ? res.json() : []))
-      .then((data) => setSessions(Array.isArray(data) ? data : []))
+      .then((data) => {
+        const arr = Array.isArray(data) ? data : []
+        setSessions(arr)
+        setHasMore(arr.length === PAGE_SIZE)
+      })
       .catch(() => setSessions([]))
       .finally(() => setLoading(false))
   }, [])
+
+  const loadMore = () => {
+    setLoadingMore(true)
+    fetch(`/api/sessions/list?limit=${PAGE_SIZE}&offset=${sessions.length}`)
+      .then((res) => (res.ok ? res.json() : []))
+      .then((data) => {
+        const arr = Array.isArray(data) ? data : []
+        setSessions((prev) => [...prev, ...arr])
+        setHasMore(arr.length === PAGE_SIZE)
+      })
+      .catch(() => {})
+      .finally(() => setLoadingMore(false))
+  }
 
   const filtered = filter === 'todos' ? sessions : sessions.filter((s) => s.type === filter)
 
@@ -91,7 +113,7 @@ export default function HistoryPage() {
     <div className="max-w-4xl mx-auto space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-white">Historial de Sesiones</h1>
-        <p className="text-zinc-400 mt-1">{sessions.length} sesiones completadas</p>
+        <p className="text-zinc-400 mt-1">{sessions.length}{hasMore ? '+' : ''} sesiones completadas</p>
       </div>
 
       <div className="flex gap-2 flex-wrap">
@@ -147,6 +169,13 @@ export default function HistoryPage() {
                 <div className="px-5 pb-4 pt-0 border-t border-zinc-800/50 space-y-3">
                   {session.feedback && (
                     <>
+                      {session.feedback.feedback_source === 'heuristic' && (
+                        <div className="bg-orange-500/10 border border-orange-500/20 rounded-lg px-3 py-2">
+                          <p className="text-xs text-orange-300">
+                            ⚠ Evaluación provisional (automática): la IA de evaluación no estaba disponible en esta llamada.
+                          </p>
+                        </div>
+                      )}
                       <div className="bg-green-500/5 border border-green-500/10 rounded-lg p-3">
                         <p className="text-xs font-medium text-green-400 mb-1">Lo que hiciste bien</p>
                         <p className="text-sm text-zinc-300 whitespace-pre-line">{session.feedback.feedback_positivo}</p>
@@ -194,6 +223,18 @@ export default function HistoryPage() {
               )}
             </div>
           ))}
+
+          {hasMore && (
+            <div className="flex justify-center pt-2">
+              <button
+                onClick={loadMore}
+                disabled={loadingMore}
+                className="rounded-lg bg-zinc-800 hover:bg-zinc-700 px-6 py-2.5 text-sm font-medium text-zinc-200 transition-colors disabled:opacity-50"
+              >
+                {loadingMore ? 'Cargando…' : 'Cargar más'}
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>

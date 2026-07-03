@@ -113,6 +113,12 @@ export default function DashboardPage() {
         </Link>
       </div>
 
+      <div className="text-center">
+        <Link href="/dashboard/onboarding" className="text-xs text-zinc-500 hover:text-zinc-300 transition-colors">
+          ¿Primera vez? Ver la guía de inicio →
+        </Link>
+      </div>
+
       {sessions.length > 0 ? (
         <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-6">
           <div className="flex items-center justify-between mb-4">
