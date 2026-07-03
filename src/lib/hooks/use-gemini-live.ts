@@ -477,13 +477,22 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
         // Gemini para de enviar audio y manda este flag. Detenemos el playback
         // inmediatamente para que el usuario no escuche el audio ya buffereado
         // (puede quedar desincronizado con lo que el modelo va a decir ahora).
-        // Nota: NO limpiamos pendingHangupRef aquí — si el modelo ya decidió
-        // colgar (end_call fue llamado antes de la interrupción), el timer de
-        // fallback de 800ms sigue corriendo. La guardia de duración mínima en
-        // phone-ui evita que end_call prematuro termine la llamada.
         if (sc.interrupted) {
           logEvent('interrupted')
           stopPlayback()
+          // Si había un end_call pendiente, su audio de despedida acaba de ser
+          // interrumpido → los `onended` se anularon en stopPlayback y nadie
+          // dispararía el hangup. Lo programamos aquí para no quedar mudos
+          // (variante del bug "la IA se queda callada").
+          if (pendingHangupRef.current) {
+            setTimeout(() => {
+              if (pendingHangupRef.current) {
+                const info = pendingHangupRef.current
+                pendingHangupRef.current = null
+                onModelHangupRef.current?.(info)
+              }
+            }, 800)
+          }
           return
         }
 

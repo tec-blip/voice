@@ -67,6 +67,14 @@ export function useMicrophone(options: UseMicrophoneOptions = {}): UseMicrophone
   const workletRef = useRef<AudioWorkletNode | null>(null)
   const animationRef = useRef<number | null>(null)
 
+  // onAudioData en ref: los handlers de audio (worklet/ScriptProcessor) se
+  // enganchan UNA sola vez en start(); si llamaran el `onAudioData` de ese
+  // momento, quedarían con un closure congelado (el gate half-duplex/mute leía
+  // isModelSpeaking/isMuted viejos → nunca funcionaba). Con el ref siempre
+  // invocan la versión actual.
+  const onAudioDataRef = useRef(onAudioData)
+  onAudioDataRef.current = onAudioData
+
   const updateFrequencyData = useCallback(() => {
     if (!analyserRef.current) return
     const data = new Uint8Array(analyserRef.current.frequencyBinCount)
@@ -87,6 +95,24 @@ export function useMicrophone(options: UseMicrophoneOptions = {}): UseMicrophone
       if (!AudioContextClass) {
         onError?.('Tu navegador no soporta Web Audio API.')
         return null
+      }
+
+      // Guarda de reentrada: si una captura anterior quedó viva (p.ej. un error
+      // que no la cerró), la desmontamos antes de crear otra. Dos pipelines
+      // simultáneos enviando a Gemini corrompen el audio.
+      if (streamRef.current || audioContextRef.current) {
+        if (animationRef.current) { cancelAnimationFrame(animationRef.current); animationRef.current = null }
+        if (workletRef.current) { workletRef.current.port.onmessage = null; try { workletRef.current.disconnect() } catch {} }
+        try { processorRef.current?.disconnect() } catch {}
+        try { sourceRef.current?.disconnect() } catch {}
+        streamRef.current?.getTracks().forEach((t) => t.stop())
+        try { audioContextRef.current?.close() } catch {}
+        workletRef.current = null
+        processorRef.current = null
+        sourceRef.current = null
+        analyserRef.current = null
+        streamRef.current = null
+        audioContextRef.current = null
       }
 
       const stream = await navigator.mediaDevices.getUserMedia({
@@ -139,7 +165,7 @@ export function useMicrophone(options: UseMicrophoneOptions = {}): UseMicrophone
           try {
             await audioContext.audioWorklet.addModule('/mic-worklet.js')
             const worklet = new AudioWorkletNode(audioContext, 'mic-capture')
-            worklet.port.onmessage = (e) => onAudioData(e.data as Float32Array)
+            worklet.port.onmessage = (e) => onAudioDataRef.current?.(e.data as Float32Array)
             source.connect(worklet)
             // Conectar a destination hace que el grafo "tire" del worklet; su
             // salida es silencio (no escribe outputs) → no produce eco.
@@ -165,7 +191,7 @@ export function useMicrophone(options: UseMicrophoneOptions = {}): UseMicrophone
               inputSampleRate === TARGET_SAMPLE_RATE
                 ? new Float32Array(inputData)
                 : downsampleBuffer(inputData, inputSampleRate, TARGET_SAMPLE_RATE)
-            onAudioData(resampled)
+            onAudioDataRef.current?.(resampled)
           }
           processorRef.current = processor
         }

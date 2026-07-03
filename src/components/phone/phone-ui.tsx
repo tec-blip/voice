@@ -98,6 +98,12 @@ export function PhoneUI({ roleplayType, systemPromptOverride, voiceName, onCallE
 
   // Id de la sesión reservada en /api/sessions/start (control de costo/concurrencia).
   const sessionIdRef = useRef<string | null>(null)
+  // Guarda de idempotencia: evita doble onCallEnd/guardado si finalizeCall corre
+  // más de una vez.
+  const endedRef = useRef(false)
+  // Limpieza de recursos para rutas de ERROR (sin evaluar): detiene mic, cierra
+  // WS y libera la reserva de sesión. Se asigna abajo (usa gemini/microphone).
+  const cleanupRef = useRef<() => void>(() => {})
 
   const gemini = useGeminiLive({
     systemPrompt,
@@ -108,6 +114,7 @@ export function PhoneUI({ roleplayType, systemPromptOverride, voiceName, onCallE
     }, []),
     onError: useCallback((error: string) => {
       console.error('Gemini error:', error)
+      cleanupRef.current()
       setErrorMessage(error)
       setCallState('idle')
     }, []),
@@ -137,6 +144,7 @@ export function PhoneUI({ roleplayType, systemPromptOverride, voiceName, onCallE
     }, [gemini, isMuted]),
     onError: useCallback((error: string) => {
       console.error('Microphone error:', error)
+      cleanupRef.current()
       setErrorMessage(error)
       setCallState('idle')
     }, []),
@@ -159,10 +167,11 @@ export function PhoneUI({ roleplayType, systemPromptOverride, voiceName, onCallE
     }
   }, [duration, callState])
 
-  // Heartbeat para mantener viva la reserva de sesión durante la llamada
-  // (el reaper del servidor cierra sesiones sin heartbeat reciente).
+  // Heartbeat para mantener viva la reserva de sesión durante la llamada.
+  // También en 'dropped': la reserva sigue abierta para poder Reanudar, así que
+  // debemos evitar que el reaper la cierre mientras el usuario decide.
   useEffect(() => {
-    if (callState !== 'active') return
+    if (callState !== 'active' && callState !== 'dropped') return
     const id = setInterval(() => {
       const sid = sessionIdRef.current
       if (!sid) return
@@ -189,6 +198,7 @@ export function PhoneUI({ roleplayType, systemPromptOverride, voiceName, onCallE
     setIsMuted(false)
     setLastText('')
     setErrorMessage(null)
+    endedRef.current = false
     setCallState('connecting')
 
     // Reserva de sesión (control de costo + concurrencia) ANTES de conectar.
@@ -228,34 +238,54 @@ export function PhoneUI({ roleplayType, systemPromptOverride, voiceName, onCallE
   // y evitar el warning "setState during render" en PracticePage.
   const finalizeCall = useCallback(
     (meta: { endedBy: 'user' | 'model'; reason?: CallEndReason; summary?: string }) => {
-      setCallState((prev) => {
-        if (prev === 'ended') return prev
-        const finalTranscript = gemini.transcript
-        const finalDuration = durationRef.current
-        // Eventos de ciclo de vida + marca de cierre, para diagnóstico.
-        const events = [
-          ...gemini.getEvents(),
-          { t: Date.now(), type: 'ended', detail: { endedBy: meta.endedBy, reason: meta.reason } },
-        ]
-        microphone.stop()
-        gemini.disconnect()
-        // Cerrar la reserva de sesión y conciliar la cuota (best-effort).
-        const sid = sessionIdRef.current
-        if (sid) {
-          fetch('/api/sessions/end', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ sessionId: sid, actualSeconds: finalDuration }),
-          }).catch(() => {})
-          sessionIdRef.current = null
-        }
-        setTimeout(() => onCallEnd?.(finalTranscript, finalDuration, { ...meta, events }), 0)
-        return 'ended'
-      })
+      // Idempotencia por ref (no dentro del updater de setState: React puede
+      // re-ejecutar el updater y disparaba doble evaluación/guardado).
+      if (endedRef.current) return
+      endedRef.current = true
+
+      const finalTranscript = gemini.transcript
+      const finalDuration = durationRef.current
+      // Eventos de ciclo de vida + marca de cierre, para diagnóstico.
+      const events = [
+        ...gemini.getEvents(),
+        { t: Date.now(), type: 'ended', detail: { endedBy: meta.endedBy, reason: meta.reason } },
+      ]
+      microphone.stop()
+      gemini.disconnect()
+      // Cerrar la reserva de sesión y conciliar la cuota (best-effort).
+      const sid = sessionIdRef.current
+      if (sid) {
+        fetch('/api/sessions/end', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sessionId: sid, actualSeconds: finalDuration }),
+        }).catch(() => {})
+        sessionIdRef.current = null
+      }
+      setCallState('ended')
+      setTimeout(() => onCallEnd?.(finalTranscript, finalDuration, { ...meta, events }), 0)
     },
     [microphone, gemini, onCallEnd]
   )
   finalizeCallRef.current = finalizeCall
+
+  // Limpieza para rutas de ERROR: libera recursos y la reserva SIN evaluar ni
+  // guardar (una conexión fallida no es una práctica). Idempotente con finalizeCall.
+  cleanupRef.current = () => {
+    if (endedRef.current) return
+    endedRef.current = true
+    microphone.stop()
+    gemini.disconnect()
+    const sid = sessionIdRef.current
+    if (sid) {
+      fetch('/api/sessions/end', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId: sid, actualSeconds: durationRef.current }),
+      }).catch(() => {})
+      sessionIdRef.current = null
+    }
+  }
 
   // Reanudar una llamada caída: vuelve a 'connecting'; el efecto de isConnected
   // la promueve a 'active' al reconectar (preservando transcript y duración).
