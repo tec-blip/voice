@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { evaluateBadges } from '@/lib/utils/badge-logic'
-import { normalizeCategoryScores } from '@/lib/engine'
+import { normalizeCategoryScores, computeOverallScore } from '@/lib/engine'
+import { enforceRateLimit } from '@/lib/rate-limit'
 import type { RoleplayType, TranscriptEntry, FeedbackScores } from '@/lib/types/database'
 
 const ALLOWED_TYPES: RoleplayType[] = [
@@ -47,11 +48,16 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    // Rate limit: guardar sesiones es escritura + dispara recálculo de ranking.
+    // 20/hora es holgado para uso real y frena scripts que inflen el leaderboard.
+    const limited = await enforceRateLimit(`sessions:${user.id}`, { capacity: 20, windowMs: 60 * 60 * 1000 })
+    if (limited) return limited
+
     const body = await request.json().catch(() => null)
     if (!body || typeof body !== 'object') {
       return NextResponse.json({ error: 'Invalid body' }, { status: 400 })
     }
-    const { type, scenario, score, duration, transcript, feedback, events } = body as Record<string, unknown>
+    const { type, scenario, duration, transcript, feedback, events } = body as Record<string, unknown>
 
     // ── type ────────────────────────────────────────────────────────────────
     if (typeof type !== 'string' || !ALLOWED_TYPES.includes(type as RoleplayType)) {
@@ -59,13 +65,9 @@ export async function POST(request: Request) {
     }
 
     // ── score ───────────────────────────────────────────────────────────────
+    // NO se confía en el score del cliente (falsificaría el ranking). Se recalcula
+    // server-side desde el feedback real (computeOverallScore) más abajo.
     let safeScore: number | null = null
-    if (score !== undefined && score !== null) {
-      if (typeof score !== 'number' || !Number.isFinite(score)) {
-        return NextResponse.json({ error: 'Score inválido' }, { status: 400 })
-      }
-      safeScore = Math.max(0, Math.min(100, Math.round(score)))
-    }
 
     // ── duration ────────────────────────────────────────────────────────────
     let safeDuration: number | null = null
@@ -108,6 +110,9 @@ export async function POST(request: Request) {
     if (feedback && !safeFeedback) {
       return NextResponse.json({ error: 'Feedback con formato inválido' }, { status: 400 })
     }
+
+    // Score derivado del feedback saneado (server-side, no falsificable).
+    if (safeFeedback) safeScore = computeOverallScore(safeFeedback)
 
     // ── events (diagnóstico de ciclo de vida; opcional, best-effort) ──────────
     let safeEvents: unknown[] | null = null
