@@ -322,12 +322,16 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
               ],
             },
           ],
-          // Habilita session resumption — Gemini enviará handles periódicos en
-          // `sessionResumptionUpdate` y permite reconectar preservando contexto.
-          // Solo se envía el campo si hay un handle activo (sesiones nuevas no lo incluyen).
-          ...(isResuming && sessionHandleRef.current
-            ? { sessionResumption: { handle: sessionHandleRef.current } }
-            : {}),
+          // Session resumption: SIEMPRE enviamos el campo. En una sesión nueva va
+          // VACÍO ({}) — ese es el opt-in que hace que Gemini EMPIECE a emitir
+          // handles (sessionResumptionUpdate); al reconectar mandamos { handle }
+          // para retomar el contexto.
+          // BUG previo: solo se enviaba al reconectar → Gemini nunca emitía handles
+          // → sessionHandle quedaba null → la reconexión automática y el "Reanudar"
+          // nunca funcionaban y las llamadas largas cortaban con "error de Gemini".
+          sessionResumption: sessionHandleRef.current
+            ? { handle: sessionHandleRef.current }
+            : {},
         },
       }
       ws.send(JSON.stringify(setupMessage))
