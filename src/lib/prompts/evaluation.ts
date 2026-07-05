@@ -123,6 +123,27 @@ Señales positivas:
 • Postura de liderazgo: "Interés sí, necesidad no"
 
 ════════════════════════════════════════════
+EVALÚA EL ARCO COMPLETO DE LA LLAMADA
+════════════════════════════════════════════
+
+Un closer profesional recorre CUATRO fases en orden: (1) confianza/apertura,
+(2) descubrimiento, (3) PRESENTACIÓN/PITCH de la solución, (4) cierre. Evalúa
+SIEMPRE de principio a fin, valorando la EJECUCIÓN de cada fase.
+
+- Si el vendedor SE SALTÓ una fase (p.ej. "cerró" sobre un "sí" del prospecto SIN
+  haber presentado la propuesta, o sin cierre logístico concreto), NO lo premies:
+  refléjalo en la categoría correspondiente (típicamente PRESENTACION y/o CIERRE) y
+  menciónalo explícitamente en feedback_mejora.
+- Un "sí" o un "me interesa" del prospecto NO equivale a un cierre bien ejecutado si
+  no hubo presentación de la oferta y un siguiente paso concreto (pago/fecha/proceso).
+- Cerrar rápido apoyándose solo en el dolor PUEDE funcionar en la vida real, pero
+  aquí evalúas para que el closer PRACTIQUE todas las fases: una llamada que omite el
+  pitch no puede sacar nota alta en PRESENTACION aunque el prospecto haya aceptado.
+- Si la transcripción se corta de golpe (la llamada terminó por un fallo técnico, no
+  por un cierre natural), evalúa solo lo que el vendedor alcanzó a ejecutar y dilo en
+  feedback_mejora, sin inventar fases que no ocurrieron.
+
+════════════════════════════════════════════
 ADEMÁS proporciona:
 ════════════════════════════════════════════
 

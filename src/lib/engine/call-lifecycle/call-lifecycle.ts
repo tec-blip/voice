@@ -29,17 +29,39 @@ export function minEndCallSeconds(type?: CallType): number {
 }
 
 /**
- * ¿Se permite que el modelo cuelgue ahora? Único criterio: que haya pasado el
- * piso mínimo de duración del tipo (backstop anti-corte-temprano).
+ * ¿Se permite que el modelo cuelgue ahora (por DURACIÓN)? Único criterio aquí:
+ * que haya pasado el piso mínimo de duración del tipo (backstop anti-corte-temprano).
+ * El filtro por `reason` es aparte (canModelUseReason).
  *
- * NO filtramos por `reason`: bloquear un end_call legítimo (p.ej. al cierre)
- * dejaba al modelo congelado en silencio en vez de continuar. Si el cierre es
- * inapropiado, lo evita el PROMPT; el código solo frena lo absurdamente temprano.
  * Cuando este guard bloquea, el hook RE-ENGANCHA al modelo (clientContent) para
  * que nunca se quede mudo.
  */
 export function canModelEndCall(callAgeMs: number, type?: CallType): boolean {
   return callAgeMs >= minEndCallSeconds(type) * 1000
+}
+
+/**
+ * ¿Puede el MODELO (prospecto) terminar la llamada con este `reason`, según el tipo?
+ *
+ * En ARCO COMPLETO (general, cierre, llamada_fria, framing) un CIERRE EXITOSO lo
+ * declara el HUMANO colgando (reason 'manual'), NO el prospecto. Si el modelo
+ * autocuelga con 'cierre_exitoso' apenas el prospecto dice "sí", corta al closer
+ * ANTES del pitch y del cierre logístico real (bug reportado por Ivan: la IA dio
+ * la venta por cerrada sobre un soft-yes y colgó a mitad del pitch). Por eso el
+ * modelo NO puede autocerrar con 'cierre_exitoso' en estos tipos — solo con
+ * finales negativos/neutros (sin_interes, objeciones_no_resueltas, timeout).
+ * Cuando se bloquea, el hook re-engancha al modelo para que siga de prospecto y
+ * empuje al vendedor a presentar y cerrar (nunca queda mudo).
+ *
+ * En el drill de 'objeciones' SÍ se permite 'cierre_exitoso': ese modo termina,
+ * por diseño, cuando el prospecto se convence tras resolver sus barreras.
+ */
+export function canModelUseReason(reason: string, type?: CallType): boolean {
+  if (!(VALID_REASONS as readonly string[]).includes(reason)) return false
+  // 'manual' es del usuario, nunca del modelo.
+  if (reason === 'manual') return false
+  if (reason === 'cierre_exitoso' && type !== 'objeciones') return false
+  return true
 }
 
 /** ¿Alcanzó el cap duro de sesión? → auto-hangup. */

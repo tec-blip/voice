@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import {
   canModelEndCall,
+  canModelUseReason,
   minEndCallSeconds,
   isHardCapReached,
   isWarningWindow,
@@ -29,6 +30,41 @@ describe('canModelEndCall', () => {
     // a 5 min cualquier cierre es válido para el guard (el modelo decide vía prompt)
     expect(canModelEndCall(300_000, 'general')).toBe(true)
     expect(canModelEndCall(300_000, 'cierre')).toBe(true)
+  })
+})
+
+describe('canModelUseReason', () => {
+  it('arco completo: el modelo NO puede autocerrar como cierre_exitoso', () => {
+    for (const t of ['general', 'cierre', 'llamada_fria', 'framing'] as const) {
+      expect(canModelUseReason('cierre_exitoso', t)).toBe(false)
+    }
+  })
+
+  it('drill de objeciones: SÍ permite cierre_exitoso', () => {
+    expect(canModelUseReason('cierre_exitoso', 'objeciones')).toBe(true)
+  })
+
+  it('finales negativos/neutros permitidos en cualquier tipo', () => {
+    for (const t of ['general', 'cierre', 'objeciones'] as const) {
+      expect(canModelUseReason('sin_interes', t)).toBe(true)
+      expect(canModelUseReason('objeciones_no_resueltas', t)).toBe(true)
+      expect(canModelUseReason('timeout', t)).toBe(true)
+    }
+  })
+
+  it("'manual' es del usuario, nunca del modelo", () => {
+    expect(canModelUseReason('manual', 'general')).toBe(false)
+    expect(canModelUseReason('manual', 'objeciones')).toBe(false)
+  })
+
+  it('reason desconocido → false', () => {
+    expect(canModelUseReason('lol', 'general')).toBe(false)
+    expect(canModelUseReason('', 'objeciones')).toBe(false)
+  })
+
+  it('sin tipo: cierre_exitoso bloqueado (conservador)', () => {
+    expect(canModelUseReason('cierre_exitoso')).toBe(false)
+    expect(canModelUseReason('sin_interes')).toBe(true)
   })
 })
 

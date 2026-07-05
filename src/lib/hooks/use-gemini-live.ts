@@ -1,5 +1,5 @@
 import { useRef, useState, useCallback } from 'react'
-import { canModelEndCall, type CallEndReason, type CallType } from '@/lib/engine'
+import { canModelEndCall, canModelUseReason, type CallEndReason, type CallType } from '@/lib/engine'
 
 // Re-exportado para compatibilidad: el tipo canónico vive en la capa-motor
 // (engine/types) para que no dependa de React.
@@ -9,11 +9,22 @@ export type { CallEndReason }
 const STEER_CONTINUE_MSG =
   'Todavía no es momento de colgar. La conversación debe continuar: sigue en tu personaje y deja que el vendedor dirija la llamada.'
 
+// Respuesta cuando bloqueamos un end_call por 'cierre_exitoso' del modelo en arco
+// completo: el cierre lo declara el vendedor colgando, no el prospecto. Que hayas
+// aceptado NO es motivo para colgar — hay que dejar que el vendedor presente y cierre.
+const STEER_CLOSE_MSG =
+  'El cierre lo marca el vendedor, no tú. Aunque estés de acuerdo, NO cuelgues: pide el siguiente paso concreto y deja que el vendedor te explique cómo funciona, el precio y cierre él la llamada.'
+
 // Turno de cliente que INYECTAMOS tras bloquear un end_call para forzar que el
 // modelo vuelva a hablar (si solo respondiéramos a la función, a veces se queda
 // mudo esperando colgar). Esto garantiza que nunca quede la llamada en silencio.
 const REENGAGE_PROMPT =
   '(El vendedor sigue en la llamada y espera tu respuesta. Continúa la conversación con naturalidad: haz un comentario o una pregunta, en español. NO cuelgues ni te despidas todavía.)'
+
+// Re-enganche específico cuando el modelo intentó cerrar sobre un "sí": lo
+// empujamos a exigir el pitch/siguiente paso en vez de despedirse.
+const REENGAGE_CLOSE_PROMPT =
+  '(Acabas de mostrar interés, pero la llamada NO ha terminado. Como cliente real, pide al vendedor el siguiente paso concreto: pregúntale cómo funciona, el precio o cómo empezar. En español. NO cuelgues ni te despidas.)'
 
 interface TranscriptEntry {
   role: 'user' | 'model'
@@ -104,6 +115,19 @@ function getAudioContextClass(): typeof AudioContext | null {
 // Sample rate del audio que devuelve Gemini Live (siempre 24kHz).
 const GEMINI_OUTPUT_SAMPLE_RATE = 24000
 
+// Parsea el `timeLeft` de un goAway (p.ej. "57s", "10.000s") a segundos.
+function parseTimeLeftSeconds(v: unknown, fallback = 20): number {
+  if (typeof v === 'number' && isFinite(v)) return v
+  if (typeof v === 'string') {
+    const m = v.match(/([\d.]+)/)
+    if (m) {
+      const n = parseFloat(m[1])
+      if (!isNaN(n)) return n
+    }
+  }
+  return fallback
+}
+
 export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveReturn {
   const { systemPrompt, voiceName = 'Kore', roleplayType, onTranscript, onModelSpeaking, onError, onModelHangup, onConnectionLost } = options
 
@@ -149,6 +173,12 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
   // Listener de visibilitychange registrado durante la llamada.
   // Lo guardamos en un ref para poder retirarlo en disconnect().
   const visibilityListenerRef = useRef<(() => void) | null>(null)
+
+  // Timer de reconexión proactiva programado al recibir un goAway. Reconectamos
+  // ANTES de que Gemini cierre la sesión (~límite de 10 min) para que la llamada
+  // cruce el límite sin corte y el modelo nunca use el fin de sesión como señal
+  // para colgar. Se limpia en disconnect()/connect().
+  const goAwayTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   // Registro de eventos de ciclo de vida (diagnóstico). Se escribe SOLO desde
   // handlers/efectos (nunca en render), así que no viola las reglas de refs.
@@ -380,12 +410,17 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
         }
       }
 
-      // GoAway: Gemini avisa antes de cerrar. timeLeft suele ser ~30s.
-      // Aprovechamos ese margen para pre-fetchear un token fresco, de modo que
-      // cuando onclose dispare tengamos la URL lista y la reconexión sea instantánea.
+      // GoAway: Gemini avisa que va a cerrar la sesión (~límite de 10 min del
+      // modelo native-audio). timeLeft suele ser decenas de segundos.
+      // Estrategia: (1) pre-fetch de token fresco para que la reconexión sea
+      // instantánea; (2) RECONEXIÓN PROACTIVA unos segundos antes del cierre,
+      // usando el handle de resumption. Así la conversación cruza el límite sin
+      // corte y el modelo NUNCA usa el fin de sesión como señal para colgar —
+      // el fin de la llamada lo decide solo el contexto conversacional.
       if (data.goAway) {
-        console.warn('[gemini-live] goAway received — pre-fetching fresh token', data.goAway)
-        logEvent('go_away', { timeLeft: data.goAway?.timeLeft })
+        const timeLeft = data.goAway?.timeLeft
+        console.warn('[gemini-live] goAway received — pre-fetch + proactive resume', data.goAway)
+        logEvent('go_away', { timeLeft })
         fetch('/api/vertex/config')
           .then((r) => (r.ok ? r.json() : Promise.reject('goAway pre-fetch HTTP error')))
           .then(({ wsUrl, modelPath }: { wsUrl: string; modelPath: string }) => {
@@ -396,6 +431,33 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
           .catch((err) =>
             console.warn('[gemini-live] goAway: pre-fetch failed (will retry on close)', err),
           )
+
+        // Programa la reconexión proactiva ~3s antes de que Gemini cierre.
+        const secs = parseTimeLeftSeconds(timeLeft)
+        const fireInMs = Math.max(secs - 3, 1) * 1000
+        if (goAwayTimerRef.current) clearTimeout(goAwayTimerRef.current)
+        goAwayTimerRef.current = setTimeout(() => {
+          goAwayTimerRef.current = null
+          // Abortamos si: el usuario ya colgó; hay un fin de llamada legítimo en
+          // curso; no hay handle; ya reconectamos por otra vía; o el modelo está
+          // hablando ahora mismo (en ese caso dejamos que el cierre natural +
+          // reconexión lo maneje, para no cortar audio a media frase).
+          if (isUserDisconnectingRef.current) return
+          if (pendingHangupRef.current) return
+          if (!sessionHandleRef.current) return
+          if (wsRef.current !== ws) return
+          if (activeSourcesRef.current.length > 0) return
+          console.log('[gemini-live] goAway: proactive resume firing')
+          logEvent('proactive_resume')
+          // Neutralizamos el socket viejo para que su onclose NO dispare otra
+          // reconexión (evita sockets duplicados).
+          ws.onclose = null
+          ws.onmessage = null
+          ws.onerror = null
+          try { ws.close() } catch {}
+          reconnectAttemptsRef.current = 0
+          doReconnectRef.current()
+        }, fireInMs)
       }
 
       // Function calling: el modelo pidió ejecutar una herramienta.
@@ -404,28 +466,46 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
       if (data.toolCall?.functionCalls) {
         const functionResponses: Array<{ id?: string; name: string; response: Record<string, unknown> }> = []
         let reengageAfterBlock = false
+        let reengageMsg = REENGAGE_PROMPT
         for (const fc of data.toolCall.functionCalls) {
           if (fc.name === 'end_call') {
             const args = fc.args || {}
             const reason = (args.reason as CallEndReason) || 'timeout'
             const summary = typeof args.summary === 'string' ? args.summary : undefined
 
-            // Gating determinista (engine/call-lifecycle): rechaza end_call
-            // prematuro (piso mínimo por tipo) o con un reason no permitido en
-            // este modo (en arco completo solo cierre_exitoso; el resto los
-            // decide el usuario colgando). Si se rechaza, NO colgamos: devolvemos
-            // un toolResponse que reconduce al modelo a seguir en personaje, así
-            // no queda dead-air tras una despedida que ignoramos.
+            // Gating determinista (engine/call-lifecycle) en DOS frentes. Si se
+            // rechaza, NO colgamos: devolvemos un toolResponse que reconduce al
+            // modelo a seguir en personaje, así no queda dead-air tras una
+            // despedida que ignoramos.
             const callAgeMs = connectedAtRef.current ? Date.now() - connectedAtRef.current : Infinity
+
+            // (1) Piso mínimo por tipo — rechaza cortes absurdamente tempranos.
             if (!canModelEndCall(callAgeMs, roleplayType)) {
               console.warn('[gemini-live] end_call BLOQUEADO (demasiado temprano) — re-enganchando', { reason, type: roleplayType, callAgeS: Math.round(callAgeMs / 1000) })
-              logEvent('end_call_blocked', { reason, ageS: Math.round(callAgeMs / 1000) })
+              logEvent('end_call_blocked', { reason, ageS: Math.round(callAgeMs / 1000), cause: 'too_early' })
               functionResponses.push({
                 id: fc.id,
                 name: 'end_call',
                 response: { ok: false, continue: true, message: STEER_CONTINUE_MSG },
               })
               reengageAfterBlock = true
+              continue
+            }
+
+            // (2) Política de reason por tipo — en arco completo el modelo NO
+            // puede autocerrar como 'cierre_exitoso' (el cierre lo declara el
+            // usuario colgando). Evita que la IA dé la venta por cerrada sobre un
+            // "sí" y cuelgue a mitad del pitch.
+            if (!canModelUseReason(reason, roleplayType)) {
+              console.warn('[gemini-live] end_call BLOQUEADO (reason no permitido en este modo) — re-enganchando', { reason, type: roleplayType })
+              logEvent('end_call_blocked', { reason, ageS: Math.round(callAgeMs / 1000), cause: 'reason_not_allowed' })
+              functionResponses.push({
+                id: fc.id,
+                name: 'end_call',
+                response: { ok: false, continue: true, message: STEER_CLOSE_MSG },
+              })
+              reengageAfterBlock = true
+              reengageMsg = REENGAGE_CLOSE_PROMPT
               continue
             }
 
@@ -467,7 +547,7 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
         if (reengageAfterBlock && ws.readyState === WebSocket.OPEN) {
           ws.send(JSON.stringify({
             clientContent: {
-              turns: [{ role: 'user', parts: [{ text: REENGAGE_PROMPT }] }],
+              turns: [{ role: 'user', parts: [{ text: reengageMsg }] }],
               turnComplete: true,
             },
           }))
@@ -627,6 +707,7 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
       pendingHangupRef.current = null
       connectedAtRef.current = null
       eventsRef.current = []
+      if (goAwayTimerRef.current) { clearTimeout(goAwayTimerRef.current); goAwayTimerRef.current = null }
       logEvent('connect')
 
       if (!audioContextRef.current || audioContextRef.current.state === 'closed') {
@@ -702,6 +783,7 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
     reconnectAttemptsRef.current = 0
     wsUrlRef.current = null
     pendingHangupRef.current = null
+    if (goAwayTimerRef.current) { clearTimeout(goAwayTimerRef.current); goAwayTimerRef.current = null }
 
     // Retirar el listener de visibilitychange para no intentar reconectar
     // después de que el usuario haya colgado intencionalmente.
