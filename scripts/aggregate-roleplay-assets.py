@@ -2,7 +2,7 @@
 Agrega los perfiles individuales en activos listos para el agente roleplay:
   - archetypes.json         : 8-12 arquetipos representativos (clusters)
   - objections_library.json : objeciones unicas tipadas con frecuencia y ejemplos
-  - scenario_briefs.json    : 30 escenarios listos para inyectar al agente, con dificultad
+  - scenario_briefs.json    : escenarios listos para inyectar al agente (sin cap; 1 por llamada usable)
   - dataset_stats.json      : estadisticas del dataset (genero, pais, dificultad, etc)
 
 Uso:
@@ -160,8 +160,16 @@ DATOS:
     return call_gemini(api_key, prompt) or {"archetypes": []}
 
 
-def build_scenario_briefs(profiles: list[dict], archetypes: dict) -> list[dict]:
-    """Selecciona 30 escenarios diversos balanceando dificultad y arquetipo."""
+def build_scenario_briefs(profiles: list[dict], archetypes: dict,
+                          limit: int | None = None, per_arch: int | None = None) -> list[dict]:
+    """Convierte los perfiles en escenarios para el agente.
+
+    Por defecto incluye TODOS los perfiles (limit=None, per_arch=None). El cap
+    histórico de 30 (máx 4 por arquetipo) descartaba ~980 casos reales usables;
+    solo úsalo si quieres un subconjunto curado. NOTA: el `src/data/scenarios.json`
+    que consume la app se genera con `scripts/build-scenarios.mjs` (uncapped +
+    nombre ficticio por caso); esta función mantiene el intermedio equivalente.
+    """
     arch_by_call = {}
     for arch in archetypes.get("archetypes", []):
         for cid in arch.get("call_ids", []):
@@ -182,9 +190,9 @@ def build_scenario_briefs(profiles: list[dict], archetypes: dict) -> list[dict]:
     seen_arch = Counter()
     # primero un buen mix: preferir distintos arquetipos
     for score, p, arch_id in pool:
-        if len(picked) >= 30:
+        if limit is not None and len(picked) >= limit:
             break
-        if seen_arch[arch_id] >= 4:
+        if per_arch is not None and seen_arch[arch_id] >= per_arch:
             continue
         prf = p["perfil"]
         ps = prf.get("psicografia", {}) or {}
