@@ -9,6 +9,7 @@ export interface ScenarioBrief {
   dificultad_1_5: number
   resistencia_1_5: number
   estado_inicial: {
+    nombre?: string
     genero?: string
     pais?: string
     ocupacion?: string
