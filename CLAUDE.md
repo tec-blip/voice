@@ -1,9 +1,11 @@
 # SalesVoice — Contexto central del proyecto
 
-> Documento vivo. Es el contexto que cualquier asistente IA (o dev) debe leer ANTES
-> de tocar la app. Mantenlo actualizado al hacer cambios estructurales.
-> Detalle técnico profundo: ver [DEVELOPER.md](./DEVELOPER.md).
-> Última actualización: 2026-06-26.
+> **LÉEME ANTES DE TOCAR NADA.** Este es el contrato que cualquier asistente IA (o dev)
+> debe seguir. Si vas a continuar el desarrollo: lee esta página completa + la sección
+> **"Reglas para contribuir"**, y registra tus cambios en [CHANGELOG.md](./CHANGELOG.md).
+> Historial cronológico: [CHANGELOG.md](./CHANGELOG.md) · Detalle técnico: [DEVELOPER.md](./DEVELOPER.md).
+> Mantén este archivo actualizado al hacer cambios estructurales.
+> Última actualización: 2026-07-06.
 
 ## Qué es
 
@@ -39,6 +41,33 @@ calculadora y reglas escritas?"* → sí = motor; necesita entender la conversac
   límites del ciclo de llamada, normalización de transcript, matemática de cuota, y un
   **scorer heurístico de respaldo** que produce un score si la IA no está disponible.
 
+## Reglas para contribuir (el siguiente agente DEBE seguirlas)
+
+1. **Diagnostica con DATOS reales, no supongas.** Antes de "arreglar" un bug de llamada,
+   consulta la sesión afectada: `select events, transcript from sessions where ...` (los
+   `events` registran connect/go_away/end_call/reconnect/ws_close). Verifica la hipótesis
+   contra la BD (proyecto Supabase `lkwlsvoyxysyyigycoah`) antes de tocar código.
+2. **Motor puro** (`src/lib/engine/`): sin `fetch`/Supabase/`process.env`/`next/*`/React.
+   Toda lógica determinista va aquí, con test Vitest. La IA solo donde se necesita semántica.
+3. **El LLM NO decide reglas de negocio.** No calcula la puntuación general (la calcula
+   `computeOverallScore`), no decide los límites de tiempo (los aplica `engine/call-lifecycle`),
+   no declara el cierre exitoso en arco completo (ver "Prompts y roleplay").
+4. **Prompts del prospecto** (`src/lib/prompts/roleplay.ts`): el `ROLE_LOCK` es **fuente única**
+   inyectada en todas las bases — el prospecto es un CLIENTE particular, usa su `nombre` del
+   caso, NUNCA vende ni se presenta como la empresa/"Luis Romero". NO pongas umbrales de tiempo
+   en el prompt (viven en el motor).
+5. **Secretos server-only.** Nunca prefijes con `NEXT_PUBLIC_` una clave/secreto
+   (`SUPABASE_SERVICE_ROLE_KEY`, `GEMINI_API_KEY`, etc.).
+6. **DDL solo al proyecto correcto** (`lkwlsvoyxysyyigycoah`). Añade la migración en
+   `src/lib/supabase/migrations/` Y aplícala. No apliques SQL a un proyecto "adivinado".
+7. **Antes de commitear:** `npm test` + `npm run build` + `npm run lint` verdes. El flujo de
+   voz NO se puede probar headless (necesita auth+mic+Gemini) → valídalo con una llamada real.
+8. **Cada cambio relevante → una entrada en [CHANGELOG.md](./CHANGELOG.md)** y, si es
+   estructural, actualiza este archivo.
+9. **Deploy = push a `main`** (Vercel despliega solo). Si `git push` da 403 (`vh-ia`):
+   `printf "protocol=https\nhost=github.com\n\n" | git credential reject` y reintenta con la
+   cuenta `yltamayoia`.
+
 ## Estructura
 
 ```
@@ -73,7 +102,11 @@ src/
     supabase/    client.ts, server.ts, admin.ts (service-role), middleware.ts, schema.sql, migrations/
     utils/       badge-logic.ts, badges.ts (deterministas, sin LLM — modelo a seguir)
     rate-limit.ts (distribuido Postgres + fallback en memoria), log.ts (logging/costo), env.ts
-  data/scenarios.json            # 30 escenarios estáticos (trading + marca_personal_instagram)
+  data/scenarios.json            # ~1011 escenarios estáticos (trading + marca_personal_instagram)
+scripts/
+  extract-call-profiles.py       # CSV Fathom → profiles.jsonl (usa Gemini; corre 1 vez)
+  aggregate-roleplay-assets.py   # profiles.jsonl → archetypes/objections (cap ahora configurable)
+  build-scenarios.mjs            # ⭐ profiles.jsonl → src/data/scenarios.json (Node, SIN LLM, sin cap)
 ```
 
 ## Capa-motor (`src/lib/engine/`)
@@ -90,6 +123,30 @@ src/
 - **transcript/** — `normalizeForStorage` (hook→DB) y `formatForEvaluation` (VENDEDOR/PROSPECTO).
 - **quota/** — `evaluateQuota` (token bucket puro); `rate-limit.ts` lo usa como fallback.
 - Tests: `src/**/*.test.ts` (Vitest). Correr `npm test`.
+
+## Prompts y roleplay (`src/lib/prompts/roleplay.ts`)
+
+- `buildScenarioPrompt(type, scenario)` arma el prompt del prospecto inyectando UN caso real
+  (de `scenarios.json`, elegido por `/api/scenarios?nicho=`). El caso aporta identidad
+  (`estado_inicial.nombre`), dolor, objeciones, país, muletillas, frases. La voz se elige por
+  género (`getVoiceByGender`). Si no hay escenario, cae al prompt estático `getRoleplayPrompt`.
+- **`ROLE_LOCK`** (fuente única) fija el rol: prospecto = cliente particular; usa su nombre del
+  caso; nunca vende ni se presenta como empresa/"Luis Romero"; nada de "¿en qué puedo ayudarte?".
+- **Política de fin de llamada (arco completo: general/cierre/llamada_fria/framing):** el modelo
+  NO puede autocolgar con `cierre_exitoso` (lo bloquea `engine.canModelUseReason`); el cierre lo
+  marca el usuario colgando. Solo puede cerrar con `sin_interes`/`objeciones_no_resueltas`/`timeout`.
+  El drill `objeciones` SÍ permite `cierre_exitoso`. Al bloquear, el hook re-engancha (no queda mudo).
+- **`go_away` de Gemini** (límite ~10 min de sesión): `use-gemini-live.ts` reconecta
+  PROACTIVAMENTE (con el handle de resumption) para cruzar el límite sin corte; el modelo no
+  usa el fin de sesión como señal para colgar.
+
+### Regenerar escenarios (tras subir más CSVs de Fathom)
+1. `python scripts/extract-call-profiles.py` (CSV → `scripts/data/profiles.jsonl`; usa Gemini).
+2. `node scripts/build-scenarios.mjs` (→ `src/data/scenarios.json`, SIN LLM, sin cap, con nombres).
+3. Si es nicho nuevo: actualiza `ALL_NICHOS` (`api/scenarios/route.ts`), `Nicho`/`NICHO_LABELS`
+   (`roleplay.ts`) y la lista de la UI (`practice/page.tsx`). Commit + push.
+> Nota: NO reintroduzcas el cap de 30 que tenía `aggregate-roleplay-assets.py` (descartaba ~980
+> casos reales usables). El histórico de ese bug está en [CHANGELOG.md](./CHANGELOG.md) (2026-07-06).
 
 ## Evaluación
 
@@ -120,9 +177,10 @@ RPCs clave (SECURITY DEFINER): `update_user_stats`, `recalculate_rankings`, `get
 admin (`get_students_overview`, `get_student_detail`, `admin_update_user_role`).
 Triggers: alta de usuario (`on_auth_user_created`) y refresh de stats por sesión.
 
-**Migraciones** en `src/lib/supabase/migrations/` (se aplican a mano en el SQL Editor o por CLI):
-`001_ranking_cron.sql`, `002_get_user_names_and_indexes.sql` ✅ aplicada,
-`003_cost_control.sql` ✅ aplicada. Proyecto Supabase: `lkwlsvoyxysyyigycoah` ("Voice Sales").
+**Migraciones** en `src/lib/supabase/migrations/` (se aplican por MCP o SQL Editor). Aplicadas
+en prod: `001_ranking_cron`, `002_get_user_names_and_indexes`, `003_cost_control`,
+`004` (columna `sessions.events`), `005_security_phase0`, `006_end_session_server_time`,
+`007_sync_user_badges`. Proyecto Supabase: `lkwlsvoyxysyyigycoah` ("Voice Sales").
 
 ## Variables de entorno
 
@@ -157,9 +215,13 @@ npm test         # Vitest (capa-motor)
 
 ## Estado actual / pendiente
 
-- Track A (motor determinista) y Track B (control de costo) **implementados, build+tests verdes**.
-- Migraciones 002 y 003 **aplicadas en prod**.
-- **Pendiente:** setear `SUPABASE_SERVICE_ROLE_KEY` en Vercel + `.env.local` y redeploy para
-  activar el control de costo (mientras tanto corre en fallback sin romperse).
-- Escenarios: **se mantienen como JSON estático** (decisión). Añadir nicho = regenerar JSON
-  (scripts Python) + actualizar `ALL_NICHOS`/`Nicho`/UI + redeploy.
+- Track A (motor determinista) y Track B (control de costo): **en prod**. Migraciones 001–007
+  aplicadas. Todas las fases de la auditoría 2026-06 (seguridad/voz/producto): **desplegadas**.
+- **~1011 escenarios** activos (541 trading + 470 marca). Escenarios siguen como **JSON estático**
+  (regenerar con `build-scenarios.mjs`); migrarlos a la BD (`knowledge_base`) es mejora futura.
+- **Pendientes conocidos (bajo impacto):**
+  - Confirmar `SUPABASE_SERVICE_ROLE_KEY` en Vercel para el control de costo (si no, corre en fallback).
+  - Activar "Leaked password protection" en el dashboard de Supabase (1 clic).
+  - Punto ciego: las llamadas que fallan al conectar (onError) no dejan fila/events en la BD.
+  - Cosmético: stats del dashboard sobre ventana de 20; toast de badge; racha en UTC vs tz LATAM.
+- **Historial de cambios:** [CHANGELOG.md](./CHANGELOG.md).
