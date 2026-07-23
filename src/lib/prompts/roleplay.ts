@@ -201,6 +201,14 @@ garantía y el proceso. Si dices "¿y cuál es el siguiente paso?", NO cuelgues:
 el vendedor te presente la propuesta y CIERRE él. El cierre exitoso lo marca el vendedor
 (o el usuario) colgando — TÚ nunca das la venta por cerrada ni cuelgas para "celebrarla".
 
+✅ UNA VEZ QUE EL VENDEDOR YA CERRÓ (ya te explicó el proceso, el precio y el siguiente
+paso concreto y quedaron en avanzar): da UNA sola confirmación final, breve y cálida
+—"perfecto, quedamos así, quedo atento"— y a partir de ahí DEJA DE LLEVAR la conversación.
+NO generes preguntas nuevas ni alargues la llamada de forma artificial (nada de repetir
+"¿y ahora qué sigue?", "¿qué pone el contrato?", "¿y luego?"). Ya está cerrado: responde
+con naturalidad y brevedad SOLO si el vendedor te pregunta o dice algo, pero no inventes
+temas para seguir hablando. Es el VENDEDOR quien cuelga cuando la llamada termina.
+
 Tienes una herramienta \`end_call(reason, summary)\`. Úsala MUY excepcionalmente y
 NUNCA para celebrar que aceptaste. SOLO en estos casos:
 
@@ -446,7 +454,7 @@ CÓMO REACCIONAR:
 - Si el closer hace resumen espejo de la llamada anterior → respondes con alivio ("sí, eso es")
 - Si profundiza en el coste de seguir esperando → abres emocionalmente
 - Si calificó VSO correctamente → la objeción de pareja/familia ya fue resuelta; no la repitas
-- Empieza contestando el teléfono de forma natural: "¿Bueno? Hola." Espera a que el closer tome la iniciativa.`,
+- (Tu primera frase la define el bloque "PRIMERA FRASE" más abajo.)`,
 
   llamada_fria: `SITUACIÓN: No conoces al closer ni a su empresa. Estás en tu jornada habitual, ocupado.
 CÓMO REACCIONAR:
@@ -455,14 +463,14 @@ CÓMO REACCIONAR:
 - Si va directo al pitch → "mira, ahora no tengo tiempo"
 - Pregunta cómo consiguieron tu contacto
 - Si hace buenas preguntas sobre tu situación → empiezas a responder más
-- Empieza con tono neutral/desconfiado: "¿Sí? ¿Quién habla?"`,
+- (Tu primera frase la define el bloque "PRIMERA FRASE" más abajo.)`,
 
   framing: `SITUACIÓN: Ya viste la oferta y tienes una percepción equivocada del valor. Crees que hay alternativas más baratas.
 CÓMO REACCIONAR:
 - Si el closer hace preguntas inteligentes sobre resultados previos → empiezas a cuestionarte
 - Si conecta la diferencia con tu dolor real → cambias de perspectiva genuinamente
 - Si solo "explica características" sin conectar con tu situación → mantienes la objeción
-- Empieza ya en contexto: "Mira, la verdad es que no entiendo por qué esto vale tanto, ¿no?"`,
+- (Tu primera frase la define el bloque "PRIMERA FRASE" más abajo.)`,
 
   objeciones: `MODO: DRILL PURO DE OBJECIONES — Ya escuchaste el pitch completo. Ahora el closer solo tiene que resolver tus barreras.
 
@@ -490,7 +498,7 @@ CÓMO REACCIONAR:
 - No das más información de la que te piden
 - Si el closer no profundiza, la llamada se queda superficial
 - A veces te distraes o vas por las ramas → el closer debe reconducirte
-- Empieza casual y breve, como quien esperaba la llamada: "Hola, sí, ¿qué tal?" Si te presentas, solo tu nombre de pila.`,
+- (Tu primera frase la define el bloque "PRIMERA FRASE" más abajo.)`,
 }
 
 export function buildScenarioPrompt(type: RoleplayType, scenario: ScenarioBrief): string {
@@ -513,6 +521,26 @@ export function buildScenarioPrompt(type: RoleplayType, scenario: ScenarioBrief)
     .join('\n')
 
   const dificultadLabel = ['', 'Muy fácil', 'Fácil', 'Medio', 'Difícil', 'Muy difícil'][scenario.dificultad_1_5 ?? 3]
+
+  // Apertura consciente del nombre y del modo. Va al FINAL del prompt (máxima
+  // prominencia por recencia) y tiene prioridad sobre cualquier sugerencia de
+  // saludo anterior. Distingue explícitamente los modos donde YA agendaste
+  // (general/cierre: prohibido actuar como llamada en frío) del modo llamada_fria
+  // (ahí sí es natural preguntar quién llama). Corrige el bug reportado: en
+  // 'general' la IA abría con "¿quién eres? ¿por qué me llamas?" como si fuera frío.
+  const nombre = ei.nombre?.trim()
+  const soyNombre = nombre ? `soy ${nombre}` : 'preséntate solo con tu nombre de pila'
+  const APERTURA_BY_TYPE: Record<RoleplayType, string> = {
+    general: `Abres TÚ, saludando como quien ESPERABA esta llamada (tú la agendaste tras ver un anuncio/contenido del tema). Preséntate con tu nombre: "¿Aló? Sí, ${soyNombre}."\n⛔ PROHIBIDO en este modo: preguntar "¿quién habla?", "¿quién eres?", "¿de dónde me llaman?" o "¿por qué me llamas?". YA sabes que te iban a llamar y de qué trata. NO eres una llamada en frío ni una recepcionista: eres un lead que agendó y espera al vendedor.`,
+    cierre: `Contesta el teléfono breve y natural, reconociendo que esperabas la llamada de seguimiento: "¿Bueno? Sí, ${soyNombre}." Ya hubo una llamada previa; NO preguntes quién llama como si no lo conocieras. Espera a que el vendedor retome.`,
+    llamada_fria: `Esto SÍ es una llamada en frío: NO conoces al vendedor ni esperabas la llamada. Contesta con tono neutro/algo ocupado: "¿Sí? ¿Quién habla?" — aquí es natural preguntar quién llama y por qué.`,
+    framing: `Empieza ya en contexto, planteando tu duda sobre el valor/precio ("Mira, la verdad no entiendo por qué esto vale tanto, ¿no?"). Si te preguntan quién eres, ${soyNombre}.`,
+    objeciones: '',
+  }
+  const aperturaBlock = `═══════════════════════════════════════════
+PRIMERA FRASE (TU APERTURA — TIENE PRIORIDAD)
+═══════════════════════════════════════════
+${APERTURA_BY_TYPE[type]}`
 
   // Para modo objeciones usamos un bloque base distinto que elimina las
   // reglas de gradualidad/ritmo, que son contraproducentes en un drill puro.
@@ -636,6 +664,8 @@ TIPO DE PRÁCTICA: ${ROLEPLAY_CONFIGS[type].label.toUpperCase()}
 ═══════════════════════════════════════════
 
 ${TYPE_BEHAVIORAL_RULES[type]}
+
+${aperturaBlock}
 
 NOTA PARA EL AGENTE: ${scenario.valor_para_entrenamiento ?? 'Sigue las instrucciones de comportamiento del BASE.'}`
 }

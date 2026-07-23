@@ -37,6 +37,9 @@ export function PhoneUI({ roleplayType, systemPromptOverride, voiceName, onCallE
   const [duration, setDuration] = useState(0)
   const [lastText, setLastText] = useState('')
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  // Aviso híbrido: el modelo señaló un cierre exitoso maduro (venta cerrada).
+  // NO cuelga la llamada — solo invita al alumno a colgar para ver su evaluación.
+  const [saleClosed, setSaleClosed] = useState(false)
 
   // ── Screen Wake Lock ───────────────────────────────────────────────────────
   // Mantiene la pantalla encendida durante la llamada activa.
@@ -130,6 +133,12 @@ export function PhoneUI({ roleplayType, systemPromptOverride, voiceName, onCallE
       console.warn('[phone-ui] connection lost — offering resume')
       setCallState('dropped')
     }, []),
+    onSaleClosed: useCallback(() => {
+      // La venta se cerró (cierre maduro). Mostramos el aviso; el alumno decide
+      // cuándo colgar. NO terminamos la llamada automáticamente.
+      console.log('[phone-ui] sale closed — showing hint')
+      setSaleClosed(true)
+    }, []),
   })
 
   const microphone = useMicrophone({
@@ -198,6 +207,7 @@ export function PhoneUI({ roleplayType, systemPromptOverride, voiceName, onCallE
     setIsMuted(false)
     setLastText('')
     setErrorMessage(null)
+    setSaleClosed(false)
     endedRef.current = false
     setCallState('connecting')
 
@@ -382,6 +392,16 @@ export function PhoneUI({ roleplayType, systemPromptOverride, voiceName, onCallE
             </div>
           )}
         </div>
+
+        {callState === 'active' && saleClosed && (
+          <div className="px-6 pb-2">
+            <div className="bg-green-950/40 border border-green-800/50 rounded-lg px-4 py-3">
+              <p className="text-xs text-green-200 leading-relaxed">
+                ✅ <span className="font-semibold">Venta cerrada.</span> Cuando quieras, pulsa el botón rojo para colgar y ver tu evaluación.
+              </p>
+            </div>
+          </div>
+        )}
 
         {callState === 'active' && lastText && (
           <div className="px-6 pb-2">

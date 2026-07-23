@@ -38,3 +38,14 @@ export const MAX_CALL_SECONDS = 45 * 60 // 2700
 
 /** Inicio de la ventana de aviso "quedan N minutos". */
 export const WARN_CALL_SECONDS = 40 * 60 // 2400
+
+/**
+ * Piso mínimo para considerar "maduro" un cierre exitoso en modos de arco
+ * completo (general/cierre/llamada_fria/framing). El modelo NUNCA cuelga solo
+ * en estos modos (eso lo sigue bloqueando canModelUseReason — protege contra el
+ * cierre prematuro sobre un "sí" temprano). Este umbral solo decide CUÁNDO la UI
+ * puede mostrar el aviso "venta cerrada, cuelga para ver tu evaluación": antes de
+ * este tiempo, un end_call('cierre_exitoso') se trata como soft-yes prematuro y
+ * NO dispara el aviso. Es puramente informativo, no cambia el ciclo de vida.
+ */
+export const MATURE_CLOSE_SECONDS = 5 * 60 // 300

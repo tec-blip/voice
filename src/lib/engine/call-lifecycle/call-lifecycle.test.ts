@@ -6,9 +6,10 @@ import {
   isHardCapReached,
   isWarningWindow,
   minutesRemaining,
+  isMatureClose,
   resolveEndReason,
 } from './call-lifecycle'
-import { MAX_CALL_SECONDS, WARN_CALL_SECONDS } from './limits'
+import { MAX_CALL_SECONDS, WARN_CALL_SECONDS, MATURE_CLOSE_SECONDS } from './limits'
 
 describe('canModelEndCall', () => {
   it('sin tipo: guard global de 30s', () => {
@@ -97,6 +98,21 @@ describe('minutesRemaining', () => {
     expect(minutesRemaining(WARN_CALL_SECONDS)).toBe(5)
     expect(minutesRemaining(MAX_CALL_SECONDS)).toBe(0)
     expect(minutesRemaining(MAX_CALL_SECONDS + 100)).toBe(0)
+  })
+})
+
+describe('isMatureClose', () => {
+  it('arco completo: solo maduro pasado el umbral', () => {
+    const t = MATURE_CLOSE_SECONDS * 1000
+    expect(isMatureClose(t - 1, 'general')).toBe(false)
+    expect(isMatureClose(t, 'general')).toBe(true)
+    expect(isMatureClose(t + 1, 'cierre')).toBe(true)
+  })
+  it('soft-yes prematuro (82s) NO es cierre maduro', () => {
+    expect(isMatureClose(82_000, 'cierre')).toBe(false)
+  })
+  it('objeciones: nunca aplica el aviso híbrido', () => {
+    expect(isMatureClose(Infinity, 'objeciones')).toBe(false)
   })
 })
 

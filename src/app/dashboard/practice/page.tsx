@@ -78,7 +78,12 @@ function ScenarioCard({ scenario, onRefresh }: { scenario: ScenarioBrief; onRefr
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-xs font-semibold uppercase tracking-widest text-zinc-500 mb-1">Cliente de hoy</p>
-          <h3 className="text-white font-semibold text-base leading-snug">{scenario.arquetipo_label}</h3>
+          <h3 className="text-white font-semibold text-base leading-snug">
+            {ei.nombre ?? scenario.arquetipo_label}
+          </h3>
+          {ei.nombre && (
+            <p className="text-xs text-zinc-500 mt-0.5">{scenario.arquetipo_label}</p>
+          )}
         </div>
         <button
           onClick={onRefresh}
