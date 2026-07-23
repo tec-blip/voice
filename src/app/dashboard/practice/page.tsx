@@ -71,8 +71,39 @@ function DifficultyDots({ value, max = 5 }: { value: number; max?: number }) {
 
 // ── Scenario preview card ─────────────────────────────────────────────────────
 
-function ScenarioCard({ scenario, onRefresh }: { scenario: ScenarioBrief; onRefresh: () => void }) {
+// Qué sabe el vendedor ANTES de la llamada, según el tipo de práctica. Lo que
+// NO sabría (lo tiene que descubrir en la llamada) se muestra como "Por
+// descubrir". IMPORTANTE: esto solo cambia lo MOSTRADO en la ficha — la IA
+// conserva TODOS sus datos internos (presupuesto, dolor, objeciones), así que
+// su comportamiento no cambia. Nombre, país y las métricas de dificultad son
+// siempre visibles (ayudas de entrenamiento).
+type CardField = 'tono' | 'ocupacion' | 'presupuesto' | 'objeciones'
+const CARD_VISIBILITY: Record<RoleplayType, Record<CardField, boolean>> = {
+  // Frío: el vendedor no conoce al prospecto — casi todo por descubrir.
+  llamada_fria: { tono: false, ocupacion: false, presupuesto: false, objeciones: false },
+  // Agendó / vio la oferta: sabe quién es y su tono, pero el presupuesto se
+  // descubre en la llamada. Framing además ya escuchó sus objeciones de valor.
+  general:      { tono: true,  ocupacion: true,  presupuesto: false, objeciones: false },
+  framing:      { tono: true,  ocupacion: true,  presupuesto: false, objeciones: true  },
+  // Hubo contacto previo (cierre) o ya pasó el pitch (objeciones): ficha completa.
+  cierre:       { tono: true,  ocupacion: true,  presupuesto: true,  objeciones: true  },
+  objeciones:   { tono: true,  ocupacion: true,  presupuesto: true,  objeciones: true  },
+}
+
+function LockedValue() {
+  return (
+    <span className="inline-flex items-center gap-1 text-zinc-500 italic">
+      <svg className="w-3 h-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+      </svg>
+      Por descubrir
+    </span>
+  )
+}
+
+function ScenarioCard({ scenario, type, onRefresh }: { scenario: ScenarioBrief; type: RoleplayType; onRefresh: () => void }) {
   const ei = scenario.estado_inicial
+  const vis = CARD_VISIBILITY[type]
   return (
     <div className="bg-zinc-900/60 border border-zinc-700 rounded-2xl p-5 space-y-4">
       <div className="flex items-start justify-between gap-3">
@@ -99,7 +130,9 @@ function ScenarioCard({ scenario, onRefresh }: { scenario: ScenarioBrief; onRefr
       <div className="grid grid-cols-2 gap-2 text-sm">
         <div className="bg-zinc-800/60 rounded-lg px-3 py-2">
           <p className="text-zinc-500 text-xs mb-0.5">Tono inicial</p>
-          <p className="text-zinc-200 capitalize">{ei.tono_inicial ?? '—'}</p>
+          {vis.tono
+            ? <p className="text-zinc-200 capitalize">{ei.tono_inicial ?? '—'}</p>
+            : <LockedValue />}
         </div>
         <div className="bg-zinc-800/60 rounded-lg px-3 py-2">
           <p className="text-zinc-500 text-xs mb-0.5">País</p>
@@ -107,29 +140,40 @@ function ScenarioCard({ scenario, onRefresh }: { scenario: ScenarioBrief; onRefr
         </div>
         <div className="bg-zinc-800/60 rounded-lg px-3 py-2">
           <p className="text-zinc-500 text-xs mb-0.5">Ocupación</p>
-          <p className="text-zinc-200 truncate">{ei.ocupacion ?? '—'}</p>
+          {vis.ocupacion
+            ? <p className="text-zinc-200 truncate">{ei.ocupacion ?? '—'}</p>
+            : <LockedValue />}
         </div>
         <div className="bg-zinc-800/60 rounded-lg px-3 py-2">
           <p className="text-zinc-500 text-xs mb-0.5">Presupuesto inicial</p>
-          <p className="text-zinc-200">{ei.presupuesto_inicial ?? 'No revelado'}</p>
+          {vis.presupuesto
+            ? <p className="text-zinc-200">{ei.presupuesto_inicial ?? 'No revelado'}</p>
+            : <LockedValue />}
         </div>
       </div>
 
-      {scenario.objeciones_a_plantear.length > 0 && (
-        <div>
-          <p className="text-zinc-500 text-xs font-semibold uppercase tracking-wider mb-2">
-            Objeciones ({scenario.objeciones_a_plantear.length})
-          </p>
-          <div className="flex flex-wrap gap-1.5">
-            {scenario.objeciones_a_plantear.map((o, i) => (
-              <span
-                key={i}
-                className="text-xs px-2 py-0.5 rounded-full bg-red-500/10 text-red-400 border border-red-500/20 capitalize"
-              >
-                {o.tipo ?? 'otro'}
-              </span>
-            ))}
+      {vis.objeciones ? (
+        scenario.objeciones_a_plantear.length > 0 && (
+          <div>
+            <p className="text-zinc-500 text-xs font-semibold uppercase tracking-wider mb-2">
+              Objeciones ({scenario.objeciones_a_plantear.length})
+            </p>
+            <div className="flex flex-wrap gap-1.5">
+              {scenario.objeciones_a_plantear.map((o, i) => (
+                <span
+                  key={i}
+                  className="text-xs px-2 py-0.5 rounded-full bg-red-500/10 text-red-400 border border-red-500/20 capitalize"
+                >
+                  {o.tipo ?? 'otro'}
+                </span>
+              ))}
+            </div>
           </div>
+        )
+      ) : (
+        <div>
+          <p className="text-zinc-500 text-xs font-semibold uppercase tracking-wider mb-2">Objeciones</p>
+          <LockedValue />
         </div>
       )}
 
@@ -440,7 +484,7 @@ export default function PracticePage() {
               <p className="text-xs font-semibold uppercase tracking-widest text-zinc-500 mb-3">
                 3 · Tu cliente de hoy
               </p>
-              <ScenarioCard scenario={scenario} onRefresh={handleRefreshScenario} />
+              <ScenarioCard scenario={scenario} type={selectedType} onRefresh={handleRefreshScenario} />
               <p className="text-center text-xs text-zinc-600 mt-2">
                 Basado en una llamada de venta real · Pulsa <span className="text-zinc-400">↺</span> para cambiar cliente
               </p>

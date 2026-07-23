@@ -542,6 +542,16 @@ PRIMERA FRASE (TU APERTURA — TIENE PRIORIDAD)
 ═══════════════════════════════════════════
 ${APERTURA_BY_TYPE[type]}`
 
+  // Etiqueta del "motivo" condicionada al tipo: en llamada fría el prospecto NO
+  // agendó nada ni conoce al vendedor, así que hablar de "por qué agendaste esta
+  // llamada" se contradice con el escenario. Usamos una redacción coherente por tipo.
+  const motivoLabel =
+    type === 'llamada_fria'
+      ? 'Lo que te ronda por dentro (NO llamaste tú ni conoces al vendedor; esto NO lo dices de entrada)'
+      : type === 'framing'
+        ? 'Lo que te movió a mirar la oferta'
+        : 'Por qué agendaste esta llamada'
+
   // Para modo objeciones usamos un bloque base distinto que elimina las
   // reglas de gradualidad/ritmo, que son contraproducentes en un drill puro.
   const baseBlock = type === 'objeciones'
@@ -642,7 +652,7 @@ ESTADO EMOCIONAL AL INICIAR:
 - Presupuesto inicial que mencionarás si preguntan: ${ei.presupuesto_inicial ?? 'no definido'}
 
 TU MOTIVACIÓN Y DOLOR (lo que sientes por dentro, no lo que dices de entrada):
-- Por qué agendaste esta llamada: ${ei.que_lo_trajo ?? 'te interesó el tema'}
+- ${motivoLabel}: ${ei.que_lo_trajo ?? 'te interesó el tema'}
 - Tu motivación real: ${ei.motivacion ?? 'mejorar tu situación económica'}
 - Tu dolor profundo: ${ei.dolor ?? 'estás estancado y quieres cambiar'}
 
