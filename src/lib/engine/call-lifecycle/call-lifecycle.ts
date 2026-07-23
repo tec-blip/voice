@@ -10,6 +10,7 @@ import {
   WARN_CALL_SECONDS,
   MIN_CALL_SECONDS,
   MIN_END_CALL_SECONDS_BY_TYPE,
+  MATURE_CLOSE_SECONDS,
   type CallType,
 } from './limits'
 import type { CallEndReason } from '../types'
@@ -67,6 +68,20 @@ export function canModelUseReason(reason: string, type?: CallType): boolean {
 /** ¿Alcanzó el cap duro de sesión? → auto-hangup. */
 export function isHardCapReached(durationSeconds: number): boolean {
   return durationSeconds >= MAX_CALL_SECONDS
+}
+
+/**
+ * ¿Un end_call('cierre_exitoso') del modelo en arco completo representa un cierre
+ * MADURO (la venta realmente se cerró tras el pitch) y no un soft-yes prematuro?
+ *
+ * NO autoriza a colgar (canModelUseReason sigue bloqueando el auto-hangup del
+ * modelo en arco completo). Solo sirve para que la UI decida si mostrar el aviso
+ * "venta cerrada" al alumno. En 'objeciones' el cierre lo maneja el flujo normal,
+ * así que aquí devolvemos false (no aplica el aviso híbrido).
+ */
+export function isMatureClose(callAgeMs: number, type?: CallType): boolean {
+  if (type === 'objeciones') return false
+  return callAgeMs >= MATURE_CLOSE_SECONDS * 1000
 }
 
 /** ¿Está en la ventana de aviso "quedan N minutos"? */

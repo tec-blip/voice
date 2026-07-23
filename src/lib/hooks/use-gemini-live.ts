@@ -1,5 +1,5 @@
 import { useRef, useState, useCallback } from 'react'
-import { canModelEndCall, canModelUseReason, type CallEndReason, type CallType } from '@/lib/engine'
+import { canModelEndCall, canModelUseReason, isMatureClose, type CallEndReason, type CallType } from '@/lib/engine'
 
 // Re-exportado para compatibilidad: el tipo canónico vive en la capa-motor
 // (engine/types) para que no dependa de React.
@@ -25,6 +25,27 @@ const REENGAGE_PROMPT =
 // empujamos a exigir el pitch/siguiente paso en vez de despedirse.
 const REENGAGE_CLOSE_PROMPT =
   '(Acabas de mostrar interés, pero la llamada NO ha terminado. Como cliente real, pide al vendedor el siguiente paso concreto: pregúntale cómo funciona, el precio o cómo empezar. En español. NO cuelgues ni te despidas.)'
+
+// Re-enganche cuando la venta YA se cerró de forma MADURA (tras el pitch, pasado
+// el piso de tiempo): el prospecto confirma brevemente y deja de llevar la
+// conversación. Sigue sin colgar (el vendedor cuelga) — el aviso "venta cerrada"
+// se lo mostramos al alumno vía onSaleClosed.
+const REENGAGE_CLOSE_DONE_PROMPT =
+  '(La venta ya quedó cerrada y lo confirmaste. NO generes preguntas nuevas ni alargues la llamada; responde breve y natural SOLO si el vendedor dice algo. En español. NO cuelgues: el vendedor cierra la llamada.)'
+const STEER_CLOSE_DONE_MSG =
+  'La venta quedó cerrada. No cuelgues tú: confirma brevemente ("perfecto, quedamos así, quedo atento") y deja que el vendedor cierre y cuelgue. No sigas generando preguntas nuevas.'
+
+// Dead-air: si el vendedor terminó su turno y el prospecto se queda mudo más de
+// este tiempo (sin responder, sin audio, sin que el usuario siga hablando), le
+// inyectamos un empujón para que retome. Conservador para no cortar pausas
+// naturales: la latencia normal del modelo es de 1-3s.
+const DEAD_AIR_MS = 10_000
+
+// Empujón de ARRANQUE: si tras conectar el prospecto no abre la llamada (en arco
+// completo el modelo saluda primero) y nadie habla, lo activamos para que dé su
+// primera frase. Semánticamente distinto al re-enganche de mitad de conversación.
+const KICKOFF_NUDGE_PROMPT =
+  '(La llamada acaba de empezar y hay silencio. Abre tú en tu personaje de cliente con tu primera frase, en español, breve y natural. NO cuelgues.)'
 
 interface TranscriptEntry {
   role: 'user' | 'model'
@@ -54,6 +75,11 @@ interface UseGeminiLiveOptions {
   // Se dispara cuando la conexión se cayó y la reconexión automática se agotó,
   // PERO hay un sessionHandle → la llamada se puede REANUDAR (resume()).
   onConnectionLost?: () => void
+  // Se dispara (una vez por llamada) cuando el modelo señala un cierre EXITOSO
+  // maduro en arco completo — la venta se cerró tras el pitch. NO cuelga la
+  // llamada (el vendedor cuelga); solo permite avisar al alumno que ya puede
+  // colgar para ver su evaluación. En 'objeciones' no aplica.
+  onSaleClosed?: () => void
 }
 
 interface UseGeminiLiveReturn {
@@ -129,7 +155,7 @@ function parseTimeLeftSeconds(v: unknown, fallback = 20): number {
 }
 
 export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveReturn {
-  const { systemPrompt, voiceName = 'Kore', roleplayType, onTranscript, onModelSpeaking, onError, onModelHangup, onConnectionLost } = options
+  const { systemPrompt, voiceName = 'Kore', roleplayType, onTranscript, onModelSpeaking, onError, onModelHangup, onConnectionLost, onSaleClosed } = options
 
   const [isConnected, setIsConnected] = useState(false)
   const [isModelSpeaking, setIsModelSpeaking] = useState(false)
@@ -160,6 +186,16 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
   const onModelHangupRef = useRef(onModelHangup)
   onModelHangupRef.current = onModelHangup
 
+  // Cierre exitoso maduro (arco completo): se avisa al UI una sola vez por llamada.
+  const onSaleClosedRef = useRef(onSaleClosed)
+  onSaleClosedRef.current = onSaleClosed
+  const saleClosedFiredRef = useRef(false)
+
+  // Watchdog de dead-air: timer one-shot armado cuando el vendedor terminó su
+  // turno y el prospecto aún no responde. Se limpia cuando el modelo habla o el
+  // usuario retoma. Vive en un ref para poder limpiarlo desde cualquier handler.
+  const deadAirTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
   // Momento de conexión (ref): el handler de end_call (en ws.onmessage) lo lee
   // para gatear un end_call prematuro contra el piso mínimo por tipo (engine).
   // roleplayType se captura por closure en openSocket (es constante durante la
@@ -187,6 +223,39 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
     eventsRef.current.push({ t: Date.now(), type, ...(detail ? { detail } : {}) })
     console.log(`[gemini-live][evt] ${type}`, detail ?? '')
   }, [])
+
+  // ── Watchdog de dead-air ────────────────────────────────────────────────────
+  const clearDeadAir = useCallback(() => {
+    if (deadAirTimerRef.current) {
+      clearTimeout(deadAirTimerRef.current)
+      deadAirTimerRef.current = null
+    }
+  }, [])
+
+  // Arma un empujón one-shot: si tras DEAD_AIR_MS el prospecto sigue mudo (y no
+  // hay audio del modelo, ni hangup en curso, ni desconexión), inyecta un turno
+  // que lo obliga a retomar. Reusa REENGAGE_PROMPT (mismo espíritu que el
+  // re-enganche tras bloquear un end_call). Se re-arma en cada turno del usuario.
+  const armDeadAir = useCallback((nudgeMsg: string = REENGAGE_PROMPT) => {
+    clearDeadAir()
+    deadAirTimerRef.current = setTimeout(() => {
+      deadAirTimerRef.current = null
+      if (isUserDisconnectingRef.current) return
+      if (pendingHangupRef.current) return
+      // Venta ya cerrada: NO reabrimos la conversación (el banner invita a colgar).
+      if (saleClosedFiredRef.current) return
+      if (activeSourcesRef.current.length > 0) return // el modelo está hablando
+      const ws = wsRef.current
+      if (!ws || ws.readyState !== WebSocket.OPEN) return
+      logEvent('dead_air_nudge')
+      ws.send(JSON.stringify({
+        clientContent: {
+          turns: [{ role: 'user', parts: [{ text: nudgeMsg }] }],
+          turnComplete: true,
+        },
+      }))
+    }, DEAD_AIR_MS)
+  }, [clearDeadAir, logEvent])
 
   const playAudioChunk = useCallback((pcmBase64: string) => {
     if (!audioContextRef.current || audioContextRef.current.state === 'closed') {
@@ -281,6 +350,11 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
   // envía `sessionResumption: { handle }` para continuar la sesión anterior sin perder
   // el contexto de la conversación en curso.
   const openSocket = useCallback((url: string) => {
+    // Limpia cualquier watchdog pendiente ANTES de (re)abrir: cubre en un solo
+    // punto la conexión inicial, la reconexión por goAway (proactive resume), la
+    // de visibilitychange y el resume manual. Evita que un timer armado en la
+    // conexión vieja dispare un nudge sobre el socket nuevo tras reconectar.
+    clearDeadAir()
     const isResuming = sessionHandleRef.current !== null
     const ws = new WebSocket(url)
 
@@ -397,6 +471,10 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
         // Marca el inicio de la llamada (solo la primera vez; una reconexión por
         // session-resumption NO reinicia el reloj del piso mínimo de duración).
         if (!connectedAtRef.current) connectedAtRef.current = Date.now()
+        // Cobertura de dead-air en el ARRANQUE (solo conexión nueva, no resume):
+        // si el prospecto no abre la llamada en DEAD_AIR_MS, lo empujamos. En una
+        // reconexión la conversación ya venía en curso, así que no armamos aquí.
+        if (!isResuming) armDeadAir(KICKOFF_NUDGE_PROMPT)
         return
       }
 
@@ -497,15 +575,25 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
             // usuario colgando). Evita que la IA dé la venta por cerrada sobre un
             // "sí" y cuelgue a mitad del pitch.
             if (!canModelUseReason(reason, roleplayType)) {
-              console.warn('[gemini-live] end_call BLOQUEADO (reason no permitido en este modo) — re-enganchando', { reason, type: roleplayType })
-              logEvent('end_call_blocked', { reason, ageS: Math.round(callAgeMs / 1000), cause: 'reason_not_allowed' })
+              // ¿Es un cierre EXITOSO maduro (tras el pitch, pasado el piso de
+              // tiempo)? Entonces avisamos al alumno "venta cerrada" y guiamos al
+              // modelo a confirmar y quedarse quieto. Seguimos SIN colgar (el bug
+              // de Ivan queda protegido: el modelo nunca cuelga en arco completo).
+              const matureClose = reason === 'cierre_exitoso' && isMatureClose(callAgeMs, roleplayType)
+              console.warn('[gemini-live] end_call BLOQUEADO (reason no permitido en este modo) — re-enganchando', { reason, type: roleplayType, matureClose })
+              logEvent('end_call_blocked', { reason, ageS: Math.round(callAgeMs / 1000), cause: matureClose ? 'close_mature' : 'reason_not_allowed' })
               functionResponses.push({
                 id: fc.id,
                 name: 'end_call',
-                response: { ok: false, continue: true, message: STEER_CLOSE_MSG },
+                response: { ok: false, continue: true, message: matureClose ? STEER_CLOSE_DONE_MSG : STEER_CLOSE_MSG },
               })
               reengageAfterBlock = true
-              reengageMsg = REENGAGE_CLOSE_PROMPT
+              reengageMsg = matureClose ? REENGAGE_CLOSE_DONE_PROMPT : REENGAGE_CLOSE_PROMPT
+              if (matureClose && !saleClosedFiredRef.current) {
+                saleClosedFiredRef.current = true
+                logEvent('sale_closed', { ageS: Math.round(callAgeMs / 1000) })
+                onSaleClosedRef.current?.()
+              }
               continue
             }
 
@@ -563,6 +651,7 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
         // (puede quedar desincronizado con lo que el modelo va a decir ahora).
         if (sc.interrupted) {
           logEvent('interrupted')
+          clearDeadAir() // el usuario barge-in: no hay dead-air
           stopPlayback()
           // Si había un end_call pendiente, su audio de despedida acaba de ser
           // interrumpido → los `onended` se anularon en stopPlayback y nadie
@@ -585,6 +674,7 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
         if (modelTurn?.parts) {
           for (const part of modelTurn.parts) {
             if (part.inlineData?.mimeType?.startsWith('audio/')) {
+              clearDeadAir() // el modelo respondió: no hay dead-air
               if (!isModelSpeaking) {
                 setIsModelSpeaking(true)
                 onModelSpeaking?.(true)
@@ -592,6 +682,7 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
               playAudioChunk(part.inlineData.data)
             }
             if (part.text) {
+              clearDeadAir() // el modelo ya está respondiendo (texto), aunque el audio tarde
               currentModelTextRef.current += part.text
             }
           }
@@ -600,20 +691,27 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
         const inputTr = sc.inputTranscription
         if (inputTr?.text) {
           currentUserTextRef.current += inputTr.text
+          clearDeadAir() // el usuario está hablando
         }
         if (inputTr?.finished && currentUserTextRef.current) {
           const entry: TranscriptEntry = { role: 'user', text: currentUserTextRef.current.trim() }
           setTranscript((prev) => [...prev, entry])
           onTranscript?.(entry)
           currentUserTextRef.current = ''
+          // El vendedor terminó su turno; el prospecto debería responder. Armamos
+          // el watchdog: si se queda mudo > DEAD_AIR_MS, lo empujamos a retomar.
+          armDeadAir()
         }
 
         const outputTr = sc.outputTranscription
         if (outputTr?.text) {
+          clearDeadAir() // el modelo ya está respondiendo (transcripción de salida)
           currentModelTextRef.current += outputTr.text
         }
 
         if (turnComplete) {
+          const hadUserText = !!currentUserTextRef.current
+          const hadModelText = !!currentModelTextRef.current
           if (currentUserTextRef.current) {
             const entry: TranscriptEntry = { role: 'user', text: currentUserTextRef.current.trim() }
             setTranscript((prev) => [...prev, entry])
@@ -626,6 +724,10 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
             onTranscript?.(entry)
             currentModelTextRef.current = ''
           }
+          // Fallback: si el turno del usuario se cerró aquí (sin que llegara
+          // inputTranscription.finished) y el modelo NO respondió en el mismo
+          // turno, armamos el watchdog igualmente (no dependemos solo de 'finished').
+          if (hadUserText && !hadModelText) armDeadAir()
         }
       }
     }
@@ -640,6 +742,7 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
       )
       logEvent('ws_close', { code: ev.code, wasClean: ev.wasClean, reason: ev.reason || undefined })
       setIsConnected(false)
+      clearDeadAir() // no dejar un empujón pendiente cruzar a otra conexión
 
       // Si fue cierre intencional del usuario, no reconectar.
       if (isUserDisconnectingRef.current) {
@@ -670,7 +773,7 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
     }
 
     wsRef.current = ws
-  }, [voiceName, systemPrompt, roleplayType, onTranscript, onModelSpeaking, playAudioChunk, stopPlayback, isModelSpeaking, logEvent, giveUp])
+  }, [voiceName, systemPrompt, roleplayType, onTranscript, onModelSpeaking, playAudioChunk, stopPlayback, isModelSpeaking, logEvent, giveUp, armDeadAir, clearDeadAir])
 
   // Obtiene un token fresco de /api/vertex/config y abre un nuevo socket preservando
   // el sessionHandle para que Gemini retome la conversación desde donde se cortó.
@@ -706,8 +809,10 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
       reconnectAttemptsRef.current = 0
       pendingHangupRef.current = null
       connectedAtRef.current = null
+      saleClosedFiredRef.current = false
       eventsRef.current = []
       if (goAwayTimerRef.current) { clearTimeout(goAwayTimerRef.current); goAwayTimerRef.current = null }
+      clearDeadAir()
       logEvent('connect')
 
       if (!audioContextRef.current || audioContextRef.current.state === 'closed') {
@@ -775,7 +880,7 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
       logEvent('connect_error', { msg: err instanceof Error ? err.message : String(err) })
       onError?.(err instanceof Error ? err.message : 'Error conectando con Gemini')
     }
-  }, [openSocket, onError, logEvent])
+  }, [openSocket, onError, logEvent, clearDeadAir])
 
   const disconnect = useCallback(() => {
     isUserDisconnectingRef.current = true
@@ -784,6 +889,7 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
     wsUrlRef.current = null
     pendingHangupRef.current = null
     if (goAwayTimerRef.current) { clearTimeout(goAwayTimerRef.current); goAwayTimerRef.current = null }
+    clearDeadAir()
 
     // Retirar el listener de visibilitychange para no intentar reconectar
     // después de que el usuario haya colgado intencionalmente.
@@ -803,7 +909,7 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
     setTranscript([])
     currentModelTextRef.current = ''
     currentUserTextRef.current = ''
-  }, [stopPlayback])
+  }, [stopPlayback, clearDeadAir])
 
   // Reanuda una llamada caída: la reconexión automática se agotó PERO hay
   // sessionHandle, así que reabrimos el socket preservando el contexto de la
