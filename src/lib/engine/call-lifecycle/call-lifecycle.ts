@@ -44,24 +44,26 @@ export function canModelEndCall(callAgeMs: number, type?: CallType): boolean {
 /**
  * ¿Puede el MODELO (prospecto) terminar la llamada con este `reason`, según el tipo?
  *
- * En ARCO COMPLETO (general, cierre, llamada_fria, framing) un CIERRE EXITOSO lo
- * declara el HUMANO colgando (reason 'manual'), NO el prospecto. Si el modelo
- * autocuelga con 'cierre_exitoso' apenas el prospecto dice "sí", corta al closer
- * ANTES del pitch y del cierre logístico real (bug reportado por Ivan: la IA dio
- * la venta por cerrada sobre un soft-yes y colgó a mitad del pitch). Por eso el
- * modelo NO puede autocerrar con 'cierre_exitoso' en estos tipos — solo con
- * finales negativos/neutros (sin_interes, objeciones_no_resueltas, timeout).
- * Cuando se bloquea, el hook re-engancha al modelo para que siga de prospecto y
- * empuje al vendedor a presentar y cerrar (nunca queda mudo).
+ * En ARCO COMPLETO (general, cierre, llamada_fria, framing) el prospecto NUNCA
+ * cuelga: quien termina la llamada es el VENDEDOR (colgando, reason 'manual') o el
+ * cap duro. Por eso bloqueamos TODOS los reasons del modelo en estos tipos —no solo
+ * 'cierre_exitoso'. Esto evita dos cortes reales reportados:
+ *   - Ivan: la IA daba la venta por cerrada sobre un "sí" y colgaba a mitad del pitch.
+ *   - Ana/otros: la IA colgaba con 'timeout' ante una pausa o silencio, cortando la
+ *     práctica antes de que el vendedor pudiera hacer el discovery.
+ * Cuando se bloquea, el hook re-engancha al modelo para que siga de prospecto y deje
+ * que el vendedor dirija (nunca queda mudo). El vendedor siempre puede colgar él.
  *
- * En el drill de 'objeciones' SÍ se permite 'cierre_exitoso': ese modo termina,
- * por diseño, cuando el prospecto se convence tras resolver sus barreras.
+ * SOLO el drill de 'objeciones' permite que el modelo cierre: ese modo termina, por
+ * diseño, cuando el prospecto se convence ('cierre_exitoso') o se rinde
+ * ('objeciones_no_resueltas' / 'timeout').
  */
 export function canModelUseReason(reason: string, type?: CallType): boolean {
   if (!(VALID_REASONS as readonly string[]).includes(reason)) return false
   // 'manual' es del usuario, nunca del modelo.
   if (reason === 'manual') return false
-  if (reason === 'cierre_exitoso' && type !== 'objeciones') return false
+  // Arco completo: el modelo no cierra la llamada por ningún motivo.
+  if (type !== 'objeciones') return false
   return true
 }
 
