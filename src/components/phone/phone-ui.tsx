@@ -40,6 +40,9 @@ export function PhoneUI({ roleplayType, systemPromptOverride, voiceName, onCallE
   // Aviso híbrido: el modelo señaló un cierre exitoso maduro (venta cerrada).
   // NO cuelga la llamada — solo invita al alumno a colgar para ver su evaluación.
   const [saleClosed, setSaleClosed] = useState(false)
+  // Indicador "Reconectando…": se muestra SOLO si la reconexión tarda (>1.2s),
+  // para no parpadear en los cruces instantáneos del límite de ~10 min.
+  const [showReconnecting, setShowReconnecting] = useState(false)
 
   // ── Screen Wake Lock ───────────────────────────────────────────────────────
   // Mantiene la pantalla encendida durante la llamada activa.
@@ -193,6 +196,17 @@ export function PhoneUI({ roleplayType, systemPromptOverride, voiceName, onCallE
     return () => clearInterval(id)
   }, [callState])
 
+  // "Reconectando…" con retardo: solo se muestra si la reconexión tarda >1.2s
+  // (así los cruces instantáneos del límite de ~10 min no hacen parpadear nada).
+  useEffect(() => {
+    if (!gemini.isReconnecting) {
+      setShowReconnecting(false)
+      return
+    }
+    const t = setTimeout(() => setShowReconnecting(true), 1200)
+    return () => clearTimeout(t)
+  }, [gemini.isReconnecting])
+
   useEffect(() => {
     if (gemini.isConnected && callState === 'connecting') {
       setCallState('active')
@@ -331,6 +345,7 @@ export function PhoneUI({ roleplayType, systemPromptOverride, voiceName, onCallE
               : callState === 'connecting' ? 'Conectando...'
               : callState === 'dropped' ? 'Conexión perdida'
               : callState === 'ended' ? 'Llamada finalizada'
+              : showReconnecting ? 'Reconectando…'
               : gemini.isModelSpeaking ? 'Hablando...' : 'Escuchando...'}
           </p>
           <p className={`text-sm mt-0.5 ${
@@ -392,6 +407,17 @@ export function PhoneUI({ roleplayType, systemPromptOverride, voiceName, onCallE
             </div>
           )}
         </div>
+
+        {callState === 'active' && showReconnecting && (
+          <div className="px-6 pb-2">
+            <div className="bg-amber-950/40 border border-amber-800/50 rounded-lg px-4 py-3 flex items-center gap-3">
+              <div className="h-4 w-4 rounded-full border-2 border-amber-700 border-t-amber-300 animate-spin flex-shrink-0" />
+              <p className="text-xs text-amber-200 leading-relaxed">
+                Recuperando la llamada… <span className="font-semibold">no cuelgues</span>, sigue en un momento.
+              </p>
+            </div>
+          </div>
+        )}
 
         {callState === 'active' && saleClosed && (
           <div className="px-6 pb-2">
