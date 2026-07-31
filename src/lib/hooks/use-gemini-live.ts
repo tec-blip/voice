@@ -575,20 +575,26 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
             // usuario colgando). Evita que la IA dé la venta por cerrada sobre un
             // "sí" y cuelgue a mitad del pitch.
             if (!canModelUseReason(reason, roleplayType)) {
-              // ¿Es un cierre EXITOSO maduro (tras el pitch, pasado el piso de
-              // tiempo)? Entonces avisamos al alumno "venta cerrada" y guiamos al
-              // modelo a confirmar y quedarse quieto. Seguimos SIN colgar (el bug
-              // de Ivan queda protegido: el modelo nunca cuelga en arco completo).
-              const matureClose = reason === 'cierre_exitoso' && isMatureClose(callAgeMs, roleplayType)
-              console.warn('[gemini-live] end_call BLOQUEADO (reason no permitido en este modo) — re-enganchando', { reason, type: roleplayType, matureClose })
-              logEvent('end_call_blocked', { reason, ageS: Math.round(callAgeMs / 1000), cause: matureClose ? 'close_mature' : 'reason_not_allowed' })
+              // En arco completo el modelo NUNCA cuelga (lo termina el vendedor o el
+              // cap duro). Reconducimos según el motivo que intentó:
+              //  - cierre_exitoso MADURO (tras el pitch): avisamos "venta cerrada" al
+              //    alumno y guiamos al modelo a confirmar y quedarse quieto.
+              //  - cierre_exitoso temprano (soft-yes): lo empujamos a exigir el pitch.
+              //  - cualquier otro (timeout/sin_interes/…): silencio o pausa mal leídos
+              //    como "se acabó" → lo mantenemos en personaje (arreglo del corte
+              //    prematuro reportado por Ana y otros).
+              const isClose = reason === 'cierre_exitoso'
+              const matureClose = isClose && isMatureClose(callAgeMs, roleplayType)
+              console.warn('[gemini-live] end_call BLOQUEADO (el modelo no cuelga en arco completo) — re-enganchando', { reason, type: roleplayType, matureClose })
+              logEvent('end_call_blocked', { reason, ageS: Math.round(callAgeMs / 1000), cause: matureClose ? 'close_mature' : isClose ? 'close_early' : 'model_no_hangup' })
+              const steerMsg = matureClose ? STEER_CLOSE_DONE_MSG : isClose ? STEER_CLOSE_MSG : STEER_CONTINUE_MSG
               functionResponses.push({
                 id: fc.id,
                 name: 'end_call',
-                response: { ok: false, continue: true, message: matureClose ? STEER_CLOSE_DONE_MSG : STEER_CLOSE_MSG },
+                response: { ok: false, continue: true, message: steerMsg },
               })
               reengageAfterBlock = true
-              reengageMsg = matureClose ? REENGAGE_CLOSE_DONE_PROMPT : REENGAGE_CLOSE_PROMPT
+              reengageMsg = matureClose ? REENGAGE_CLOSE_DONE_PROMPT : isClose ? REENGAGE_CLOSE_PROMPT : REENGAGE_PROMPT
               if (matureClose && !saleClosedFiredRef.current) {
                 saleClosedFiredRef.current = true
                 logEvent('sale_closed', { ageS: Math.round(callAgeMs / 1000) })

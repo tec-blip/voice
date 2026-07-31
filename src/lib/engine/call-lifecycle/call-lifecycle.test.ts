@@ -35,22 +35,20 @@ describe('canModelEndCall', () => {
 })
 
 describe('canModelUseReason', () => {
-  it('arco completo: el modelo NO puede autocerrar como cierre_exitoso', () => {
+  it('arco completo: el modelo NO puede colgar por NINGÚN motivo', () => {
     for (const t of ['general', 'cierre', 'llamada_fria', 'framing'] as const) {
       expect(canModelUseReason('cierre_exitoso', t)).toBe(false)
+      expect(canModelUseReason('sin_interes', t)).toBe(false)
+      expect(canModelUseReason('objeciones_no_resueltas', t)).toBe(false)
+      expect(canModelUseReason('timeout', t)).toBe(false)
     }
   })
 
-  it('drill de objeciones: SÍ permite cierre_exitoso', () => {
+  it('drill de objeciones: SÍ permite cerrar (por diseño)', () => {
     expect(canModelUseReason('cierre_exitoso', 'objeciones')).toBe(true)
-  })
-
-  it('finales negativos/neutros permitidos en cualquier tipo', () => {
-    for (const t of ['general', 'cierre', 'objeciones'] as const) {
-      expect(canModelUseReason('sin_interes', t)).toBe(true)
-      expect(canModelUseReason('objeciones_no_resueltas', t)).toBe(true)
-      expect(canModelUseReason('timeout', t)).toBe(true)
-    }
+    expect(canModelUseReason('sin_interes', 'objeciones')).toBe(true)
+    expect(canModelUseReason('objeciones_no_resueltas', 'objeciones')).toBe(true)
+    expect(canModelUseReason('timeout', 'objeciones')).toBe(true)
   })
 
   it("'manual' es del usuario, nunca del modelo", () => {
@@ -63,9 +61,9 @@ describe('canModelUseReason', () => {
     expect(canModelUseReason('', 'objeciones')).toBe(false)
   })
 
-  it('sin tipo: cierre_exitoso bloqueado (conservador)', () => {
+  it('sin tipo: bloqueado (conservador, se trata como arco completo)', () => {
     expect(canModelUseReason('cierre_exitoso')).toBe(false)
-    expect(canModelUseReason('sin_interes')).toBe(true)
+    expect(canModelUseReason('sin_interes')).toBe(false)
   })
 })
 
