@@ -85,6 +85,7 @@ interface UseGeminiLiveOptions {
 interface UseGeminiLiveReturn {
   isConnected: boolean
   isModelSpeaking: boolean
+  isReconnecting: boolean
   transcript: TranscriptEntry[]
   connect: () => Promise<void>
   disconnect: () => void
@@ -160,6 +161,9 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
   const [isConnected, setIsConnected] = useState(false)
   const [isModelSpeaking, setIsModelSpeaking] = useState(false)
   const [transcript, setTranscript] = useState<TranscriptEntry[]>([])
+  // true mientras se está reconectando (cruce del límite de ~10 min o caída
+  // recuperable). La UI puede mostrar "Reconectando…" solo si el cruce tarda.
+  const [isReconnecting, setIsReconnecting] = useState(false)
 
   const wsRef = useRef<WebSocket | null>(null)
   const audioContextRef = useRef<AudioContext | null>(null)
@@ -336,6 +340,7 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
   // puede reanudar → avisamos al UI (onConnectionLost) para ofrecer "Reanudar".
   // Si no hay handle, es un cierre real → error.
   const giveUp = useCallback(() => {
+    setIsReconnecting(false) // se agotó la reconexión → deja de mostrar "Reconectando…"
     stopPlayback()
     if (sessionHandleRef.current) {
       logEvent('connection_lost', { resumable: true })
@@ -467,6 +472,7 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
         console.log('[gemini-live] setupComplete — connected')
         logEvent('setup_complete', { resuming: isResuming })
         setIsConnected(true)
+        setIsReconnecting(false) // reconexión (o conexión) lograda → ocultar aviso
         reconnectAttemptsRef.current = 0
         // Marca el inicio de la llamada (solo la primera vez; una reconexión por
         // session-resumption NO reinicia el reloj del piso mínimo de duración).
@@ -527,6 +533,7 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
           if (activeSourcesRef.current.length > 0) return
           console.log('[gemini-live] goAway: proactive resume firing')
           logEvent('proactive_resume')
+          setIsReconnecting(true) // cruce del límite de ~10 min en curso
           // Neutralizamos el socket viejo para que su onclose NO dispare otra
           // reconexión (evita sockets duplicados).
           ws.onclose = null
@@ -765,6 +772,7 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
           `[gemini-live] attempting resume #${reconnectAttemptsRef.current} with fresh token in ${delayMs}ms`
         )
         logEvent('reconnect_attempt', { n: reconnectAttemptsRef.current })
+        setIsReconnecting(true) // caída recuperable: estamos reconectando
         // Siempre pedimos un token fresco — el token anterior puede haber expirado
         // (el OIDC token de Vercel tiene ~2 min de vida, lo que limita el access token de GCP).
         setTimeout(() => {
@@ -817,6 +825,7 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
       connectedAtRef.current = null
       saleClosedFiredRef.current = false
       eventsRef.current = []
+      setIsReconnecting(false)
       if (goAwayTimerRef.current) { clearTimeout(goAwayTimerRef.current); goAwayTimerRef.current = null }
       clearDeadAir()
       logEvent('connect')
@@ -894,6 +903,7 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
     reconnectAttemptsRef.current = 0
     wsUrlRef.current = null
     pendingHangupRef.current = null
+    setIsReconnecting(false)
     if (goAwayTimerRef.current) { clearTimeout(goAwayTimerRef.current); goAwayTimerRef.current = null }
     clearDeadAir()
 
@@ -950,5 +960,5 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
     }))
   }, [])
 
-  return { isConnected, isModelSpeaking, transcript, connect, disconnect, resume, sendAudio, getEvents }
+  return { isConnected, isModelSpeaking, isReconnecting, transcript, connect, disconnect, resume, sendAudio, getEvents }
 }
