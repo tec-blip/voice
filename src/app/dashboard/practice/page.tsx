@@ -52,6 +52,24 @@ const RoleplayIcon = ({ id }: { id: RoleplayType }) => {
   )
 }
 
+// Descripción corta de cada tipo de práctica (qué entrena). Se muestra como
+// tooltip al pasar el cursor y como línea explicativa al seleccionar el tipo.
+// Pedido por testers: no quedaba claro en qué consistía cada tipo.
+const TYPE_DESCRIPTIONS: Record<RoleplayType, string> = {
+  cierre: 'Llamada de CIERRE: ya hubo una llamada previa y el prospecto te conoce. Tu meta es cerrar la venta.',
+  llamada_fria: 'Llamada en FRÍO: el prospecto NO te conoce ni esperaba tu llamada. Gánate los primeros segundos.',
+  framing: 'FRAMING (reencuadre): el prospecto cree que hay opciones más baratas. Reencuadra el VALOR, no el precio.',
+  objeciones: 'Drill de OBJECIONES: el prospecto ya escuchó el pitch y lanza objeciones una a una. Resuélvelas.',
+  general: 'Llamada GENERAL: el prospecto agendó tras ver un anuncio. Descubre su situación, presenta y cierra.',
+}
+
+// Producto/infoproducto que quiere el prospecto, para mostrarlo en la tarjeta
+// (sobre todo en modo Aleatorio, donde el vendedor no sabe qué está vendiendo).
+const PRODUCT_LABEL: Record<string, string> = {
+  trading: 'Mentoría de Trading',
+  marca_personal_instagram: 'Marca Personal en Instagram',
+}
+
 // ── Difficulty dots ───────────────────────────────────────────────────────────
 
 function DifficultyDots({ value, max = 5 }: { value: number; max?: number }) {
@@ -125,6 +143,13 @@ function ScenarioCard({ scenario, type, onRefresh }: { scenario: ScenarioBrief; 
             <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182" />
           </svg>
         </button>
+      </div>
+
+      {/* Producto a vender: SIEMPRE visible (es lo que ofreces). Clave en Aleatorio,
+          donde el vendedor no sabe si el prospecto quiere trading o marca personal. */}
+      <div className="bg-red-500/5 border border-red-500/20 rounded-lg px-3 py-2">
+        <p className="text-red-400/70 text-[11px] font-semibold uppercase tracking-wider mb-0.5">Producto a vender</p>
+        <p className="text-red-200 text-sm">{PRODUCT_LABEL[scenario.nicho] ?? scenario.nicho}</p>
       </div>
 
       <div className="grid grid-cols-2 gap-2 text-sm">
@@ -464,6 +489,7 @@ export default function PracticePage() {
                   <button
                     key={id}
                     onClick={() => setSelectedType(id === selectedType ? null : id)}
+                    title={TYPE_DESCRIPTIONS[id]}
                     className={`flex flex-col items-center gap-2 p-4 rounded-xl border transition-colors text-center ${
                       selectedType === id
                         ? 'border-red-500 bg-red-600/10 text-red-400'
@@ -475,6 +501,12 @@ export default function PracticePage() {
                   </button>
                 ))}
               </div>
+              {selectedType && (
+                <div className="mt-3 flex items-start gap-2 bg-zinc-900/50 border border-zinc-800 rounded-lg px-3 py-2">
+                  <span className="text-red-400 text-sm leading-none mt-0.5">ⓘ</span>
+                  <p className="text-xs text-zinc-300 leading-relaxed">{TYPE_DESCRIPTIONS[selectedType]}</p>
+                </div>
+              )}
             </div>
           )}
 

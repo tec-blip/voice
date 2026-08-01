@@ -177,6 +177,11 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
   const sessionHandleRef = useRef<string | null>(null)
   const isUserDisconnectingRef = useRef(false)
   const reconnectAttemptsRef = useRef(0)
+  // MUTEX de reconexión: true desde que ARRANCA una reconexión (fetch de token +
+  // apertura de socket) hasta que se logra (setup_complete) o falla (giveUp).
+  // Evita que dos disparadores concurrentes (goAway proactivo, ws.onclose,
+  // visibilitychange) abran DOS sockets a la vez con el mismo handle.
+  const reconnectInFlightRef = useRef(false)
   const wsUrlRef = useRef<string | null>(null)
   // Default alineado con el modelo real que sirve /api/vertex/config. En el flujo
   // normal modelPath llega del endpoint y sobrescribe esto; el default solo aplica
@@ -341,6 +346,7 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
   // Si no hay handle, es un cierre real → error.
   const giveUp = useCallback(() => {
     setIsReconnecting(false) // se agotó la reconexión → deja de mostrar "Reconectando…"
+    reconnectInFlightRef.current = false // libera el mutex (la reconexión falló)
     stopPlayback()
     if (sessionHandleRef.current) {
       logEvent('connection_lost', { resumable: true })
@@ -484,6 +490,7 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
         logEvent('setup_complete', { resuming: isResuming })
         setIsConnected(true)
         setIsReconnecting(false) // reconexión (o conexión) lograda → ocultar aviso
+        reconnectInFlightRef.current = false // libera el mutex de reconexión
         reconnectAttemptsRef.current = 0
         // Marca el inicio de la llamada (solo la primera vez; una reconexión por
         // session-resumption NO reinicia el reloj del piso mínimo de duración).
@@ -805,6 +812,13 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
   // Se accede siempre vía doReconnectRef para evitar closures stales en openSocket.
   const doReconnect = useCallback(() => {
     if (isUserDisconnectingRef.current) return
+    // MUTEX: si ya hay una reconexión en curso, no lanzamos otra (evita sockets
+    // duplicados cuando goAway/onclose/visibilitychange disparan a la vez).
+    if (reconnectInFlightRef.current) {
+      console.log('[gemini-live] reconexión ya en curso — se ignora el disparo duplicado')
+      return
+    }
+    reconnectInFlightRef.current = true
     console.log(`[gemini-live] fetching fresh token for reconnect #${reconnectAttemptsRef.current}`)
     fetch('/api/vertex/config')
       .then((r) => {
@@ -832,6 +846,7 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
       isUserDisconnectingRef.current = false
       sessionHandleRef.current = null
       reconnectAttemptsRef.current = 0
+      reconnectInFlightRef.current = false
       pendingHangupRef.current = null
       connectedAtRef.current = null
       saleClosedFiredRef.current = false
@@ -912,6 +927,7 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
     isUserDisconnectingRef.current = true
     sessionHandleRef.current = null
     reconnectAttemptsRef.current = 0
+    reconnectInFlightRef.current = false
     wsUrlRef.current = null
     pendingHangupRef.current = null
     setIsReconnecting(false)
@@ -947,6 +963,7 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
     logEvent('resume_requested')
     isUserDisconnectingRef.current = false
     reconnectAttemptsRef.current = 0
+    reconnectInFlightRef.current = false // reintento manual: libera el mutex por si quedó colgado
     if (audioContextRef.current?.state === 'suspended') {
       audioContextRef.current.resume().catch(() => {})
     }
