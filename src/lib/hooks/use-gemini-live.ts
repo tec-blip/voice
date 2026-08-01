@@ -441,6 +441,17 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
           sessionResumption: sessionHandleRef.current
             ? { handle: sessionHandleRef.current }
             : {},
+          // Compresión de ventana de contexto (sliding window). SIN esto, una
+          // sesión de solo-audio se corta a los ~15 min al llenarse la ventana de
+          // 128k tokens (el "muro" que tiraba las llamadas largas). CON esto,
+          // Gemini compacta automáticamente el contexto viejo cuando se acerca al
+          // límite y la sesión puede durar indefinidamente. Efecto secundario: el
+          // modelo puede perder detalles MUY antiguos de la llamada (no corta ni
+          // falla). Forma mínima documentada; triggerTokens es afinable si se
+          // quiere que compacte antes.
+          contextWindowCompression: {
+            slidingWindow: {},
+          },
         },
       }
       ws.send(JSON.stringify(setupMessage))
