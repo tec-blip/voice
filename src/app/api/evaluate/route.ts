@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { EVALUATION_PROMPT, type EvaluationResult } from '@/lib/prompts/evaluation'
 import { createClient } from '@/lib/supabase/server'
 import { enforceRateLimit } from '@/lib/rate-limit'
-import { normalizeCategoryScores, computeOverallScore } from '@/lib/engine'
+import { normalizeCategoryScores, computeOverallScoreForType } from '@/lib/engine'
 import { log, estimateEvalCostUsd } from '@/lib/log'
 
 // Models confirmed available for this API key (via ListModels)
@@ -24,7 +24,9 @@ const TYPE_LABEL: Record<string, string> = {
 }
 const TYPE_EVAL_CONTEXT: Record<string, string> = {
   objeciones:
-    'Es un DRILL de manejo de objeciones: el vendedor NO hace apertura ni discovery completos (el formato arranca ya en las objeciones). NO penalices "apertura" ni "descubrimiento" por no aparecer; evalúa sobre todo objeciones, presentación y cierre, y para las fases que el formato no incluye asigna un puntaje neutral (~60) en vez de castigar.',
+    'Es un DRILL de manejo de objeciones: el formato arranca YA en las objeciones (el pitch y el precio ya se dieron antes). NO existe apertura, descubrimiento ni presentación en este ejercicio — esas categorías NO se muestran al alumno, así que su valor es indiferente (puedes poner 60, no se usa). Evalúa SOLO objeciones, cierre y tono. Además del manejo de objeciones, se espera que el vendedor CIERRE al final.',
+  cierre:
+    'Es una llamada de CIERRE: el descubrimiento a fondo (situación, dolor, visión) YA ocurrió en una llamada previa. NO exijas ni penalices un descubrimiento de primera llamada. En "descubrimiento" valora solo el RESUMEN ESPEJO y la reconexión con el dolor ya conocido; el foco de la nota es la ejecución del cierre (calificación VSO, manejo de objeciones de pago, cierre directo). Un buen cierre puede ser corto.',
   llamada_fria:
     'Es una llamada EN FRÍO: es legítimo que sea corta si el prospecto no engancha. Prioriza apertura, generación de interés y manejo de la resistencia inicial.',
   framing:
@@ -182,7 +184,10 @@ export async function POST(request: Request) {
     // ponderado lo calcula el MOTOR de forma determinista. Cualquier
     // `puntuacion_general` que devuelva el LLM se ignora a propósito.
     const categories = normalizeCategoryScores(parsed)
-    const puntuacion_general = computeOverallScore(categories)
+    // Nota general consciente del tipo: en drills (objeciones) excluye las
+    // categorías que no aplican (apertura/descubrimiento/presentación) para no
+    // castigar al alumno por fases que el formato no le permite ejecutar.
+    const puntuacion_general = computeOverallScoreForType(categories, typeStr)
 
     // Telemetría temporal: comparar el general del modelo vs el recalculado.
     if (typeof parsed.puntuacion_general === 'number' && Math.round(parsed.puntuacion_general) !== puntuacion_general) {

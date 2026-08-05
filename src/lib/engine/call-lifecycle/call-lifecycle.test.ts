@@ -106,8 +106,11 @@ describe('isMatureClose', () => {
     expect(isMatureClose(t, 'general')).toBe(true)
     expect(isMatureClose(t + 1, 'cierre')).toBe(true)
   })
-  it('soft-yes prematuro (82s) NO es cierre maduro', () => {
-    expect(isMatureClose(82_000, 'cierre')).toBe(false)
+  it('cierre: umbral más bajo (90s) — el pitch ya fue en la llamada previa', () => {
+    expect(isMatureClose(89_000, 'cierre')).toBe(false)
+    expect(isMatureClose(90_000, 'cierre')).toBe(true)
+    // un cierre rápido y real a los ~3 min SÍ es maduro (antes se perdía a los 5 min)
+    expect(isMatureClose(180_000, 'cierre')).toBe(true)
   })
   it('objeciones: nunca aplica el aviso híbrido', () => {
     expect(isMatureClose(Infinity, 'objeciones')).toBe(false)

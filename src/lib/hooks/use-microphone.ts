@@ -106,7 +106,10 @@ export function useMicrophone(options: UseMicrophoneOptions = {}): UseMicrophone
         try { processorRef.current?.disconnect() } catch {}
         try { sourceRef.current?.disconnect() } catch {}
         streamRef.current?.getTracks().forEach((t) => t.stop())
-        try { audioContextRef.current?.close() } catch {}
+        // AWAIT el cierre: close() es asíncrono. Sin esperarlo, crear un nuevo
+        // AudioContext + getUserMedia inmediatamente (reinicio rápido tras un
+        // corte) pega con el contexto viejo aún cerrándose → pipeline mudo.
+        try { await audioContextRef.current?.close() } catch {}
         workletRef.current = null
         processorRef.current = null
         sourceRef.current = null

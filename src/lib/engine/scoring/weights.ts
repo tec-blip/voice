@@ -36,3 +36,14 @@ export const WEIGHT_DENOMINATOR = Object.values(CATEGORY_WEIGHTS).reduce((a, b) 
 
 /** Valor por defecto cuando una categoría llega inválida o ausente. */
 export const DEFAULT_CATEGORY_SCORE = 50
+
+/**
+ * Categorías que NO se pueden ejecutar en ciertos modos (drills donde esa fase
+ * ya ocurrió o no forma parte del ejercicio). Se muestran como "No aplica" en la
+ * UI y se EXCLUYEN del promedio general — así no penalizan al alumno por algo que
+ * el formato no le permite hacer. Reportado por testers (objeciones arranca ya en
+ * la objeción: no hay apertura, ni descubrimiento, ni presentación).
+ */
+export const NA_CATEGORIES_BY_TYPE: Record<string, readonly CategoryKey[]> = {
+  objeciones: ['apertura', 'descubrimiento', 'presentacion'],
+}

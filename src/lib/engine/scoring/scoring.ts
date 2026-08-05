@@ -9,6 +9,7 @@ import {
   CATEGORY_WEIGHTS,
   WEIGHT_DENOMINATOR,
   DEFAULT_CATEGORY_SCORE,
+  NA_CATEGORIES_BY_TYPE,
   type CategoryKey,
   type CategoryScores,
 } from './weights'
@@ -53,6 +54,30 @@ export function computeOverallScore(scores: CategoryScores): number {
     weighted += value * CATEGORY_WEIGHTS[key as CategoryKey]
   }
   return Math.max(0, Math.min(100, Math.round(weighted / WEIGHT_DENOMINATOR)))
+}
+
+/** Categorías que NO aplican en un tipo dado (drills). Set vacío = todas aplican. */
+export function naCategoriesForType(type?: string): Set<CategoryKey> {
+  return new Set(NA_CATEGORIES_BY_TYPE[type ?? ''] ?? [])
+}
+
+/**
+ * Promedio general CONSCIENTE DEL TIPO: excluye las categorías que no aplican en
+ * ese modo (p.ej. en el drill de 'objeciones' no se puntúan apertura/
+ * descubrimiento/presentación). Si todas aplican, equivale a computeOverallScore.
+ */
+export function computeOverallScoreForType(scores: CategoryScores, type?: string): number {
+  const na = naCategoriesForType(type)
+  if (na.size === 0) return computeOverallScore(scores)
+  let weighted = 0
+  let denom = 0
+  for (const key of CATEGORY_KEYS) {
+    if (na.has(key)) continue
+    weighted += clampScore(scores[key]) * CATEGORY_WEIGHTS[key as CategoryKey]
+    denom += CATEGORY_WEIGHTS[key as CategoryKey]
+  }
+  if (denom === 0) return computeOverallScore(scores)
+  return Math.max(0, Math.min(100, Math.round(weighted / denom)))
 }
 
 /** Etiqueta amigable para mostrar junto a un score. Movida desde feedback-card.tsx. */

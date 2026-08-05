@@ -48,4 +48,14 @@ export const WARN_CALL_SECONDS = 40 * 60 // 2400
  * este tiempo, un end_call('cierre_exitoso') se trata como soft-yes prematuro y
  * NO dispara el aviso. Es puramente informativo, no cambia el ciclo de vida.
  */
-export const MATURE_CLOSE_SECONDS = 5 * 60 // 300
+export const MATURE_CLOSE_SECONDS = 5 * 60 // 300 (default arco completo)
+
+/**
+ * Umbral de "cierre maduro" POR TIPO. En 'cierre' el pitch ya ocurrió en la
+ * llamada previa, así que un cierre a los ~1.5 min es legítimo (reportado por
+ * testers: cerraban rápido y el sistema lo trataba como "sí" prematuro, sin
+ * mostrar el aviso). Los tipos no listados usan MATURE_CLOSE_SECONDS (5 min).
+ */
+export const MATURE_CLOSE_SECONDS_BY_TYPE: Partial<Record<CallType, number>> = {
+  cierre: 90,
+}

@@ -313,11 +313,24 @@ export function PhoneUI({ roleplayType, systemPromptOverride, voiceName, onCallE
 
   // Reanudar una llamada caída: vuelve a 'connecting'; el efecto de isConnected
   // la promueve a 'active' al reconectar (preservando transcript y duración).
-  const handleResume = useCallback(() => {
+  const handleResume = useCallback(async () => {
     setErrorMessage(null)
     setCallState('connecting')
+    // REINICIA el micrófono antes de reanudar. Lo que cortó la llamada (una
+    // interrupción, otra app tomando el micro, la pantalla) suele dejar el
+    // pipeline del micro MUERTO (AudioContext suspendido o tracks 'ended'). Si
+    // solo reconectáramos el WebSocket, la IA volvería pero NO te oiría
+    // ("¿aló? no se oye…") — reportado por testers. Un micro fresco lo garantiza.
+    microphone.stop()
+    const stream = await microphone.start()
+    if (!stream) {
+      // No se pudo recuperar el micro (permiso/otra app): volvemos a 'dropped'
+      // para que el usuario reintente o termine, en vez de reconectar sin voz.
+      setCallState('dropped')
+      return
+    }
     gemini.resume()
-  }, [gemini])
+  }, [gemini, microphone])
 
   const handleHangup = useCallback(() => {
     finalizeCall({ endedBy: 'user', reason: 'manual' })
