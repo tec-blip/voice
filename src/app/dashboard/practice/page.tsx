@@ -56,10 +56,10 @@ const RoleplayIcon = ({ id }: { id: RoleplayType }) => {
 // tooltip al pasar el cursor y como línea explicativa al seleccionar el tipo.
 // Pedido por testers: no quedaba claro en qué consistía cada tipo.
 const TYPE_DESCRIPTIONS: Record<RoleplayType, string> = {
-  cierre: 'Llamada de CIERRE: ya hubo una llamada previa y el prospecto te conoce. Tu meta es cerrar la venta.',
+  cierre: 'Lead cualificado y llamada agendada para CIERRE: ya te reuniste con él y te conoce. Tu meta es cerrar la venta (el descubrimiento ya se hizo en la llamada previa).',
   llamada_fria: 'Llamada en FRÍO: el prospecto NO te conoce ni esperaba tu llamada. Gánate los primeros segundos.',
   framing: 'FRAMING (reencuadre): el prospecto cree que hay opciones más baratas. Reencuadra el VALOR, no el precio.',
-  objeciones: 'Drill de OBJECIONES: el prospecto ya escuchó el pitch y lanza objeciones una a una. Resuélvelas.',
+  objeciones: 'Drill de OBJECIONES: ya se dio el pitch y el precio; el prospecto lanza objeciones una a una. Resuélvelas y CIERRA. Aquí no hay apertura ni descubrimiento (no se evalúan).',
   general: 'Llamada GENERAL: el prospecto agendó tras ver un anuncio. Descubre su situación, presenta y cierra.',
 }
 
@@ -377,7 +377,7 @@ export default function PracticePage() {
           {` · ${lastTranscript.length} intercambios · ${Math.round(callDuration / 60)} min`}
         </p>
       </div>
-      {evaluation && <FeedbackCard evaluation={evaluation} />}
+      {evaluation && <FeedbackCard evaluation={evaluation} type={selectedType ?? undefined} />}
       {evalError && (
         <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-5 text-center">
           <p className="text-red-400">{evalError}</p>

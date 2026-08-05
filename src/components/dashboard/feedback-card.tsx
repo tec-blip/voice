@@ -1,10 +1,14 @@
 ﻿'use client'
 
 import type { EvaluationResult } from '@/lib/prompts/evaluation'
-import { getGradeLabel } from '@/lib/engine'
+import { getGradeLabel, naCategoriesForType } from '@/lib/engine'
 
 interface FeedbackCardProps {
   evaluation: EvaluationResult
+  // Tipo de práctica: permite marcar como "No aplica" las categorías que ese
+  // modo no puede ejecutar (p.ej. apertura/descubrimiento/presentación en el
+  // drill de objeciones). Si no se pasa, se muestran las 6 (comportamiento previo).
+  type?: string
 }
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -30,8 +34,9 @@ function getBarColor(score: number): string {
   return 'bg-red-500'
 }
 
-export function FeedbackCard({ evaluation }: FeedbackCardProps) {
+export function FeedbackCard({ evaluation, type }: FeedbackCardProps) {
   const categories = ['apertura', 'descubrimiento', 'presentacion', 'objeciones', 'cierre', 'tono'] as const
+  const na = naCategoriesForType(type)
 
   return (
     <div className="space-y-6">
@@ -64,6 +69,21 @@ export function FeedbackCard({ evaluation }: FeedbackCardProps) {
         <div className="space-y-4">
           {categories.map((cat) => {
             const score = evaluation[cat] as number
+            // Categoría que no aplica en este modo (drill): se muestra atenuada
+            // como "No aplica" en vez de una barra con un número engañoso.
+            if (na.has(cat)) {
+              return (
+                <div key={cat}>
+                  <div className="flex justify-between items-center mb-1.5">
+                    <span className="text-sm text-zinc-500">{CATEGORY_LABELS[cat]}</span>
+                    <span className="text-xs text-zinc-500 italic">No aplica en este modo</span>
+                  </div>
+                  <div className="h-2 bg-zinc-800/50 rounded-full overflow-hidden">
+                    <div className="h-full rounded-full bg-zinc-700/40" style={{ width: '100%' }} />
+                  </div>
+                </div>
+              )
+            }
             return (
               <div key={cat}>
                 <div className="flex justify-between items-center mb-1.5">

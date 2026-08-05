@@ -11,6 +11,7 @@ import {
   MIN_CALL_SECONDS,
   MIN_END_CALL_SECONDS_BY_TYPE,
   MATURE_CLOSE_SECONDS,
+  MATURE_CLOSE_SECONDS_BY_TYPE,
   type CallType,
 } from './limits'
 import type { CallEndReason } from '../types'
@@ -83,7 +84,8 @@ export function isHardCapReached(durationSeconds: number): boolean {
  */
 export function isMatureClose(callAgeMs: number, type?: CallType): boolean {
   if (type === 'objeciones') return false
-  return callAgeMs >= MATURE_CLOSE_SECONDS * 1000
+  const threshold = (type && MATURE_CLOSE_SECONDS_BY_TYPE[type]) ?? MATURE_CLOSE_SECONDS
+  return callAgeMs >= threshold * 1000
 }
 
 /** ¿Está en la ventana de aviso "quedan N minutos"? */
