@@ -86,6 +86,10 @@ Señales negativas:
 • Cedió ante la primera objeción sin redirect
 • Atacó a la competencia directamente
 
+IMPORTANTE — NO confundir con justificar el precio: reencuadrar el precio como
+inversión / coste de oportunidad / fraccionamiento, y ACOMPAÑAR el pago paso a paso,
+son TÉCNICAS CORRECTAS de cierre. NO las penalices como "justificar el precio".
+
 ──────────────────────────────────────────
 5. CIERRE (VSO + Cierre directo)
 ──────────────────────────────────────────
@@ -105,6 +109,7 @@ Señales de cierre efectivo:
 • "¿Tú cómo lo harías?" (pregunta de poder)
 • Cierre por resumen: "Me dijiste X y Y... ¿comenzamos ya?"
 • Silencio después del precio
+• Acompañar el pago en vivo: guiar paso a paso ("pon el importe", "elige las cuotas", "envíame el comprobante") y dar de alta al cliente en el momento — es cierre FUERTE, no presión
 
 Señales negativas:
 • No calificó VSO antes del pitch → objeciones al final
