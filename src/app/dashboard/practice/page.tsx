@@ -1,6 +1,6 @@
 ﻿'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { PhoneUI } from '@/components/phone/phone-ui'
 import { FeedbackCard } from '@/components/dashboard/feedback-card'
 import {
@@ -61,6 +61,39 @@ const TYPE_DESCRIPTIONS: Record<RoleplayType, string> = {
   framing: 'FRAMING (reencuadre): el prospecto cree que hay opciones más baratas. Reencuadra el VALOR, no el precio.',
   objeciones: 'Drill de OBJECIONES: ya se dio el pitch y el precio; el prospecto lanza objeciones una a una. Resuélvelas y CIERRA. Aquí no hay apertura ni descubrimiento (no se evalúan).',
   general: 'Llamada GENERAL: el prospecto agendó tras ver un anuncio. Descubre su situación, presenta y cierra.',
+}
+
+// Guía completa de cada tipo para el "menú de instrucciones" (pedido en el plan
+// de acción): el alumno debe saber QUÉ es cada llamada, QUÉ se evalúa y cuál es
+// el OBJETIVO antes de empezar. Se muestra en un modal desde el botón
+// "¿Cómo funciona cada práctica?".
+type TypeGuide = { definicion: string; evalua: string; objetivo: string }
+const TYPE_GUIDE: Record<RoleplayType, TypeGuide> = {
+  general: {
+    definicion: 'El prospecto agendó una llamada tras ver un anuncio. Es la llamada completa, de principio a fin.',
+    evalua: 'Las 6 categorías completas: apertura, descubrimiento, presentación, objeciones, cierre y tono.',
+    objetivo: 'Recorrer todo el arco: generar rapport, descubrir su situación y su dolor, presentar y cerrar.',
+  },
+  cierre: {
+    definicion: 'Lead ya cualificado y con la llamada agendada para cerrar. Ya te conoce y el descubrimiento se hizo en la llamada previa.',
+    evalua: 'Sobre todo el cierre (calificación VSO, resumen espejo y acompañar el pago) y el tono. No se te exige repetir el descubrimiento.',
+    objetivo: 'Cerrar la venta con dirección y seguridad, sin dar margen al "me lo pienso".',
+  },
+  llamada_fria: {
+    definicion: 'El prospecto NO te conoce ni esperaba tu llamada.',
+    evalua: 'La apertura, tu capacidad de generar interés y de manejar la resistencia inicial.',
+    objetivo: 'Ganarte los primeros segundos y conseguir que te dé la oportunidad de avanzar.',
+  },
+  framing: {
+    definicion: 'El prospecto cree que hay opciones más baratas o no termina de ver el valor.',
+    evalua: 'Cómo reencuadras el VALOR frente a las alternativas, sin atacar a la competencia ni justificar el precio.',
+    objetivo: 'Cambiar su percepción de valor conectándolo con su dolor y su deseo.',
+  },
+  objeciones: {
+    definicion: 'Ya se dio el pitch y el precio; el prospecto lanza objeciones una a una.',
+    evalua: 'El manejo de objeciones, el cierre y el tono. Apertura, descubrimiento y presentación no aplican en este drill.',
+    objetivo: 'Resolver las objeciones con técnica y cerrar la venta.',
+  },
 }
 
 // Producto/infoproducto que quiere el prospecto, para mostrarlo en la tarjeta
@@ -216,6 +249,77 @@ function ScenarioCard({ scenario, type, onRefresh }: { scenario: ScenarioBrief; 
   )
 }
 
+// ── Guía de prácticas (modal) ──────────────────────────────────────────────────
+
+function GuideModal({ types, onClose }: { types: RoleplayType[]; onClose: () => void }) {
+  // Cerrar con Escape (además del backdrop y el botón ✕).
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [onClose])
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Guía de prácticas"
+    >
+      <div
+        className="relative w-full max-w-2xl max-h-[85vh] overflow-y-auto bg-zinc-900 border border-zinc-700 rounded-2xl shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="sticky top-0 z-10 flex items-start justify-between gap-3 px-6 py-4 border-b border-zinc-800 bg-zinc-900/95 backdrop-blur">
+          <div>
+            <h2 className="text-white font-semibold text-lg">Guía de prácticas</h2>
+            <p className="text-zinc-500 text-xs mt-0.5">Qué es cada llamada, qué se evalúa y cuál es el objetivo</p>
+          </div>
+          <button
+            onClick={onClose}
+            className="flex-shrink-0 text-zinc-500 hover:text-white transition-colors p-1"
+            title="Cerrar"
+            aria-label="Cerrar"
+          >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <div className="px-6 py-5 space-y-4">
+          {types.map((id) => {
+            const g = TYPE_GUIDE[id]
+            return (
+              <div key={id} className="border border-zinc-800 rounded-xl p-4 bg-zinc-900/40">
+                <div className="flex items-center gap-2.5 mb-3">
+                  <span className="text-red-400"><RoleplayIcon id={id} /></span>
+                  <h3 className="text-white font-semibold text-sm">{ROLEPLAY_CONFIGS[id].label}</h3>
+                </div>
+                <dl className="space-y-2.5 text-sm">
+                  <div>
+                    <dt className="text-zinc-500 text-[11px] font-semibold uppercase tracking-wider mb-0.5">Qué es</dt>
+                    <dd className="text-zinc-300 leading-relaxed">{g.definicion}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-zinc-500 text-[11px] font-semibold uppercase tracking-wider mb-0.5">Qué se evalúa</dt>
+                    <dd className="text-zinc-300 leading-relaxed">{g.evalua}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-zinc-500 text-[11px] font-semibold uppercase tracking-wider mb-0.5">Objetivo</dt>
+                    <dd className="text-zinc-300 leading-relaxed">{g.objetivo}</dd>
+                  </div>
+                </dl>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function PracticePage() {
@@ -230,6 +334,8 @@ export default function PracticePage() {
   const [evalError, setEvalError] = useState<string | null>(null)
   // Aviso en la pantalla de selección (p.ej. llamada demasiado corta).
   const [callNotice, setCallNotice] = useState<string | null>(null)
+  // Modal con la guía de tipos de práctica (definición / qué se evalúa / objetivo).
+  const [showGuide, setShowGuide] = useState(false)
 
   const fetchScenario = useCallback(async (nicho: Nicho) => {
     setLoadingScenario(true)
@@ -427,6 +533,19 @@ export default function PracticePage() {
             ? `${scenario.arquetipo_label} · ${selectedType ? ROLEPLAY_CONFIGS[selectedType].label : ''}`
             : 'Elige nicho, tipo de práctica y habla con un cliente real'}
         </p>
+        {pageState === 'select' && (
+          <div className="flex justify-center mt-3">
+            <button
+              onClick={() => setShowGuide(true)}
+              className="inline-flex items-center gap-2 rounded-full border border-zinc-700 bg-zinc-900/60 px-4 py-2 text-xs font-medium text-zinc-300 hover:border-zinc-600 hover:text-white transition-colors"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+              </svg>
+              ¿Cómo funciona cada práctica?
+            </button>
+          </div>
+        )}
       </div>
 
       {callNotice && (
@@ -531,6 +650,8 @@ export default function PracticePage() {
 
         </div>
       )}
+
+      {showGuide && <GuideModal types={roleplayTypes} onClose={() => setShowGuide(false)} />}
     </div>
   )
 }
