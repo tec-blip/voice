@@ -42,13 +42,37 @@ export interface ScenarioBrief {
 const ALL_NICHOS = ['trading', 'marca_personal_instagram']
 const scenarios = scenariosData as unknown as ScenarioBrief[]
 
+// Los datos reales están sesgados a hombres (~75% M / ~23% F), así que las
+// clientas —y por tanto las voces femeninas— salían poco en la práctica. Elevamos
+// su probabilidad a este objetivo. OJO: seguimos eligiendo un escenario REAL de
+// mujer (no forzamos voz femenina sobre un caso de hombre), así cliente, voz y
+// caso quedan coherentes. Ajustable.
+const FEMALE_TARGET_SHARE = 0.4
+
+function isFemale(s: ScenarioBrief): boolean {
+  return (s.estado_inicial?.genero ?? '').trim().toUpperCase() === 'F'
+}
+
+function pickRandom<T>(arr: T[]): T {
+  return arr[Math.floor(Math.random() * arr.length)]
+}
+
 function getScenario(nicho?: string): ScenarioBrief | null {
   let pool = scenarios
   if (nicho && nicho !== 'aleatorio' && ALL_NICHOS.includes(nicho)) {
     pool = scenarios.filter(s => s.nicho === nicho)
   }
   if (!pool.length) pool = scenarios
-  return pool[Math.floor(Math.random() * pool.length)]
+  if (!pool.length) return null
+
+  // Selección ponderada por género: sube la aparición de clientas al objetivo.
+  const female = pool.filter(isFemale)
+  const rest = pool.filter(s => !isFemale(s))
+  if (female.length && rest.length) {
+    return Math.random() < FEMALE_TARGET_SHARE ? pickRandom(female) : pickRandom(rest)
+  }
+  // Si el pool no tiene ambos géneros, aleatorio simple.
+  return pickRandom(pool)
 }
 
 // GET /api/scenarios?nicho=trading|marca_personal_instagram|aleatorio

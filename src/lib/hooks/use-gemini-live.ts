@@ -41,11 +41,41 @@ const STEER_CLOSE_DONE_MSG =
 // naturales: la latencia normal del modelo es de 1-3s.
 const DEAD_AIR_MS = 10_000
 
+// Cuántos turnos seguidos del usuario SIN respuesta del modelo toleramos antes de
+// FORZAR el re-enganche (el modelo se quedó mudo). 2 = el usuario habló, no hubo
+// respuesta y volvió a hablar → empujamos ya, sin esperar el silencio total del
+// watchdog (que NO se dispara si el usuario sigue hablando: cada turno suyo
+// reinicia el timer). Arregla el reporte "tuve que repetir 3 veces a la IA".
+const MAX_UNANSWERED_USER_TURNS = 2
+
 // Empujón de ARRANQUE: si tras conectar el prospecto no abre la llamada (en arco
 // completo el modelo saluda primero) y nadie habla, lo activamos para que dé su
 // primera frase. Semánticamente distinto al re-enganche de mitad de conversación.
 const KICKOFF_NUDGE_PROMPT =
   '(La llamada acaba de empezar y hay silencio. Abre tú en tu personaje de cliente con tu primera frase, en español, breve y natural. NO cuelgues.)'
+
+// Firmas de nuestros empujones internos (dead-air / re-enganche / steer). A veces
+// el modelo, en vez de ACTUAR sobre el turno que le inyectamos, lo "lee en voz
+// alta" y aparece como turno del prospecto (reporte de Ana). Esos textos NO deben
+// entrar a la transcripción ni a la evaluación. Comparamos sin acentos ni
+// mayúsculas para tolerar pequeñas variaciones del modelo.
+const INJECTED_NUDGE_SIGNATURES = [
+  'el vendedor sigue en la llamada',
+  'no cuelgues ni te despidas',
+  'la llamada acaba de empezar y hay silencio',
+  'acabas de mostrar interes',
+  'la venta ya quedo cerrada y lo confirmaste',
+  'todavia no es momento de colgar',
+  'el cierre lo marca el vendedor',
+  'la venta quedo cerrada',
+]
+function stripDiacritics(s: string): string {
+  return s.normalize('NFD').replace(/[̀-ͯ]/g, '')
+}
+function looksLikeInjectedNudge(text: string): boolean {
+  const t = stripDiacritics(text.toLowerCase())
+  return INJECTED_NUDGE_SIGNATURES.some((sig) => t.includes(sig))
+}
 
 interface TranscriptEntry {
   role: 'user' | 'model'
@@ -205,6 +235,16 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
   // usuario retoma. Vive en un ref para poder limpiarlo desde cualquier handler.
   const deadAirTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
+  // Nodo de ganancia maestro del playback: TODAS las fuentes de audio pasan por
+  // aquí, lo que permite un fade-out corto al cortar (barge-in / desconexión) y
+  // evitar el "click"/pitido de cortar el audio de golpe (reporte de Ana).
+  const masterGainRef = useRef<GainNode | null>(null)
+
+  // Turnos del usuario finalizados SIN respuesta del modelo desde su última
+  // intervención. Si llega a MAX_UNANSWERED_USER_TURNS, el modelo se quedó mudo
+  // → forzamos el re-enganche de inmediato (ver bumpUnansweredAndMaybeReengage).
+  const userTurnsSinceModelRef = useRef(0)
+
   // Momento de conexión (ref): el handler de end_call (en ws.onmessage) lo lee
   // para gatear un end_call prematuro contra el piso mínimo por tipo (engine).
   // roleplayType se captura por closure en openSocket (es constante durante la
@@ -266,6 +306,30 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
     }, DEAD_AIR_MS)
   }, [clearDeadAir, logEvent])
 
+  // Fuerza el re-enganche cuando el usuario encadena turnos sin respuesta del
+  // modelo (mudo). Complementa al watchdog de dead-air, que NO se dispara si el
+  // usuario sigue hablando (cada turno suyo reinicia el timer). Se llama al
+  // finalizar un turno del usuario; el contador se resetea cuando el modelo habla.
+  const bumpUnansweredAndMaybeReengage = useCallback(() => {
+    userTurnsSinceModelRef.current += 1
+    if (userTurnsSinceModelRef.current < MAX_UNANSWERED_USER_TURNS) return
+    if (isUserDisconnectingRef.current) return
+    if (pendingHangupRef.current) return
+    if (saleClosedFiredRef.current) return
+    if (activeSourcesRef.current.length > 0) return // el modelo está hablando
+    const ws = wsRef.current
+    if (!ws || ws.readyState !== WebSocket.OPEN) return
+    userTurnsSinceModelRef.current = 0
+    clearDeadAir()
+    logEvent('forced_reengage_unanswered')
+    ws.send(JSON.stringify({
+      clientContent: {
+        turns: [{ role: 'user', parts: [{ text: REENGAGE_PROMPT }] }],
+        turnComplete: true,
+      },
+    }))
+  }, [clearDeadAir, logEvent])
+
   const playAudioChunk = useCallback((pcmBase64: string) => {
     if (!audioContextRef.current || audioContextRef.current.state === 'closed') {
       // ⚠️ NO forzar sampleRate aquí: iOS Safari lo rechaza o lo ignora.
@@ -287,6 +351,15 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
       ctx.resume().catch((err) => console.warn('[gemini-live] resume() failed', err))
     }
 
+    // Ganancia maestra (se crea una vez por AudioContext). TODO el audio pasa por
+    // ella para poder hacer fade-out al cortar y evitar el click/pitido.
+    if (!masterGainRef.current || masterGainRef.current.context !== ctx) {
+      const g = ctx.createGain()
+      g.gain.value = 1
+      g.connect(ctx.destination)
+      masterGainRef.current = g
+    }
+
     const pcmBuffer = base64Decode(pcmBase64)
     const int16Data = new Int16Array(pcmBuffer)
     const float32Data = int16ToFloat32(int16Data)
@@ -299,7 +372,16 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
 
     const source = ctx.createBufferSource()
     source.buffer = audioBuffer
-    source.connect(ctx.destination)
+    source.connect(masterGainRef.current)
+
+    // Inicio de segmento nuevo (no había audio sonando): restablece la ganancia a
+    // 1 por si venía de un fade-out de un barge-in anterior.
+    if (activeSourcesRef.current.length === 0) {
+      try {
+        masterGainRef.current.gain.cancelScheduledValues(ctx.currentTime)
+        masterGainRef.current.gain.setValueAtTime(1, ctx.currentTime)
+      } catch {}
+    }
 
     // Buffer de 20ms (antes 50ms). Reduce la latencia percibida entre que el
     // modelo termina de "pensar" y empieza a hablar. Si vemos glitches en el
@@ -328,17 +410,29 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
   }, [onModelSpeaking])
 
   const stopPlayback = useCallback(() => {
-    // Nullificamos onended ANTES de stop() para que no disparen el hangup
-    // de pendingHangupRef cuando el audio se corta abruptamente (por ejemplo
-    // cuando el usuario interrumpe al modelo o al desconectar).
-    activeSourcesRef.current.forEach((s) => {
-      s.onended = null
-      try { s.stop() } catch {}
-    })
+    const ctx = audioContextRef.current
+    const gain = masterGainRef.current
+    const sources = activeSourcesRef.current
     activeSourcesRef.current = []
     nextPlayTimeRef.current = 0
     setIsModelSpeaking(false)
     onModelSpeaking?.(false)
+    // Nullificamos onended ANTES de parar para que no disparen el hangup de
+    // pendingHangupRef cuando el audio se corta abruptamente (barge-in / disconnect).
+    sources.forEach((s) => { s.onended = null })
+    if (ctx && gain && sources.length > 0) {
+      // Fade-out corto (~15ms) para evitar el "click"/pitido de cortar de golpe.
+      // La ganancia se restablece a 1 al iniciar el próximo segmento (playAudioChunk).
+      const now = ctx.currentTime
+      try {
+        gain.gain.cancelScheduledValues(now)
+        gain.gain.setValueAtTime(gain.gain.value, now)
+        gain.gain.linearRampToValueAtTime(0, now + 0.015)
+      } catch {}
+      sources.forEach((s) => { try { s.stop(now + 0.02) } catch {} })
+    } else {
+      sources.forEach((s) => { try { s.stop() } catch {} })
+    }
   }, [onModelSpeaking])
 
   // Se agotó la reconexión automática. Si HAY sessionHandle, la conversación se
@@ -706,6 +800,7 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
           for (const part of modelTurn.parts) {
             if (part.inlineData?.mimeType?.startsWith('audio/')) {
               clearDeadAir() // el modelo respondió: no hay dead-air
+              userTurnsSinceModelRef.current = 0 // el modelo contestó
               if (!isModelSpeaking) {
                 setIsModelSpeaking(true)
                 onModelSpeaking?.(true)
@@ -714,6 +809,7 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
             }
             if (part.text) {
               clearDeadAir() // el modelo ya está respondiendo (texto), aunque el audio tarde
+              userTurnsSinceModelRef.current = 0 // el modelo contestó
               currentModelTextRef.current += part.text
             }
           }
@@ -732,11 +828,15 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
           // El vendedor terminó su turno; el prospecto debería responder. Armamos
           // el watchdog: si se queda mudo > DEAD_AIR_MS, lo empujamos a retomar.
           armDeadAir()
+          // Y si el usuario ya encadenó turnos sin respuesta, forzamos el
+          // re-enganche YA (el watchdog no sirve si el usuario sigue hablando).
+          bumpUnansweredAndMaybeReengage()
         }
 
         const outputTr = sc.outputTranscription
         if (outputTr?.text) {
           clearDeadAir() // el modelo ya está respondiendo (transcripción de salida)
+          userTurnsSinceModelRef.current = 0 // el modelo contestó
           currentModelTextRef.current += outputTr.text
         }
 
@@ -750,10 +850,17 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
             currentUserTextRef.current = ''
           }
           if (currentModelTextRef.current) {
-            const entry: TranscriptEntry = { role: 'model', text: currentModelTextRef.current.trim() }
-            setTranscript((prev) => [...prev, entry])
-            onTranscript?.(entry)
+            const modelText = currentModelTextRef.current.trim()
             currentModelTextRef.current = ''
+            // Si el modelo "leyó en voz alta" uno de nuestros empujones internos,
+            // NO lo metemos a la transcripción ni a la evaluación (reporte de Ana).
+            if (modelText && !looksLikeInjectedNudge(modelText)) {
+              const entry: TranscriptEntry = { role: 'model', text: modelText }
+              setTranscript((prev) => [...prev, entry])
+              onTranscript?.(entry)
+            } else if (modelText) {
+              logEvent('nudge_echo_dropped')
+            }
           }
           // Fallback: si el turno del usuario se cerró aquí (sin que llegara
           // inputTranscription.finished) y el modelo NO respondió en el mismo
@@ -805,7 +912,7 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
     }
 
     wsRef.current = ws
-  }, [voiceName, systemPrompt, roleplayType, onTranscript, onModelSpeaking, playAudioChunk, stopPlayback, isModelSpeaking, logEvent, giveUp, armDeadAir, clearDeadAir])
+  }, [voiceName, systemPrompt, roleplayType, onTranscript, onModelSpeaking, playAudioChunk, stopPlayback, isModelSpeaking, logEvent, giveUp, armDeadAir, clearDeadAir, bumpUnansweredAndMaybeReengage])
 
   // Obtiene un token fresco de /api/vertex/config y abre un nuevo socket preservando
   // el sessionHandle para que Gemini retome la conversación desde donde se cortó.
@@ -850,6 +957,7 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
       pendingHangupRef.current = null
       connectedAtRef.current = null
       saleClosedFiredRef.current = false
+      userTurnsSinceModelRef.current = 0
       eventsRef.current = []
       setIsReconnecting(false)
       if (goAwayTimerRef.current) { clearTimeout(goAwayTimerRef.current); goAwayTimerRef.current = null }
@@ -864,6 +972,7 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
           throw new Error('Tu navegador no soporta Web Audio API')
         }
         audioContextRef.current = new AudioContextClass()
+        masterGainRef.current = null // la ganancia vieja pertenecía al contexto anterior
       }
       if (audioContextRef.current.state === 'suspended') {
         await audioContextRef.current.resume()
@@ -948,10 +1057,12 @@ export function useGeminiLive(options: UseGeminiLiveOptions): UseGeminiLiveRetur
     }
     audioContextRef.current?.close()
     audioContextRef.current = null
+    masterGainRef.current = null // pertenecía al contexto que acabamos de cerrar
     setIsConnected(false)
     setTranscript([])
     currentModelTextRef.current = ''
     currentUserTextRef.current = ''
+    userTurnsSinceModelRef.current = 0
   }, [stopPlayback, clearDeadAir])
 
   // Reanuda una llamada caída: la reconexión automática se agotó PERO hay
