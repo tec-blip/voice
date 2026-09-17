@@ -3,6 +3,8 @@ import {
   clampScore,
   normalizeCategoryScores,
   computeOverallScore,
+  computeOverallScoreForType,
+  naCategoriesForType,
   getGradeLabel,
   getSkillLevel,
 } from './scoring'
@@ -65,6 +67,28 @@ describe('computeOverallScore', () => {
       (100 * 1 + 100 * 2 + 100 * 1 + 100 * 1.5 + 50 * 2 + 100 * 1) / WEIGHT_DENOMINATOR,
     )
     expect(computeOverallScore(dirty)).toBe(expected)
+  })
+})
+
+describe('computeOverallScoreForType', () => {
+  it('sin tipo (o tipo sin exclusiones) equivale a computeOverallScore', () => {
+    expect(computeOverallScoreForType(all(60))).toBe(computeOverallScore(all(60)))
+    expect(computeOverallScoreForType(all(60), 'general')).toBe(computeOverallScore(all(60)))
+  })
+  it('objeciones EXCLUYE apertura/descubrimiento/presentación del promedio', () => {
+    // Las 3 categorías N/A en 0; las que SÍ aplican en 100.
+    const scores = { ...all(0), objeciones: 100, cierre: 100, tono: 100 }
+    // Consciente del tipo: solo cuentan objeciones+cierre+tono, todas 100 → 100
+    expect(computeOverallScoreForType(scores, 'objeciones')).toBe(100)
+    // Plano (el bug anterior): las 3 en 0 arrastraban el promedio hacia abajo
+    expect(computeOverallScore(scores)).toBeLessThan(100)
+  })
+  it('naCategoriesForType marca las 3 fases N/A solo en objeciones', () => {
+    expect(naCategoriesForType('objeciones')).toEqual(
+      new Set(['apertura', 'descubrimiento', 'presentacion']),
+    )
+    expect(naCategoriesForType('general').size).toBe(0)
+    expect(naCategoriesForType(undefined).size).toBe(0)
   })
 })
 

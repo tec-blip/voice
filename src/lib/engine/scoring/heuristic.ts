@@ -8,7 +8,7 @@
 
 import type { LiveTranscriptEntry } from '../types'
 import type { CategoryScores } from './weights'
-import { clampScore, computeOverallScore } from './scoring'
+import { clampScore, computeOverallScoreForType } from './scoring'
 
 export interface HeuristicResult {
   scores: CategoryScores
@@ -39,9 +39,11 @@ const BASE = 30 // piso para una llamada con poca señal
 
 /**
  * Estima las 6 categorías + puntuación general de forma determinista.
- * Mismo transcript → mismo resultado, siempre.
+ * Mismo transcript → mismo resultado, siempre. El `type` se usa para excluir del
+ * promedio las categorías que no aplican en ese drill (p.ej. objeciones), igual
+ * que el evaluador IA y el guardado.
  */
-export function estimateScoresHeuristic(entries: LiveTranscriptEntry[]): HeuristicResult {
+export function estimateScoresHeuristic(entries: LiveTranscriptEntry[], type?: string): HeuristicResult {
   const seller = entries.filter((e) => e.role === 'user')
   const prospect = entries.filter((e) => e.role === 'model')
 
@@ -80,7 +82,7 @@ export function estimateScoresHeuristic(entries: LiveTranscriptEntry[]): Heurist
     tono: clampScore(BASE + balanceBonus + Math.min(sellerTurns, 8) * 4),
   }
 
-  const puntuacion_general = computeOverallScore(scores)
+  const puntuacion_general = computeOverallScoreForType(scores, type)
 
   const fortalezas = notas.length
     ? notas.join(' ')
