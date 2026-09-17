@@ -404,7 +404,7 @@ export default function PracticePage() {
       result = await res.json()
     } catch (err) {
       console.warn('[practice] evaluación IA no disponible, usando heurístico', err)
-      const h = estimateScoresHeuristic(transcript)
+      const h = estimateScoresHeuristic(transcript, selectedType ?? undefined)
       result = {
         ...h.scores,
         puntuacion_general: h.puntuacion_general,

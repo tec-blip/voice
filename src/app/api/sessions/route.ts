@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { evaluateBadges } from '@/lib/utils/badge-logic'
-import { normalizeCategoryScores, computeOverallScore } from '@/lib/engine'
+import { normalizeCategoryScores, computeOverallScoreForType } from '@/lib/engine'
 import { enforceRateLimit } from '@/lib/rate-limit'
 import type { RoleplayType, TranscriptEntry, FeedbackScores } from '@/lib/types/database'
 
@@ -66,7 +66,10 @@ export async function POST(request: Request) {
 
     // ── score ───────────────────────────────────────────────────────────────
     // NO se confía en el score del cliente (falsificaría el ranking). Se recalcula
-    // server-side desde el feedback real (computeOverallScore) más abajo.
+    // server-side desde el feedback real (computeOverallScoreForType) más abajo,
+    // CONSCIENTE DEL TIPO: en 'objeciones' excluye apertura/descubrimiento/
+    // presentación para que el score guardado (historial/promedio/ranking) coincida
+    // con el que se muestra al colgar y no penalice categorías que no aplican.
     let safeScore: number | null = null
 
     // ── duration ────────────────────────────────────────────────────────────
@@ -111,8 +114,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Feedback con formato inválido' }, { status: 400 })
     }
 
-    // Score derivado del feedback saneado (server-side, no falsificable).
-    if (safeFeedback) safeScore = computeOverallScore(safeFeedback)
+    // Score derivado del feedback saneado (server-side, no falsificable),
+    // consciente del tipo (excluye categorías N/A del drill, p.ej. objeciones).
+    if (safeFeedback) safeScore = computeOverallScoreForType(safeFeedback, type)
 
     // ── events (diagnóstico de ciclo de vida; opcional, best-effort) ──────────
     let safeEvents: unknown[] | null = null
